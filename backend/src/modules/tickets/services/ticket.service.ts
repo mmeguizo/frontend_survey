@@ -721,6 +721,261 @@ export class TicketService {
   }
 
   /**
+   * Submit the official ARTA Client Satisfaction Measurement survey.
+   * Ticket creator only, one-time only, for resolved/closed tickets.
+   */
+  async submitClientSatisfactionSurvey(
+    ticketId: number,
+    userId: number,
+    input: {
+      clientType?: string;
+      date?: string;
+      sex?: string;
+      age?: number;
+      regionOfResidence?: string;
+      serviceTalisay: boolean;
+      serviceExternal: boolean;
+      cc1Awareness?: number;
+      cc2Visibility?: number;
+      cc3Helpfulness?: number;
+      sqd0?: number;
+      sqd1?: number;
+      sqd2?: number;
+      sqd3?: number;
+      sqd4?: number;
+      sqd5?: number;
+      sqd6?: number;
+      sqd7?: number;
+      sqd8?: number;
+      suggestions?: string;
+      emailAddress?: string;
+    },
+  ) {
+    const ticket = await this.repository.findById(ticketId);
+    if (!ticket) throw new Error("Ticket not found");
+    if (ticket.createdById !== userId)
+      throw new Error(
+        "Only the ticket creator can submit a satisfaction survey",
+      );
+    if (ticket.status !== "RESOLVED" && ticket.status !== "CLOSED") {
+      throw new Error(
+        "Satisfaction survey can only be submitted for resolved or closed tickets",
+      );
+    }
+
+    // Check if survey already submitted (one-time only per ticket)
+    const existing = await this.prisma.clientSatisfactionSurvey.findUnique({
+      where: { ticketId },
+    });
+    if (existing) {
+      throw new Error(
+        "Client satisfaction survey already submitted for this ticket",
+      );
+    }
+
+    return this.prisma.clientSatisfactionSurvey.create({
+      data: {
+        ticketId,
+        userId,
+        clientType: input.clientType || null,
+        date: input.date || null,
+        sex: input.sex || null,
+        age: input.age || null,
+        regionOfResidence: input.regionOfResidence || null,
+        serviceTalisay: input.serviceTalisay,
+        serviceExternal: input.serviceExternal,
+        cc1Awareness: input.cc1Awareness || null,
+        cc2Visibility: input.cc2Visibility || null,
+        cc3Helpfulness: input.cc3Helpfulness || null,
+        sqd0: input.sqd0 || null,
+        sqd1: input.sqd1 || null,
+        sqd2: input.sqd2 || null,
+        sqd3: input.sqd3 || null,
+        sqd4: input.sqd4 || null,
+        sqd5: input.sqd5 || null,
+        sqd6: input.sqd6 || null,
+        sqd7: input.sqd7 || null,
+        sqd8: input.sqd8 || null,
+        suggestions: input.suggestions || null,
+        emailAddress: input.emailAddress || null,
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
+
+  /**
+   * Get paginated survey responses (admin/staff analytics)
+   */
+  async getSurveyResponses(
+    filter?: { startDate?: Date; endDate?: Date },
+    pagination?: PaginationParams,
+  ) {
+    const page = pagination?.page || 1;
+    const pageSize = pagination?.pageSize || 20;
+
+    const where: any = {};
+    if (filter?.startDate) {
+      where.createdAt = { ...where.createdAt, gte: filter.startDate };
+    }
+    if (filter?.endDate) {
+      where.createdAt = { ...where.createdAt, lte: filter.endDate };
+    }
+
+    const [items, totalCount] = await Promise.all([
+      this.prisma.clientSatisfactionSurvey.findMany({
+        where,
+        include: {
+          user: true,
+          ticket: { select: { ticketNumber: true, type: true, title: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.clientSatisfactionSurvey.count({ where }),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    return {
+      items,
+      totalCount,
+      page,
+      pageSize,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    };
+  }
+
+  /**
+   * Get aggregated survey analytics (admin/staff)
+   */
+  async getSurveyAnalytics(filter?: { startDate?: Date; endDate?: Date }) {
+    const where: any = {};
+    if (filter?.startDate) {
+      where.createdAt = { ...where.createdAt, gte: filter.startDate };
+    }
+    if (filter?.endDate) {
+      where.createdAt = { ...where.createdAt, lte: filter.endDate };
+    }
+
+    const surveys = await this.prisma.clientSatisfactionSurvey.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
+
+    const totalSurveys = surveys.length;
+
+    // Average SQD scores (SQD0-SQD8)
+    const sqdDimensions = [
+      "sqd0",
+      "sqd1",
+      "sqd2",
+      "sqd3",
+      "sqd4",
+      "sqd5",
+      "sqd6",
+      "sqd7",
+      "sqd8",
+    ];
+    const sqdLabels: Record<string, string> = {
+      sqd0: "Overall Satisfaction",
+      sqd1: "Time Spent",
+      sqd2: "Requirements & Steps",
+      sqd3: "Easy & Simple Steps",
+      sqd4: "Information Access",
+      sqd5: "Reasonable Fees",
+      sqd6: "Fairness",
+      sqd7: "Courteous Staff",
+      sqd8: "Outcome Delivery",
+    };
+
+    const averageSqdScores = sqdDimensions.map((dim) => {
+      const values = surveys
+        .map((s) => (s as any)[dim])
+        .filter((v: any) => v !== null && v !== undefined) as number[];
+      const average =
+        values.length > 0
+          ? values.reduce((a, b) => a + b, 0) / values.length
+          : 0;
+      return {
+        dimension: sqdLabels[dim] || dim,
+        average: Math.round(average * 100) / 100,
+        count: values.length,
+      };
+    });
+
+    // CC Awareness distribution (CC1)
+    const ccLabels: Record<number, string> = {
+      1: "Knows CC & Saw It",
+      2: "Knows CC But Did NOT See",
+      3: "Learned CC When Saw",
+      4: "Does Not Know CC",
+    };
+    const ccDistributionMap: Record<number, number> = {};
+    surveys.forEach((s) => {
+      if (s.cc1Awareness) {
+        ccDistributionMap[s.cc1Awareness] =
+          (ccDistributionMap[s.cc1Awareness] || 0) + 1;
+      }
+    });
+    const ccAwarenessDistribution = [1, 2, 3, 4].map((code) => ({
+      code,
+      label: ccLabels[code] || `Code ${code}`,
+      count: ccDistributionMap[code] || 0,
+    }));
+
+    // Client type distribution
+    const clientTypeMap: Record<string, number> = {};
+    surveys.forEach((s) => {
+      if (s.clientType) {
+        clientTypeMap[s.clientType] = (clientTypeMap[s.clientType] || 0) + 1;
+      }
+    });
+    const clientTypeDistribution = Object.entries(clientTypeMap).map(
+      ([key, count]) => ({ key, count }),
+    );
+
+    // Satisfaction over time (group by date)
+    const dateMap: Record<string, { totalSqd: number; count: number }> = {};
+    surveys.forEach((s) => {
+      const dateStr = s.createdAt.toISOString().split("T")[0];
+      if (!dateMap[dateStr]) {
+        dateMap[dateStr] = { totalSqd: 0, count: 0 };
+      }
+      const sqdValues = sqdDimensions
+        .map((dim) => (s as any)[dim])
+        .filter((v) => v !== null && v !== undefined) as number[];
+      if (sqdValues.length > 0) {
+        dateMap[dateStr].totalSqd +=
+          sqdValues.reduce((a, b) => a + b, 0) / sqdValues.length;
+        dateMap[dateStr].count += 1;
+      }
+    });
+    const satisfactionOverTime = Object.entries(dateMap).map(
+      ([date, data]) => ({
+        date,
+        averageSqdScore: Math.round((data.totalSqd / data.count) * 100) / 100,
+        count: data.count,
+      }),
+    );
+    satisfactionOverTime.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
+
+    return {
+      totalSurveys,
+      averageSqdScores,
+      ccAwarenessDistribution,
+      clientTypeDistribution,
+      satisfactionOverTime,
+    };
+  }
+
+  /**
    * Get user's assigned tickets
    */
   async getUserTickets(userId: number, pagination?: PaginationParams) {

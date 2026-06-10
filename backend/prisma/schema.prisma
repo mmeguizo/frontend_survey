@@ -85,9 +85,10 @@ model User {
 
   skills UserSkill[]
 
-  isActive        Boolean   @default(true)
-  deactivatedAt   DateTime?
-  deactivatedById Int?
+  isActive                  Boolean                    @default(true)
+  deactivatedAt             DateTime?
+  deactivatedById           Int?
+  clientSatisfactionSurveys ClientSatisfactionSurvey[]
 
   @@index([role])
   @@index([isActive])
@@ -159,10 +160,11 @@ model Ticket {
   chatSessions             ChatSession[]             @relation("ChatTicket")
   troubleshootingSolutions TroubleshootingSolution[] @relation("SolutionTicket")
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  resolvedAt DateTime?
-  closedAt   DateTime?
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
+  resolvedAt               DateTime?
+  closedAt                 DateTime?
+  clientSatisfactionSurvey ClientSatisfactionSurvey?
 
   @@index([status])
   @@index([createdById])
@@ -462,4 +464,56 @@ model TroubleshootingSolution {
   @@index([createdById])
   @@index([createdAt])
   @@fulltext([problem, solution])
+}
+
+// ========================================
+// CLIENT SATISFACTION MEASUREMENT (CSM) SURVEY
+// Official ARTA Client Satisfaction Survey per PSA Approval No.: ARTA-2331-3
+// ========================================
+
+model ClientSatisfactionSurvey {
+  id       Int    @id @default(autoincrement())
+  ticketId Int    @unique
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  userId   Int
+  user     User   @relation(fields: [userId], references: [id])
+
+  // Page 1 — Demographics
+  clientType        String? // CITIZEN | BUSINESS | GOVERNMENT
+  date              String? // Survey date (filled by client)
+  sex               String? // MALE | FEMALE
+  age               Int?
+  regionOfResidence String?
+
+  // Service Availed
+  serviceTalisay  Boolean @default(false)
+  serviceExternal Boolean @default(false)
+
+  // Citizen's Charter (CC) Questions
+  cc1Awareness   Int? // 1-4 (CC1 response code)
+  cc2Visibility  Int? // 1-5 (CC2, only if CC1=1-3; 5=N/A)
+  cc3Helpfulness Int? // 1-4 (CC3, only if CC1=1-3; 4=N/A)
+
+  // Page 2 — Service Quality Dimensions (SQD0-SQD8)
+  // Each: 1=Strongly Disagree, 2=Disagree, 3=Neither, 4=Agree, 5=Strongly Agree, null=N/A
+  sqd0 Int?
+  sqd1 Int?
+  sqd2 Int?
+  sqd3 Int?
+  sqd4 Int?
+  sqd5 Int?
+  sqd6 Int?
+  sqd7 Int?
+  sqd8 Int?
+
+  // Footer
+  suggestions  String? @db.Text
+  emailAddress String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ticketId])
+  @@index([userId])
+  @@index([createdAt])
 }

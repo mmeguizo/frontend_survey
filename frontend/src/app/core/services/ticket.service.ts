@@ -733,6 +733,38 @@ const SUBMIT_SATISFACTION = gql`
   }
 `;
 
+const SUBMIT_CLIENT_SATISFACTION_SURVEY = gql`
+  mutation SubmitClientSatisfactionSurvey($ticketId: Int!, $input: ClientSurveyInput!) {
+    submitClientSatisfactionSurvey(ticketId: $ticketId, input: $input) {
+      id
+      ticketId
+      userId
+      clientType
+      date
+      sex
+      age
+      regionOfResidence
+      serviceTalisay
+      serviceExternal
+      cc1Awareness
+      cc2Visibility
+      cc3Helpfulness
+      sqd0
+      sqd1
+      sqd2
+      sqd3
+      sqd4
+      sqd5
+      sqd6
+      sqd7
+      sqd8
+      suggestions
+      emailAddress
+      createdAt
+    }
+  }
+`;
+
 // Type definitions matching backend GraphQL schema
 export interface CreateMISTicketInput {
   title: string;
@@ -1630,6 +1662,27 @@ export class TicketService {
             throw new Error('Failed to submit satisfaction survey');
           }
           return result.data.submitSatisfaction;
+        }),
+      );
+  }
+
+  /**
+   * Submit the official ARTA Client Satisfaction Measurement Survey
+   * @param ticketId - The resolved/closed ticket to survey
+   * @param input - Complete CSM survey form data
+   */
+  submitClientSatisfactionSurvey(ticketId: number, input: any): Observable<any> {
+    return this.apollo
+      .mutate<{ submitClientSatisfactionSurvey: any }>({
+        mutation: SUBMIT_CLIENT_SATISFACTION_SURVEY,
+        variables: { ticketId, input },
+      })
+      .pipe(
+        map((result) => {
+          if (!result.data?.submitClientSatisfactionSurvey) {
+            throw new Error('Failed to submit client satisfaction survey');
+          }
+          return result.data.submitClientSatisfactionSurvey;
         }),
       );
   }

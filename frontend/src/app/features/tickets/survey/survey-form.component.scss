@@ -1,0 +1,536 @@
+// ========================================
+// CSM Survey Form — Government/University Style
+// Matches printed ARTA Client Satisfaction Measurement Form
+// ========================================
+
+$primary-blue: #1a3c6e;
+$accent-blue: #004a99;
+$border-color: #333;
+$bg-light: #f9f9f9;
+$text-dark: #222;
+$text-medium: #444;
+
+.csm-survey-page {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 24px 28px;
+  margin-bottom: 16px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: $text-dark;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+
+  @media print {
+    border: none;
+    padding: 0;
+    max-width: 100%;
+  }
+}
+
+// ========================================
+// ARTA HEADER BAR
+// ========================================
+.csm-arta-bar {
+  background: $primary-blue;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .csm-arta-item {
+    white-space: nowrap;
+  }
+
+  .csm-arta-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+  }
+}
+
+// ========================================
+// UNIVERSITY HEADER
+// ========================================
+.csm-uni-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid $primary-blue;
+
+  .csm-logo {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+
+    .csm-logo-img {
+      max-width: 64px;
+      max-height: 64px;
+      object-fit: contain;
+    }
+  }
+}
+
+.csm-uni-text {
+  flex: 1;
+  text-align: center;
+
+  .csm-uni-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: $primary-blue;
+    margin: 0 0 4px 0;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .csm-office-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0 0 6px 0;
+  }
+
+  .csm-tagline {
+    font-size: 13px;
+    font-weight: 700;
+    color: $accent-blue;
+    margin: 0;
+    text-transform: uppercase;
+  }
+}
+
+// ========================================
+// INTRODUCTION TEXT
+// ========================================
+.csm-intro {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: $text-medium;
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
+// ========================================
+// FIELDSETS & LEGENDS
+// ========================================
+.csm-fieldset {
+  border: 1px solid #999;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: #fcfcfc;
+
+  .csm-legend {
+    font-weight: 700;
+    font-size: 13px;
+    color: $primary-blue;
+    padding: 0 8px;
+  }
+}
+
+// ========================================
+// FORM ROWS & FIELDS
+// ========================================
+.csm-row {
+  margin-bottom: 10px;
+}
+
+.csm-inline-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.csm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 100px;
+
+  &.csm-field-region {
+    flex: 1;
+    min-width: 160px;
+  }
+}
+
+.csm-label {
+  font-weight: 600;
+  font-size: 12px;
+  color: $text-dark;
+  margin-right: 4px;
+}
+
+.csm-input {
+  border: none;
+  border-bottom: 1.5px solid #666;
+  padding: 4px 6px;
+  font-size: 13px;
+  background: transparent;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-bottom-color: $accent-blue;
+    border-bottom-width: 2px;
+  }
+
+  &.csm-input-sm {
+    width: 60px;
+  }
+}
+
+.csm-textarea {
+  width: 100%;
+  border: 1.5px solid #666;
+  padding: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+
+  &:focus {
+    border-color: $accent-blue;
+  }
+}
+
+// ========================================
+// CHECKBOXES & RADIO GROUPS
+// ========================================
+.csm-check-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.csm-check-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 4px;
+
+  input[type='checkbox'] {
+    cursor: pointer;
+  }
+}
+
+.csm-check-block {
+  display: flex;
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 13.5px;
+}
+
+.csm-service-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.csm-check-label-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+.csm-radio-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  line-height: 1.5;
+
+  &.csm-radio-indent {
+    margin-bottom: 2px;
+  }
+
+  input[type='radio'] {
+    margin-top: 2px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+}
+
+// ========================================
+// INSTRUCTION & NOTE TEXT
+// ========================================
+.csm-instruction {
+  font-size: 11.5px;
+  font-style: italic;
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+.csm-na-note {
+  font-size: 11px;
+  font-style: italic;
+  color: #c00;
+  margin: 2px 0 6px 24px;
+}
+
+// ========================================
+// CC GRID (2-column layout)
+// ========================================
+.csm-cc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 24px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.csm-cc-question {
+  margin-bottom: 16px;
+
+  .csm-question-text {
+    font-size: 13px;
+    margin: 0 0 8px 0;
+    color: $text-dark;
+  }
+}
+
+// ========================================
+// CONTINUE BOX
+// ========================================
+.csm-continue-box {
+  border: 2px solid $primary-blue;
+  padding: 10px 16px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: $primary-blue;
+  margin-top: 8px;
+}
+
+// ========================================
+// PAGE 2 HEADER
+// ========================================
+.csm-page2-header {
+  margin-bottom: 16px;
+  text-align: center;
+
+  .csm-page2-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: $primary-blue;
+    margin: 0 0 8px 0;
+  }
+}
+
+// ========================================
+// SQD RATING TABLE
+// ========================================
+.csm-table-wrapper {
+  margin-bottom: 20px;
+}
+
+.csm-sqd-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  table-layout: fixed;
+
+  th,
+  td {
+    border: 1px solid #999;
+    padding: 8px 6px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  thead {
+    background: $primary-blue;
+    color: #fff;
+
+    th {
+      font-weight: 600;
+      font-size: 11px;
+      line-height: 1.3;
+      word-wrap: break-word;
+      hyphens: auto;
+
+      &.csm-col-question {
+        width: 40%;
+        text-align: left;
+        padding-left: 12px;
+      }
+
+      &.csm-col-rating {
+        width: 10%;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      &:nth-child(even) {
+        background: #f8f8f8;
+      }
+
+      &:hover {
+        background: #eef4fb;
+      }
+    }
+  }
+
+  .csm-sqd-question {
+    text-align: left;
+    line-height: 1.5;
+    font-size: 12px;
+    padding: 10px 10px;
+
+    strong {
+      color: $primary-blue;
+      font-size: 12.5px;
+    }
+
+    .csm-tagalog {
+      color: #555;
+      font-size: 11px;
+      font-style: italic;
+      display: block;
+      margin-top: 3px;
+    }
+  }
+
+  .csm-sqd-radio {
+    text-align: center;
+
+    input[type='radio'] {
+      cursor: pointer;
+      transform: scale(1.4);
+    }
+  }
+}
+
+// ========================================
+// PAGE 2 FOOTER
+// ========================================
+.csm-page2-footer {
+  .csm-footer-field {
+    margin-bottom: 16px;
+
+    .csm-label {
+      display: block;
+      margin-bottom: 6px;
+    }
+  }
+
+  .csm-thank-you {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 800;
+    color: $primary-blue;
+    margin: 24px 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+}
+
+// ========================================
+// NAVIGATION BUTTONS
+// ========================================
+.csm-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto 24px;
+  padding: 0 28px;
+
+  button {
+    min-width: 120px;
+  }
+}
+
+// ========================================
+// RESPONSIVE ADJUSTMENTS
+// ========================================
+@media (max-width: 768px) {
+  .csm-survey-page {
+    padding: 12px 14px;
+  }
+
+  .csm-arta-bar {
+    font-size: 9px;
+    padding: 6px 10px;
+    justify-content: center;
+
+    .csm-arta-title {
+      font-size: 10px;
+    }
+  }
+
+  .csm-uni-header {
+    flex-direction: column;
+    text-align: center;
+
+    .csm-uni-name {
+      font-size: 14px;
+    }
+
+    .csm-office-name {
+      font-size: 12px;
+    }
+  }
+
+  .csm-inline-fields {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .csm-field {
+    width: 100%;
+  }
+
+  .csm-cc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .csm-sqd-table {
+    font-size: 10px;
+
+    thead th.csm-col-rating {
+      font-size: 9px;
+      width: 55px;
+      min-width: 50px;
+    }
+
+    .csm-sqd-question {
+      font-size: 10.5px;
+      padding: 6px 6px;
+    }
+  }
+
+  .csm-nav {
+    flex-direction: column;
+    gap: 8px;
+
+    button {
+      width: 100%;
+    }
+  }
+}

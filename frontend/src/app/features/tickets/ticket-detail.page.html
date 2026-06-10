@@ -735,57 +735,52 @@
         }
       </nz-card>
 
-      <!-- Satisfaction Survey Card -->
-      @if (canSubmitSatisfaction()) {
-        <nz-card class="satisfaction-card">
-          <nz-alert
-            nzType="success"
-            nzMessage="Your ticket has been resolved!"
-            [nzDescription]="satisfactionPromptTpl"
-            [nzShowIcon]="true"
-          ></nz-alert>
-          <ng-template #satisfactionPromptTpl>
-            <div>
-              <p>We'd love to hear your feedback. Please rate the service you received.</p>
-              <button
-                nz-button
-                nzType="primary"
-                (click)="openSatisfactionModal()"
-                style="margin-top: 8px"
-              >
-                <i nz-icon nzType="star"></i>
-                Rate Service
-              </button>
-            </div>
-          </ng-template>
-        </nz-card>
-      }
+      <!-- Client Satisfaction Survey Card (ARTA CSM) -->
+      @if (canShowCsmSurvey()) {
+        <nz-card class="satisfaction-card csm-survey-card">
+          @if (canSubmitCsmSurvey()) {
+            <nz-alert
+              nzType="success"
+              nzMessage="Your ticket has been resolved!"
+              [nzDescription]="csmPromptTpl"
+              [nzShowIcon]="true"
+            ></nz-alert>
+            <ng-template #csmPromptTpl>
+              <div>
+                <p>
+                  Please complete the official Client Satisfaction Measurement (CSM) survey. Your
+                  feedback helps us improve our services.
+                </p>
+                <button
+                  nz-button
+                  nzType="primary"
+                  (click)="showCsmSurvey.set(true)"
+                  style="margin-top: 8px"
+                >
+                  <i nz-icon nzType="form"></i>
+                  Complete CSM Survey
+                </button>
+              </div>
+            </ng-template>
+          }
 
-      @if (hasSatisfactionRating()) {
-        <nz-card nzTitle="Your Feedback" class="satisfaction-card">
-          <div class="satisfaction-display">
-            <div class="satisfaction-stars">
-              @for (star of [1, 2, 3, 4, 5]; track star) {
-                <i
-                  nz-icon
-                  nzType="star"
-                  [nzTheme]="star <= (ticket()?.satisfactionRating ?? 0) ? 'fill' : 'outline'"
-                  [style.color]="
-                    star <= (ticket()?.satisfactionRating ?? 0) ? '#faad14' : '#d9d9d9'
-                  "
-                  style="font-size: 24px; margin-right: 4px"
-                ></i>
-              }
-              <span style="margin-left: 8px; font-weight: 500"
-                >{{ ticket()?.satisfactionRating }}/5</span
-              >
-            </div>
-            @if (ticket()?.satisfactionComment) {
-              <p style="margin-top: 12px; color: #666; font-style: italic">
-                "{{ ticket()?.satisfactionComment }}"
-              </p>
-            }
-          </div>
+          @if (showCsmSurvey() && canSubmitCsmSurvey()) {
+            <nz-divider nzText="ARTA Client Satisfaction Measurement Form"></nz-divider>
+            <app-survey-form
+              [ticketId]="ticket()!.id"
+              (submitted)="onCsmSurveySubmitted($event)"
+            ></app-survey-form>
+          }
+
+          @if (csmSurveySubmitted()) {
+            <nz-alert
+              nzType="info"
+              nzMessage="Survey Submitted"
+              nzDescription="Thank you! Your Client Satisfaction Measurement survey has been recorded. This helps us meet ARTA requirements and improve our services."
+              [nzShowIcon]="true"
+              style="margin-top: 12px"
+            ></nz-alert>
+          }
         </nz-card>
       }
 

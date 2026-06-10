@@ -36,6 +36,7 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { SurveyFormComponent } from './survey/survey-form.component';
 import {
   TicketService,
   TicketDetail,
@@ -94,6 +95,7 @@ type StatusHistoryEntry = TicketDetail['statusHistory'][number];
     NzToolTipModule,
     NzProgressModule,
     NzRadioModule,
+    SurveyFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ticket-detail.page.html',
@@ -259,6 +261,48 @@ export class TicketDetailPage implements OnInit {
     const t = this.ticket();
     return t?.satisfactionRating != null;
   });
+
+  // ========================================
+  // CLIENT SATISFACTION MEASUREMENT (CSM) SURVEY STATE
+  // ========================================
+  readonly showCsmSurvey = signal(false);
+  readonly csmSurveySubmitted = signal(false);
+  readonly submittingCsmSurvey = signal(false);
+
+  /** Check if the CSM survey card should be shown to the ticket creator */
+  readonly canShowCsmSurvey = computed(() => {
+    const t = this.ticket();
+    if (!t) return false;
+    return this.isMyTicket() && (t.status === 'RESOLVED' || t.status === 'CLOSED');
+  });
+
+  /** Check if user can still submit the CSM survey (not already submitted) */
+  readonly canSubmitCsmSurvey = computed(() => {
+    return this.canShowCsmSurvey() && !this.csmSurveySubmitted();
+  });
+
+  /**
+   * Handle CSM survey form submission
+   */
+  onCsmSurveySubmitted(input: any): void {
+    const t = this.ticket();
+    if (!t) return;
+
+    this.submittingCsmSurvey.set(true);
+    this.ticketService.submitClientSatisfactionSurvey(t.id, input).subscribe({
+      next: () => {
+        this.message.success('Thank you for completing the CSM survey!');
+        this.csmSurveySubmitted.set(true);
+        this.showCsmSurvey.set(false);
+        this.submittingCsmSurvey.set(false);
+      },
+      error: (error) => {
+        console.error('Failed to submit CSM survey:', error);
+        this.message.error(error?.message || 'Failed to submit survey');
+        this.submittingCsmSurvey.set(false);
+      },
+    });
+  }
 
   /**
    * Get developer's status update comments from the ticket's statusHistory

@@ -29,7 +29,7 @@ export const config = {
   publicBaseUrl: process.env.PUBLIC_BASE_URL || "http://localhost:4000",
 
   gemini: {
-    apiKey: process.env.GEMINI_API_KEY || "",
+    apiKey: process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY2,
     model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
   },
 

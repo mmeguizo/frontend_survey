@@ -1,0 +1,347 @@
+<!-- PAGE 1: Demographics and Citizen's Charter -->
+@if (!showPage2()) {
+  <div class="csm-survey-page" id="csm-page1">
+    <!-- ARTA Header Bar -->
+    <div class="csm-arta-bar">
+      <span class="csm-arta-item">ANTI-RED TAPE AUTHORITY</span>
+      <span class="csm-arta-item csm-arta-title">CLIENT SATISFACTION MEASUREMENT FORM</span>
+      <span class="csm-arta-item">PSA Approval No.: ARTA-2331-3</span>
+    </div>
+
+    <!-- University Header -->
+    <div class="csm-uni-header">
+      <div class="csm-logo">
+        <img src="assets/chmsu-logo.png" alt="CHMSU Logo" class="csm-logo-img" />
+      </div>
+      <div class="csm-uni-text">
+        <h1 class="csm-uni-name">CARLOS HILADO MEMORIAL STATE UNIVERSITY</h1>
+        <h2 class="csm-office-name">Information and Communication Technology Office</h2>
+        <p class="csm-tagline">HELP US SERVE YOU BETTER!</p>
+      </div>
+    </div>
+
+    <!-- Introduction -->
+    <p class="csm-intro">
+      This Client Satisfaction Measurement (CSM) tracks the customer experience of government
+      offices. Your feedback on your recently concluded transaction will help this office provide a
+      better service. Personal information shared will be kept confidential and you always have the
+      option to not answer this form.
+    </p>
+
+    <!-- Demographics Section -->
+    <fieldset class="csm-fieldset">
+      <legend class="csm-legend">Client Information</legend>
+
+      <div class="csm-row">
+        <label class="csm-label">Client type:</label>
+        <div class="csm-check-group">
+          <label class="csm-check-label">
+            <input
+              type="radio"
+              name="clientType"
+              value="CITIZEN"
+              [ngModel]="clientType()"
+              (ngModelChange)="clientType.set($event)"
+            />
+            Citizen
+          </label>
+          <label class="csm-check-label">
+            <input
+              type="radio"
+              name="clientType"
+              value="BUSINESS"
+              [ngModel]="clientType()"
+              (ngModelChange)="clientType.set($event)"
+            />
+            Business
+          </label>
+          <label class="csm-check-label">
+            <input
+              type="radio"
+              name="clientType"
+              value="GOVERNMENT"
+              [ngModel]="clientType()"
+              (ngModelChange)="clientType.set($event)"
+            />
+            Government (Employee or another agency)
+          </label>
+        </div>
+      </div>
+
+      <div class="csm-row csm-inline-fields">
+        <div class="csm-field">
+          <label class="csm-label">Date:</label>
+          <input
+            type="date"
+            class="csm-input"
+            [ngModel]="surveyDate()"
+            (ngModelChange)="surveyDate.set($event)"
+          />
+        </div>
+        <div class="csm-field">
+          <label class="csm-label">Sex:</label>
+          <label class="csm-check-label-inline">
+            <input
+              type="radio"
+              name="sex"
+              value="MALE"
+              [ngModel]="sex()"
+              (ngModelChange)="sex.set($event)"
+            />
+            Male
+          </label>
+          <label class="csm-check-label-inline">
+            <input
+              type="radio"
+              name="sex"
+              value="FEMALE"
+              [ngModel]="sex()"
+              (ngModelChange)="sex.set($event)"
+            />
+            Female
+          </label>
+        </div>
+        <div class="csm-field">
+          <label class="csm-label">Age:</label>
+          <input
+            type="number"
+            class="csm-input csm-input-sm"
+            [ngModel]="age()"
+            (ngModelChange)="age.set($event)"
+            min="1"
+            max="120"
+          />
+        </div>
+        <div class="csm-field csm-field-region">
+          <label class="csm-label">Region of residence:</label>
+          <input
+            type="text"
+            class="csm-input"
+            [ngModel]="regionOfResidence()"
+            (ngModelChange)="regionOfResidence.set($event)"
+            placeholder="e.g. Region VI"
+          />
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Service Availed -->
+    <fieldset class="csm-fieldset">
+      <legend class="csm-legend">Service Availed</legend>
+      <p class="csm-instruction">(please check service availed for this survey)</p>
+      <div class="csm-service-options">
+        <label class="csm-check-label csm-check-block">
+          <input
+            type="checkbox"
+            [ngModel]="serviceTalisay()"
+            (ngModelChange)="serviceTalisay.set($event)"
+          />
+          Request for ICT Support Services for Talisay Campus
+        </label>
+        <label class="csm-check-label csm-check-block">
+          <input
+            type="checkbox"
+            [ngModel]="serviceExternal()"
+            (ngModelChange)="serviceExternal.set($event)"
+          />
+          Request for ICT Support Services for External Campus
+        </label>
+      </div>
+    </fieldset>
+
+    <!-- Citizen's Charter Questions -->
+    <fieldset class="csm-fieldset">
+      <legend class="csm-legend">Citizen's Charter (CC)</legend>
+      <p class="csm-instruction">
+        INSTRUCTIONS: Check mark your answer to the Citizen's Charter (CC) questions. The Citizen's
+        Charter is an official document that reflects the services of a government agency/office
+        including its requirements, fees, and processing times among others.
+      </p>
+
+      <!-- CC1 -->
+      <div class="csm-cc-question">
+        <p class="csm-question-text">
+          <strong>CC1.</strong> Which of the following best describes your awareness of a CC?
+        </p>
+        @for (opt of cc1Options; track opt.value) {
+          <label class="csm-radio-label" [class.csm-radio-indent]="opt.value === 4">
+            <input
+              type="radio"
+              name="cc1"
+              [value]="opt.value"
+              [ngModel]="cc1Awareness()"
+              (ngModelChange)="cc1Awareness.set($event)"
+            />
+            {{ opt.value }}. {{ opt.label }}
+          </label>
+          @if (opt.value === 4) {
+            <p class="csm-na-note">(Answer 'N/A' on CC2 and CC3)</p>
+          }
+        }
+      </div>
+
+      <!-- CC2 -->
+      <div class="csm-cc-question">
+        <p class="csm-question-text">
+          <strong>CC2.</strong> If aware of CC (answered 1-3 in CC1), would you say that the CC of
+          this office was ...?
+        </p>
+        <div class="csm-cc-grid">
+          @for (opt of cc2Options; track opt.value) {
+            <label class="csm-radio-label">
+              <input
+                type="radio"
+                name="cc2"
+                [value]="opt.value"
+                [ngModel]="cc2Visibility()"
+                (ngModelChange)="cc2Visibility.set($event)"
+                [disabled]="!canAnswerCC2()"
+              />
+              {{ opt.value }}. {{ opt.label }}
+            </label>
+          }
+        </div>
+      </div>
+
+      <!-- CC3 -->
+      <div class="csm-cc-question">
+        <p class="csm-question-text">
+          <strong>CC3.</strong> If aware of CC (answered codes 1-3 in CC1), how much did the CC help
+          you in your transaction?
+        </p>
+        <div class="csm-cc-grid">
+          @for (opt of cc3Options; track opt.value) {
+            <label class="csm-radio-label">
+              <input
+                type="radio"
+                name="cc3"
+                [value]="opt.value"
+                [ngModel]="cc3Helpfulness()"
+                (ngModelChange)="cc3Helpfulness.set($event)"
+                [disabled]="!canAnswerCC2()"
+              />
+              {{ opt.value }}. {{ opt.label }}
+            </label>
+          }
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Continue Instruction Box -->
+    <div class="csm-continue-box">Please continue answering survey questions at the back.</div>
+  </div>
+}
+
+<!-- PAGE 2: SQD Satisfaction Table -->
+@if (showPage2()) {
+  <div class="csm-survey-page" id="csm-page2">
+    <div class="csm-page2-header">
+      <h3 class="csm-page2-title">SERVICE QUALITY DIMENSIONS</h3>
+      <p class="csm-instruction">
+        INSTRUCTIONS: For SQD 0-8, please put a check mark on the column that best corresponds to
+        your answer.
+      </p>
+    </div>
+
+    <!-- SQD Rating Table -->
+    <div class="csm-table-wrapper">
+      <table class="csm-sqd-table">
+        <thead>
+          <tr>
+            <th class="csm-col-question"></th>
+            <th class="csm-col-rating">Strongly Agree (5)</th>
+            <th class="csm-col-rating">Agree (4)</th>
+            <th class="csm-col-rating">Neither Agree nor Disagree (3)</th>
+            <th class="csm-col-rating">Disagree (2)</th>
+            <th class="csm-col-rating">Strongly Disagree (1)</th>
+            <th class="csm-col-rating">N/A</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of sqdQuestions; track row.key) {
+            <tr>
+              <td class="csm-sqd-question">
+                <strong>{{ row.key.toUpperCase() }}.</strong> {{ row.english }}<br />
+                <em class="csm-tagalog">{{ row.tagalog }}</em>
+              </td>
+              @for (rating of [5, 4, 3, 2, 1]; track rating) {
+                <td class="csm-sqd-radio">
+                  <input
+                    type="radio"
+                    [name]="row.key"
+                    [value]="rating"
+                    [ngModel]="getSqdValue(row.key)"
+                    (ngModelChange)="setSqdValue(row.key, $event)"
+                  />
+                </td>
+              }
+              <td class="csm-sqd-radio">
+                <input
+                  type="radio"
+                  [name]="row.key"
+                  value="na"
+                  [ngModel]="getSqdValue(row.key)"
+                  (ngModelChange)="setSqdValue(row.key, null)"
+                />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="csm-page2-footer">
+      <div class="csm-footer-field">
+        <label class="csm-label"
+          >Suggestions on how we can further improve our services (optional):</label
+        >
+        <textarea
+          class="csm-textarea"
+          [ngModel]="suggestions()"
+          (ngModelChange)="suggestions.set($event)"
+          rows="3"
+          placeholder="Your suggestions..."
+        ></textarea>
+      </div>
+
+      <div class="csm-footer-field">
+        <label class="csm-label">Email address (optional):</label>
+        <input
+          type="email"
+          class="csm-input"
+          [ngModel]="emailAddress()"
+          (ngModelChange)="emailAddress.set($event)"
+          placeholder="your@email.com"
+        />
+      </div>
+
+      <p class="csm-thank-you">THANK YOU!</p>
+    </div>
+  </div>
+}
+
+<!-- Navigation Buttons -->
+<div class="csm-nav">
+  @if (showPage2()) {
+    <button nz-button nzType="default" (click)="showPage2.set(false)">
+      <span nz-icon nzType="arrow-left"></span> Back
+    </button>
+  }
+  @if (!showPage2()) {
+    <button nz-button nzType="primary" (click)="goToPage2()" [disabled]="!isPage1Valid()">
+      Next <span nz-icon nzType="arrow-right"></span>
+    </button>
+  }
+  @if (showPage2()) {
+    <button
+      nz-button
+      nzType="primary"
+      (click)="submitSurvey()"
+      [nzLoading]="submitting()"
+      [disabled]="!isPage2Valid()"
+    >
+      <span nz-icon nzType="check-circle"></span> Submit Survey
+    </button>
+  }
+</div>

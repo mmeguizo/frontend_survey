@@ -56,9 +56,11 @@ export const ticketTypeDefs = gql`
     # Escalation
     escalatedAt: String
     escalationLevel: Int!
-    # Satisfaction survey
+    # Satisfaction survey (legacy star rating — kept for backward compatibility)
     satisfactionRating: Int
     satisfactionComment: String
+    # Official ARTA Client Satisfaction Survey (new)
+    clientSatisfactionSurvey: ClientSatisfactionSurvey
     createdBy: User!
     createdById: Int!
     misTicket: MISTicket
@@ -197,6 +199,93 @@ export const ticketTypeDefs = gql`
     resolvedPerDay: [TicketTrendPoint!]!
   }
 
+  # ========================================
+  # CLIENT SATISFACTION SURVEY (ARTA CSM)
+  # Official per PSA Approval No.: ARTA-2331-3
+  # ========================================
+
+  type ClientSatisfactionSurvey {
+    id: Int!
+    ticketId: Int!
+    userId: Int!
+    user: User!
+
+    # Page 1 — Demographics
+    clientType: String
+    date: String
+    sex: String
+    age: Int
+    regionOfResidence: String
+
+    # Service Availed
+    serviceTalisay: Boolean!
+    serviceExternal: Boolean!
+
+    # Citizen's Charter
+    cc1Awareness: Int
+    cc2Visibility: Int
+    cc3Helpfulness: Int
+
+    # Service Quality Dimensions
+    sqd0: Int
+    sqd1: Int
+    sqd2: Int
+    sqd3: Int
+    sqd4: Int
+    sqd5: Int
+    sqd6: Int
+    sqd7: Int
+    sqd8: Int
+
+    # Footer
+    suggestions: String
+    emailAddress: String
+
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type SurveyAnalytics {
+    totalSurveys: Int!
+    averageSqdScores: [SqdAverage!]!
+    ccAwarenessDistribution: [CcDistribution!]!
+    clientTypeDistribution: [DistributionCount!]!
+    satisfactionOverTime: [SatisfactionTrendPoint!]!
+  }
+
+  type SqdAverage {
+    dimension: String!
+    average: Float!
+    count: Int!
+  }
+
+  type CcDistribution {
+    code: Int!
+    label: String!
+    count: Int!
+  }
+
+  type DistributionCount {
+    key: String!
+    count: Int!
+  }
+
+  type SatisfactionTrendPoint {
+    date: String!
+    averageSqdScore: Float!
+    count: Int!
+  }
+
+  type PaginatedSurveys {
+    items: [ClientSatisfactionSurvey!]!
+    totalCount: Int!
+    page: Int!
+    pageSize: Int!
+    totalPages: Int!
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+  }
+
   input CreateMISTicketInput {
     title: String!
     description: String!
@@ -279,6 +368,39 @@ export const ticketTypeDefs = gql`
     comment: String
   }
 
+  input ClientSurveyInput {
+    # Demographics
+    clientType: String
+    date: String
+    sex: String
+    age: Int
+    regionOfResidence: String
+
+    # Service Availed
+    serviceTalisay: Boolean!
+    serviceExternal: Boolean!
+
+    # Citizen's Charter
+    cc1Awareness: Int
+    cc2Visibility: Int
+    cc3Helpfulness: Int
+
+    # Service Quality Dimensions (1-5 or null for N/A)
+    sqd0: Int
+    sqd1: Int
+    sqd2: Int
+    sqd3: Int
+    sqd4: Int
+    sqd5: Int
+    sqd6: Int
+    sqd7: Int
+    sqd8: Int
+
+    # Footer
+    suggestions: String
+    emailAddress: String
+  }
+
   input TicketFilterInput {
     status: TicketStatus
     type: TicketType
@@ -326,6 +448,12 @@ export const ticketTypeDefs = gql`
     slaMetrics(type: TicketType): SLAMetrics!
     ticketTrends(filter: AnalyticsFilterInput): TicketTrends!
     staffPerformance(filter: AnalyticsFilterInput): [StaffPerformance!]!
+    # Client Satisfaction Survey queries (admin/staff)
+    surveyResponses(
+      filter: AnalyticsFilterInput
+      pagination: PaginationInput
+    ): PaginatedSurveys!
+    surveyAnalytics(filter: AnalyticsFilterInput): SurveyAnalytics!
   }
 
   extend type Mutation {
@@ -360,7 +488,12 @@ export const ticketTypeDefs = gql`
     updateResolution(ticketId: Int!, input: UpdateResolutionInput!): Ticket!
     # Attachment management
     deleteTicketAttachment(attachmentId: Int!): Boolean!
-    # Satisfaction survey
+    # Satisfaction survey (legacy star rating)
     submitSatisfaction(ticketId: Int!, input: SubmitSatisfactionInput!): Ticket!
+    # Official ARTA Client Satisfaction Survey
+    submitClientSatisfactionSurvey(
+      ticketId: Int!
+      input: ClientSurveyInput!
+    ): ClientSatisfactionSurvey!
   }
 `;

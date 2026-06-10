@@ -328,6 +328,40 @@ export const ticketResolvers = {
       const filters = buildAnalyticsFilters(filter, context.currentUser.role);
       return ticketService.getStaffPerformance(filters);
     },
+
+    /**
+     * Get paginated client satisfaction survey responses (admin/staff)
+     */
+    surveyResponses: async (
+      _: any,
+      { filter, pagination }: { filter?: any; pagination?: any },
+      context: any,
+    ) => {
+      if (!context.currentUser) {
+        throw new Error("Unauthorized");
+      }
+      if (!ANALYTICS_ACCESS_ROLES.includes(context.currentUser.role)) {
+        throw new Error("Forbidden: Insufficient permissions");
+      }
+      return ticketService.getSurveyResponses(filter, pagination);
+    },
+
+    /**
+     * Get aggregated survey analytics (admin/staff)
+     */
+    surveyAnalytics: async (
+      _: any,
+      { filter }: { filter?: any },
+      context: any,
+    ) => {
+      if (!context.currentUser) {
+        throw new Error("Unauthorized");
+      }
+      if (!ANALYTICS_ACCESS_ROLES.includes(context.currentUser.role)) {
+        throw new Error("Forbidden: Insufficient permissions");
+      }
+      return ticketService.getSurveyAnalytics(filter);
+    },
   },
 
   Mutation: {
@@ -859,6 +893,25 @@ export const ticketResolvers = {
         context.currentUser.id,
         input.rating,
         input.comment,
+      );
+    },
+
+    /**
+     * Submit official ARTA Client Satisfaction Survey
+     * Only the ticket creator can submit, one-time only, for resolved/closed tickets
+     */
+    submitClientSatisfactionSurvey: async (
+      _: any,
+      { ticketId, input }: { ticketId: number; input: any },
+      context: any,
+    ) => {
+      if (!context.currentUser) {
+        throw new Error("Unauthorized");
+      }
+      return ticketService.submitClientSatisfactionSurvey(
+        ticketId,
+        context.currentUser.id,
+        input,
       );
     },
   },

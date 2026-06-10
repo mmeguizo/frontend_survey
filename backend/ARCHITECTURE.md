@@ -34,6 +34,7 @@ backend/
 ## 🏗️ Architecture Layers
 
 ### 1. **Resolvers Layer** (GraphQL Entry Point)
+
 - Handles GraphQL requests
 - Validates user authorization
 - Delegates to service layer
@@ -50,6 +51,7 @@ export const userResolvers = {
 ```
 
 ### 2. **Service Layer** (Business Logic)
+
 - Contains all business rules
 - Validates input with Zod
 - Orchestrates between repositories
@@ -62,13 +64,13 @@ export class UserService {
     // 1. Validate input
     const validation = createUserSchema.safeParse(input);
     if (!validation.success) {
-      throw new ValidationError('Invalid data', validation.error);
+      throw new ValidationError("Invalid data", validation.error);
     }
 
     // 2. Business logic
     const existing = await this.userRepo.findByEmail(input.email);
     if (existing) {
-      throw new ConflictError('User already exists');
+      throw new ConflictError("User already exists");
     }
 
     // 3. Data access
@@ -78,6 +80,7 @@ export class UserService {
 ```
 
 ### 3. **Repository Layer** (Data Access)
+
 - Direct Prisma interactions
 - CRUD operations
 - Query building
@@ -94,6 +97,7 @@ export class UserRepository {
 ```
 
 ### 4. **Validation Layer** (Zod Schemas)
+
 - Type-safe input validation
 - Reusable schemas
 - Automatic error messages
@@ -110,31 +114,37 @@ export const createUserSchema = z.object({
 ## 🔑 Key Improvements
 
 ### ✅ Separation of Concerns
+
 - Each layer has one responsibility
 - Easy to test in isolation
 - Changes don't cascade
 
 ### ✅ Type Safety
+
 - End-to-end TypeScript
 - Zod validation generates types
 - Prisma types throughout
 
 ### ✅ Error Handling
+
 - Custom error classes
 - Consistent error responses
 - GraphQL-formatted errors
 
 ### ✅ Modularity
+
 - Feature-based modules
 - Easy to add new features
 - Independent development
 
 ### ✅ Testability
+
 - Mock services easily
 - Test business logic without DB
 - Integration tests possible
 
 ### ✅ Scalability
+
 - Add modules without touching existing code
 - Clear dependencies
 - Can extract to microservices later
@@ -144,6 +154,7 @@ export const createUserSchema = z.object({
 ### Example: Tickets Module
 
 1. **Create folder structure:**
+
 ```
 modules/tickets/
 ├── ticket.types.ts
@@ -155,6 +166,7 @@ modules/tickets/
 ```
 
 2. **Create Prisma model:**
+
 ```prisma
 model Ticket {
   id          Int      @id @default(autoincrement())
@@ -168,10 +180,11 @@ model Ticket {
 ```
 
 3. **Create validator:**
+
 ```typescript
 // ticket.validators.ts
 export const createTicketSchema = z.object({
-  formType: z.enum(['MIS', 'ITS']),
+  formType: z.enum(["MIS", "ITS"]),
   requesterName: z.string().min(2),
   department: z.string().min(2),
   // ... other fields
@@ -179,6 +192,7 @@ export const createTicketSchema = z.object({
 ```
 
 4. **Create repository:**
+
 ```typescript
 // ticket.repository.ts
 export class TicketRepository {
@@ -193,6 +207,7 @@ export class TicketRepository {
 ```
 
 5. **Create service:**
+
 ```typescript
 // ticket.service.ts
 export class TicketService {
@@ -201,7 +216,7 @@ export class TicketService {
   async create(input: CreateTicketInput): Promise<Ticket> {
     const validation = createTicketSchema.safeParse(input);
     if (!validation.success) {
-      throw new ValidationError('Invalid ticket', validation.error);
+      throw new ValidationError("Invalid ticket", validation.error);
     }
 
     return this.ticketRepo.create(validation.data);
@@ -210,6 +225,7 @@ export class TicketService {
 ```
 
 6. **Create resolvers:**
+
 ```typescript
 // ticket.resolvers.ts
 export const ticketResolvers = {
@@ -227,8 +243,9 @@ export const ticketResolvers = {
 ```
 
 7. **Add to index.ts:**
+
 ```typescript
-import { ticketTypeDefs, ticketResolvers } from './modules/tickets';
+import { ticketTypeDefs, ticketResolvers } from "./modules/tickets";
 
 const typeDefs = [baseTypeDefs, userTypeDefs, ticketTypeDefs];
 const resolvers = [userResolvers, ticketResolvers];
@@ -248,10 +265,10 @@ Environment variables are loaded from `.env` file.
 Custom error classes provide consistent error responses:
 
 ```typescript
-throw new ValidationError('Invalid input', details);
-throw new UnauthorizedError('Login required');
-throw new NotFoundError('User');
-throw new ConflictError('Email already exists');
+throw new ValidationError("Invalid input", details);
+throw new UnauthorizedError("Login required");
+throw new NotFoundError("User");
+throw new ConflictError("Email already exists");
 ```
 
 All errors are automatically formatted for GraphQL responses.
@@ -259,16 +276,19 @@ All errors are automatically formatted for GraphQL responses.
 ## 🧪 Testing Strategy
 
 ### Unit Tests
+
 - Test services with mocked repositories
 - Test validators independently
 - Test business logic
 
 ### Integration Tests
+
 - Test resolvers with real database
 - Test full request/response cycle
 - Use test database
 
 ### Example:
+
 ```typescript
 describe('UserService', () => {
   it('should create user with valid data', async () => {
@@ -299,6 +319,7 @@ describe('UserService', () => {
 ## 🔄 Migration from Old Structure
 
 ### Old Structure (Flat)
+
 ```
 src/
 ├── auth.ts (80 lines)
@@ -308,6 +329,7 @@ src/
 ```
 
 ### New Structure (Modular)
+
 ```
 src/
 ├── modules/
@@ -319,6 +341,7 @@ src/
 ```
 
 **Benefits:**
+
 - Easier to find code (by feature)
 - Easier to test (smaller units)
 - Easier to scale (add modules)
@@ -331,15 +354,17 @@ src/
 3. ✅ Auth module (JWT + Auth0)
 4. ✅ Users module (full CRUD)
 5. ✅ Storage module
-6. 🔄 **Add Tickets module** (for MIS/ITS forms)
-7. Add Departments module
-8. Add Reports module
-9. Add unit tests
-10. Add API documentation (GraphQL Playground)
+6. ✅ Tickets module (MIS/ITS forms, approval workflow)
+7. ✅ Client Satisfaction Measurement (CSM) Survey module
+8. Add Departments module
+9. Add Reports module
+10. Add unit tests
+11. Add API documentation (GraphQL Playground)
 
 ## 🤝 Contributing
 
 When adding new features:
+
 1. Follow the modular structure
 2. Use Zod for validation
 3. Keep services focused
