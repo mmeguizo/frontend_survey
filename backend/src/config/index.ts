@@ -30,7 +30,7 @@ export const config = {
 
   gemini: {
     apiKey: process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY2,
-    model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+    model: process.env.GEMINI_MODEL || "gemini-2.0-flash",
   },
 
   huggingface: {
