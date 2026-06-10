@@ -915,4 +915,14 @@ export const ticketResolvers = {
       );
     },
   },
+
+  ClientSatisfactionSurvey: {
+    ticket: async (parent: any) => {
+      if (parent.ticket) return parent.ticket;
+      return prisma.ticket.findUnique({
+        where: { id: parent.ticketId },
+        select: { id: true, ticketNumber: true, type: true, title: true },
+      });
+    },
+  },
 };

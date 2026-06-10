@@ -207,6 +207,7 @@ export const ticketTypeDefs = gql`
   type ClientSatisfactionSurvey {
     id: Int!
     ticketId: Int!
+    ticket: Ticket!
     userId: Int!
     user: User!
 

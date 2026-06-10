@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { llmClient } from "../../lib/llm-client";
 import { config } from "../../config";
 import { logger } from "../../lib/logger";
 
@@ -155,21 +155,9 @@ Important rules:
 - Output valid JSON only.`;
 
 export class GeminiService {
-  private genAI: GoogleGenerativeAI | null = null;
-
-  private getClient(): GoogleGenerativeAI {
-    if (!this.genAI) {
-      if (!config.gemini.apiKey) {
-        throw new Error("GEMINI_API_KEY is not configured");
-      }
-      this.genAI = new GoogleGenerativeAI(config.gemini.apiKey);
-    }
-    return this.genAI;
-  }
-
-  /** Check if Gemini is configured and available */
+  /** Check if any LLM provider is available */
   isAvailable(): boolean {
-    return Boolean(config.gemini.apiKey);
+    return llmClient.isPerplexityAvailable() || llmClient.isGeminiAvailable();
   }
 
   /**
@@ -181,9 +169,6 @@ export class GeminiService {
     description: string,
     additionalContext?: string,
   ): Promise<TicketAnalysis> {
-    const client = this.getClient();
-    const model = client.getGenerativeModel({ model: config.gemini.model });
-
     const ticketContent = [
       title && `Title: ${title}`,
       `Description: ${description}`,
@@ -192,27 +177,22 @@ export class GeminiService {
       .filter(Boolean)
       .join("\n");
 
-    const result = await model.generateContent({
-      contents: [
-        { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
+    const text = await llmClient.chatCompletion(
+      [
+        { role: "system", content: SYSTEM_PROMPT },
         {
-          role: "model",
-          parts: [
-            {
-              text: "Understood. Send me the support ticket and I will analyze it and return the result in JSON format.",
-            },
-          ],
+          role: "assistant",
+          content:
+            "Understood. Send me the support ticket and I will analyze it and return the result in JSON format.",
         },
-        { role: "user", parts: [{ text: ticketContent }] },
+        { role: "user", content: ticketContent },
       ],
-      generationConfig: {
+      {
         temperature: 0.3,
-        maxOutputTokens: 2048,
-        responseMimeType: "application/json",
+        maxTokens: 2048,
+        responseJson: true,
       },
-    });
-
-    const text = result.response.text();
+    );
     logger.info("[GeminiService] Raw AI response received");
 
     try {
@@ -240,35 +220,27 @@ export class GeminiService {
    * Returns keywords for database search.
    */
   async extractSearchKeywords(description: string): Promise<string[]> {
-    const client = this.getClient();
-    const model = client.getGenerativeModel({ model: config.gemini.model });
-
-    const result = await model.generateContent({
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text: `Extract 5-8 specific technical search keywords from this ICT support ticket description. Return ONLY a JSON array of strings, nothing else.
+    try {
+      const text = await llmClient.chatCompletion(
+        [
+          {
+            role: "user",
+            content: `Extract 5-8 specific technical search keywords from this ICT support ticket description. Return ONLY a JSON array of strings, nothing else.
 
 Description: ${description}`,
-            },
-          ],
+          },
+        ],
+        {
+          temperature: 0.2,
+          maxTokens: 256,
+          responseJson: true,
         },
-      ],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 256,
-        responseMimeType: "application/json",
-      },
-    });
+      );
 
-    const text = result.response.text();
-    try {
       const parsed = JSON.parse(text);
       return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      logger.error("[GeminiService] Failed to parse keywords response:", text);
+    } catch (err) {
+      logger.error("[GeminiService] Failed to get keywords response:", err);
       return [];
     }
   }
@@ -279,36 +251,28 @@ Description: ${description}`,
   async parseNLPInput(input: string): Promise<ParsedTicketResult> {
     if (!this.isAvailable()) {
       logger.warn(
-        "[GeminiService] Gemini is not configured. Falling back to default parser.",
+        "[GeminiService] No LLM provider configured. Falling back to default parser.",
       );
       return this.fallbackNLPParse(input);
     }
 
     try {
-      const client = this.getClient();
-      const model = client.getGenerativeModel({ model: config.gemini.model });
-
-      const result = await model.generateContent({
-        contents: [
-          { role: "user", parts: [{ text: NLP_SYSTEM_PROMPT }] },
+      const text = await llmClient.chatCompletion(
+        [
+          { role: "system", content: NLP_SYSTEM_PROMPT },
           {
-            role: "model",
-            parts: [
-              {
-                text: "Understood. Send me the natural language query, and I will parse it and return the result in the specified JSON format.",
-              },
-            ],
+            role: "assistant",
+            content:
+              "Understood. Send me the natural language query, and I will parse it and return the result in the specified JSON format.",
           },
-          { role: "user", parts: [{ text: `Input content: ${input}` }] },
+          { role: "user", content: `Input content: ${input}` },
         ],
-        generationConfig: {
+        {
           temperature: 0.1,
-          maxOutputTokens: 2048,
-          responseMimeType: "application/json",
+          maxTokens: 2048,
+          responseJson: true,
         },
-      });
-
-      const text = result.response.text();
+      );
       logger.info("[GeminiService] Raw NLP parse response received");
 
       let parsed: any;
@@ -356,7 +320,7 @@ Description: ${description}`,
       };
     } catch (err: any) {
       logger.error(
-        "[GeminiService] Failed to parse NLP input with Gemini:",
+        "[GeminiService] Failed to parse NLP input with LLM:",
         err.message,
       );
       return this.fallbackNLPParse(input);

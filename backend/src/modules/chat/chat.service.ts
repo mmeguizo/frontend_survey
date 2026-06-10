@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, Content } from "@google/generative-ai";
+import { llmClient, type LlmMessage } from "../../lib/llm-client";
 import { Prisma } from "@prisma/client";
 import { config } from "../../config";
 import { logger } from "../../lib/logger";
@@ -118,6 +118,7 @@ USER CONTEXT:
 
 CATEGORIES:
 - MIS (Management Information Systems): Website issues, software problems, system accounts
+  - Valid MIS categories: WEBSITE, SOFTWARE
 - ITS (Information Technology Services): Hardware, network, printer, device borrowing, connectivity
 
 WHEN ASKED FOR REPORTS (staff/admin only):
@@ -193,20 +194,8 @@ const OUT_OF_SCOPE_PATTERNS = [
 ];
 
 export class ChatService {
-  private genAI: GoogleGenerativeAI | null = null;
-
-  private getClient(): GoogleGenerativeAI {
-    if (!this.genAI) {
-      if (!config.gemini.apiKey) {
-        throw new Error("GEMINI_API_KEY is not configured");
-      }
-      this.genAI = new GoogleGenerativeAI(config.gemini.apiKey);
-    }
-    return this.genAI;
-  }
-
   isAvailable(): boolean {
-    return Boolean(config.gemini.apiKey);
+    return llmClient.isPerplexityAvailable() || llmClient.isGeminiAvailable();
   }
 
   // ========================================
@@ -2175,7 +2164,7 @@ Tell the user which report type you detected based on their request, and offer t
   }
 
   // ========================================
-  // GEMINI CALL WITH HUGGING FACE DUAL FALLBACK
+  // LLM CALL WITH FALLBACK
   // ========================================
 
   private async callGemini(
@@ -2184,140 +2173,45 @@ Tell the user which report type you detected based on their request, and offer t
     contextData: string,
   ): Promise<string> {
     if (!this.isAvailable()) {
-      logger.info(
-        "[ChatService] Gemini is not available. Trying Hugging Face fallback...",
-      );
-      try {
-        return await this.callHuggingFace(history, currentMessage, contextData);
-      } catch (hfErr: any) {
-        logger.error(
-          `[ChatService] Hugging Face fallback failed (${hfErr.message}). Using local curated fallback.`,
-        );
-        return this.fallbackResponse(currentMessage, contextData);
-      }
+      return this.fallbackResponse(currentMessage, contextData);
     }
 
     try {
-      const client = this.getClient();
-      const model = client.getGenerativeModel({ model: config.gemini.model });
-
-      // Build conversation history for Gemini
-      const contents: Content[] = [
-        { role: "user", parts: [{ text: CHAT_SYSTEM_PROMPT }] },
+      const messages: LlmMessage[] = [
+        { role: "system", content: CHAT_SYSTEM_PROMPT },
         {
-          role: "model",
-          parts: [
-            {
-              text: "Understood. I'm ready to help users with ICT support issues. I'll use the provided context data to give accurate answers and guide ticket creation when needed.",
-            },
-          ],
+          role: "assistant",
+          content:
+            "Understood. I'm ready to help users with ICT support issues. I'll use the provided context data to give accurate answers and guide ticket creation when needed.",
         },
       ];
 
-      // Add conversation history (last 10 messages for context window)
       const recentHistory = history.slice(-10);
       for (const msg of recentHistory) {
-        contents.push({
-          role: msg.role === "USER" ? "user" : "model",
-          parts: [{ text: msg.content }],
+        messages.push({
+          role: msg.role === "USER" ? "user" : "assistant",
+          content: msg.content,
         });
       }
 
-      // Add current message with context
       let prompt = currentMessage;
       if (contextData.trim()) {
         prompt = `CONTEXT DATA (from our internal knowledge base and resolved tickets):\n${contextData}\n\nUSER QUESTION: ${currentMessage}`;
       }
 
-      contents.push({ role: "user", parts: [{ text: prompt }] });
+      messages.push({ role: "user", content: prompt });
 
-      const result = await model.generateContent({
-        contents,
-        generationConfig: {
-          temperature: 0.4,
-          maxOutputTokens: 4096,
-          topP: 0.9,
-        },
+      return await llmClient.chatCompletion(messages, {
+        temperature: 0.4,
+        maxTokens: 4096,
+        topP: 0.9,
       });
-
-      return result.response.text();
     } catch (err: any) {
       logger.error(
-        `[ChatService] Gemini call failed (${err.message}). Trying Hugging Face fallback...`,
+        `[ChatService] LLM call failed (${err.message}). Using local curated fallback.`,
       );
-      try {
-        return await this.callHuggingFace(history, currentMessage, contextData);
-      } catch (hfErr: any) {
-        logger.error(
-          `[ChatService] Hugging Face fallback failed (${hfErr.message}). Using local curated fallback.`,
-        );
-        return this.fallbackResponse(currentMessage, contextData);
-      }
+      return this.fallbackResponse(currentMessage, contextData);
     }
-  }
-
-  /**
-   * Safe and free Hugging Face Serverless fallback execution utilizing the provided token
-   */
-  private async callHuggingFace(
-    history: Array<{ role: string; content: string }>,
-    currentMessage: string,
-    contextData: string,
-  ): Promise<string> {
-    const token = config.huggingface.token;
-    const model = config.huggingface.model;
-
-    if (!token) {
-      throw new Error("Hugging Face token not configured");
-    }
-
-    const messages = [{ role: "system", content: CHAT_SYSTEM_PROMPT }];
-
-    // Map conversation history
-    const recentHistory = history.slice(-10);
-    for (const msg of recentHistory) {
-      messages.push({
-        role: msg.role.toUpperCase() === "USER" ? "user" : "assistant",
-        content: msg.content,
-      });
-    }
-
-    // Add current message with context
-    let prompt = currentMessage;
-    if (contextData.trim()) {
-      prompt = `CONTEXT DATA (from our internal knowledge base and resolved tickets):\n${contextData}\n\nUSER QUESTION: ${currentMessage}`;
-    }
-    messages.push({ role: "user", content: prompt });
-
-    const url = `https://api-inference.huggingface.co/models/${model}/v1/chat/completions`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages,
-        max_tokens: 1536,
-        temperature: 0.4,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `Hugging Face API returned status ${response.status}: ${errorText}`,
-      );
-    }
-
-    const data = (await response.json()) as any;
-    const reply = data?.choices?.[0]?.message?.content;
-    if (!reply) {
-      throw new Error("No response content from Hugging Face model");
-    }
-
-    return reply;
   }
 
   /**
@@ -2442,6 +2336,16 @@ If you'd like to adjust or add anything, let me know!`;
   // TICKET CREATION FROM CHAT
   // ========================================
 
+  /** Normalize AI-generated category to valid MISCategory enum value */
+  private normalizeMISCategory(category: string | undefined): string {
+    const valid: Record<string, string> = {
+      website: "WEBSITE",
+      software: "SOFTWARE",
+    };
+    const key = (category || "").toLowerCase().trim();
+    return valid[key] || "SOFTWARE";
+  }
+
   async createTicketFromChat(
     sessionId: number,
     userId: number,
@@ -2475,7 +2379,7 @@ If you'd like to adjust or add anything, let me know!`;
           title: ticketData.title,
           description: ticketData.description,
           priority: (ticketData.priority || "MEDIUM") as any,
-          category: (ticketData.category || "SOFTWARE") as any,
+          category: this.normalizeMISCategory(ticketData.category) as any,
           controlNumber: "",
         },
         userId,
