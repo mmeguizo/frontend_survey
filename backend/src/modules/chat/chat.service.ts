@@ -78,13 +78,38 @@ WHEN SAFETY POLICY DATA IS PROVIDED:
 - Make it explicit that chat is read-only for delete/deactivate/reassign actions.
 - If deletion is blocked, recommend the safer alternative (usually deactivation or reassignment).
 
-WHEN GUIDING TICKET CREATION:
-- Guide ticket creation conversationally! Ask for required details in a friendly, conversational manner rather than a numbered list of form questions.
-- Ask for: What is the problem? What device/system is affected? When did it start? Is it affecting others? Do they have alternative contact details?
-- Once you have gathered enough details, summarize what information you are submitting back to the user warmly, and respond with the JSON block wrapped in \`\`\`ticket-data tags:
-\`\`\`ticket-data
-{"title": "...", "description": "...", "type": "MIS or ITS", "priority": "LOW/MEDIUM/HIGH/CRITICAL"}
-\`\`\`
+WHEN GUIDING TICKET CREATION — SENTIMENT DETECTION & MODES:
+
+DETECT UPSET / URGENT USERS:
+You MUST switch to URGENT MODE if the user sounds ANY of the following:
+- Angry, frustrated, impatient ("just fix it", "I don't have time for this", "stop asking me questions")
+- Demanding immediate action ("create the ticket now", "just create it", "open a ticket already")
+- Sending very short, terse messages or ALL-CAPS phrasing
+- Repeating demands more than once or ignoring your troubleshooting
+
+URGENT MODE (triggered by upset/urgent user):
+- IMPORTANT: Immediately STOP asking questions. Acknowledge their frustration warmly.
+- Responses MUST be under 2 sentences. Sound human, not robotic — e.g., "Understood — I'll get this ticket created for you right away."
+- After ONE short response, immediately output the ticket-data JSON block with what you have. Do NOT wait for more details.
+- Default type to ITS if unclear. Set priority to HIGH.
+- Category defaults to GENERAL if unclear.
+- ALWAYS include a staffNote field: "⚠️ Created via urgent chat — please clarify details with the user. Category, level, and description may need editing."
+- Example: "Understood, that sounds frustrating. I'll create your ticket now."
+  \`\`\`ticket-data
+  {"title": "Urgent Support Request", "description": "User said: 'nothing works' — details incomplete", "type": "ITS", "priority": "HIGH", "category": "GENERAL", "staffNote": "⚠️ Created via urgent chat — please clarify details with the user. Category, level, and description may need editing."}
+  \`\`\`
+
+NORMAL MODE (user is calm, conversational):
+- Guide ticket creation conversationally in a friendly manner (no numbered lists).
+- Ask 1-2 short questions at a time (max 3 total). Keep it conversational — don't interrogate.
+- Gather: problem description, affected device/system, timeline, impact scope.
+- After 2 exchanges without clear details, create the ticket anyway with a staff note explaining gaps.
+- Once you have enough, summarize warmly and output the ticket-data JSON block.
+- The ticket-data JSON block format:
+  \`\`\`ticket-data
+  {"title": "...", "description": "...", "type": "MIS or ITS", "priority": "LOW/MEDIUM/HIGH/CRITICAL", "category": "...", "staffNote": "..."}
+  \`\`\`
+- Staff note can be empty string "" if all details are clear, or explain what's missing (e.g., "User didn't specify device — staff should clarify model and location.")
 
 USER CONTEXT:
 - You may receive the current user's name, role, and other details. Use this to personalize responses.
@@ -2354,7 +2379,8 @@ Please click the button below to submit this support ticket directly to our ICT 
   "description": "User requested ticket creation via chat help desk: '${message.replace(/"/g, '\\"')}'",
   "type": "${type}",
   "priority": "MEDIUM",
-  "category": "${category}"
+  "category": "${category}",
+  "staffNote": "⚠️ Created via urgent chat fallback — please clarify details with the user."
 }
 \`\`\`
 
@@ -2425,6 +2451,7 @@ If you'd like to adjust or add anything, let me know!`;
       type: "MIS" | "ITS";
       priority?: string;
       category?: string;
+      staffNote?: string;
     },
   ) {
     // Verify session
@@ -2463,6 +2490,21 @@ If you'd like to adjust or add anything, let me know!`;
         },
         userId,
       );
+    }
+
+    // Auto-add staffNote as internal TicketNote if provided
+    if (ticketData.staffNote?.trim()) {
+      try {
+        await ticketSvc.addNote(ticket.id, userId, {
+          content: ticketData.staffNote.trim(),
+          isInternal: true,
+        });
+      } catch (err: any) {
+        logger.error(
+          `[ChatService] Failed to add staff note to ticket ${ticket.id}: ${err.message}`,
+        );
+        // Don't fail ticket creation if note fails — ticket is already created
+      }
     }
 
     // Update session status

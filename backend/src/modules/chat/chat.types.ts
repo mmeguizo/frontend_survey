@@ -48,6 +48,7 @@ export const chatTypeDefs = gql`
     type: String!
     priority: String
     category: String
+    staffNote: String
   }
 
   type BackfillResult {
