@@ -36,6 +36,7 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzProgressModule } from 'ng-zorro-antd/progress';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { SurveyFormComponent } from './survey/survey-form.component';
 import {
   TicketService,
@@ -95,6 +96,7 @@ type StatusHistoryEntry = TicketDetail['statusHistory'][number];
     NzToolTipModule,
     NzProgressModule,
     NzRadioModule,
+    NzAvatarModule,
     SurveyFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -235,6 +237,23 @@ export class TicketDetailPage implements OnInit {
   // Developer can update targetCompletionDate when changing status
   // ========================================
   readonly devTargetCompletionDate = signal<Date | null>(null);
+
+  // ========================================
+  // TYPE / PRIORITY EDIT STATE (Admin/Secretary only)
+  // ========================================
+  readonly showTypeEditModal = signal(false);
+  readonly editingType = signal<string>('');
+  readonly savingType = signal(false);
+
+  readonly showPriorityEditModal = signal(false);
+  readonly editingPriority = signal<string>('');
+  readonly savingPriority = signal(false);
+
+  /** Whether current user can edit type/priority (admin or secretary) */
+  readonly canEditTypePriority = computed(() => {
+    const role = this.authService.currentUser()?.role;
+    return role === 'ADMIN' || role === 'SECRETARY';
+  });
 
   // ========================================
   // SATISFACTION SURVEY STATE
@@ -1324,6 +1343,74 @@ export class TicketDetailPage implements OnInit {
   }
 
   // ========================================
+  // TYPE / PRIORITY EDIT METHODS (Admin/Secretary only)
+  // ========================================
+
+  openTypeEditModal(): void {
+    const t = this.ticket();
+    if (!t) return;
+    this.editingType.set(t.type);
+    this.showTypeEditModal.set(true);
+  }
+
+  closeTypeEditModal(): void {
+    this.showTypeEditModal.set(false);
+    this.editingType.set('');
+  }
+
+  confirmTypeEdit(): void {
+    const t = this.ticket();
+    if (!t) return;
+
+    this.savingType.set(true);
+    this.ticketService.updateTicketType(t.id, this.editingType()).subscribe({
+      next: () => {
+        this.message.success('Ticket type updated successfully!');
+        this.closeTypeEditModal();
+        this.loadTicket(t.ticketNumber);
+      },
+      error: (err) => {
+        console.error('Failed to update ticket type:', err);
+        this.message.error(err?.message || 'Failed to update ticket type');
+        this.savingType.set(false);
+      },
+      complete: () => this.savingType.set(false),
+    });
+  }
+
+  openPriorityEditModal(): void {
+    const t = this.ticket();
+    if (!t) return;
+    this.editingPriority.set(t.priority);
+    this.showPriorityEditModal.set(true);
+  }
+
+  closePriorityEditModal(): void {
+    this.showPriorityEditModal.set(false);
+    this.editingPriority.set('');
+  }
+
+  confirmPriorityEdit(): void {
+    const t = this.ticket();
+    if (!t) return;
+
+    this.savingPriority.set(true);
+    this.ticketService.updateTicketPriority(t.id, this.editingPriority()).subscribe({
+      next: () => {
+        this.message.success('Ticket priority updated successfully!');
+        this.closePriorityEditModal();
+        this.loadTicket(t.ticketNumber);
+      },
+      error: (err) => {
+        console.error('Failed to update ticket priority:', err);
+        this.message.error(err?.message || 'Failed to update ticket priority');
+        this.savingPriority.set(false);
+      },
+      complete: () => this.savingPriority.set(false),
+    });
+  }
+
+  // ========================================
   // SECRETARY REVIEW METHODS (for Admin/Secretary)
   // ========================================
 
@@ -1724,5 +1811,19 @@ export class TicketDetailPage implements OnInit {
    */
   isImageAttachment(mimeType: string): boolean {
     return mimeType.startsWith('image/') && !mimeType.includes('svg');
+  }
+
+  /** Helper for template - get count of non-deleted attachments */
+  getVisibleAttachmentsCount(): number {
+    const t = this.ticket();
+    if (!t?.attachments) return 0;
+    return t.attachments.filter((a) => !a.isDeleted).length;
+  }
+
+  /** Helper for template - get non-deleted attachments */
+  getVisibleAttachments(): TicketAttachment[] {
+    const t = this.ticket();
+    if (!t?.attachments) return [];
+    return t.attachments.filter((a) => !a.isDeleted);
   }
 }

@@ -24,7 +24,7 @@
   </nz-card>
 
   <!-- Users Table -->
-  <nz-card nzTitle="All Users" [nzExtra]="userCountTpl">
+  <nz-card nzTitle="All Users" class="users-table-card" [nzExtra]="userCountTpl">
     <ng-template #userCountTpl>
       <nz-tag nzColor="blue">{{ filteredUsers().length }} users</nz-tag>
     </ng-template>
@@ -37,6 +37,7 @@
       [nzPageSize]="10"
       [nzShowSizeChanger]="true"
       [nzPageSizeOptions]="[10, 25, 50, 100]"
+      [nzScroll]="{ y: 'calc(100vh - 380px)' }"
     >
       <thead>
         <tr>

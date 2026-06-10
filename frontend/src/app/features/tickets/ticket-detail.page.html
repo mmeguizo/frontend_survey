@@ -8,9 +8,23 @@
             {{ t.ticketNumber }}
           </nz-descriptions-item>
           <nz-descriptions-item nzTitle="Type">
-            <nz-tag [nzColor]="t.type === 'MIS' ? 'blue' : 'green'">
-              {{ t.type }}
-            </nz-tag>
+            <div style="display: flex; align-items: center; gap: 8px">
+              <nz-tag [nzColor]="t.type === 'MIS' ? 'blue' : 'green'">
+                {{ t.type }}
+              </nz-tag>
+              @if (canEditTypePriority()) {
+                <button
+                  nz-button
+                  nzType="text"
+                  nzSize="small"
+                  nz-tooltip
+                  nzTooltipTitle="Change ticket type"
+                  (click)="openTypeEditModal()"
+                >
+                  <nz-icon nzType="edit" nzTheme="outline"></nz-icon>
+                </button>
+              }
+            </div>
           </nz-descriptions-item>
           <nz-descriptions-item nzTitle="Status">
             <nz-tag [nzColor]="getStatusColor(t.status)">
@@ -18,9 +32,23 @@
             </nz-tag>
           </nz-descriptions-item>
           <nz-descriptions-item nzTitle="Priority">
-            <nz-tag [nzColor]="getPriorityColor(t.priority)">
-              {{ t.priority }}
-            </nz-tag>
+            <div style="display: flex; align-items: center; gap: 8px">
+              <nz-tag [nzColor]="getPriorityColor(t.priority)">
+                {{ t.priority }}
+              </nz-tag>
+              @if (canEditTypePriority()) {
+                <button
+                  nz-button
+                  nzType="text"
+                  nzSize="small"
+                  nz-tooltip
+                  nzTooltipTitle="Change priority"
+                  (click)="openPriorityEditModal()"
+                >
+                  <nz-icon nzType="edit" nzTheme="outline"></nz-icon>
+                </button>
+              }
+            </div>
           </nz-descriptions-item>
           <nz-descriptions-item nzTitle="Created By">
             {{ t.createdBy.name }} ({{ t.createdBy.email }})
@@ -1415,6 +1443,71 @@
         placeholder="Any additional notes..."
       ></textarea>
     </div>
+  </ng-container>
+</nz-modal>
+
+<!-- ======================================== -->
+<!-- TYPE EDIT MODAL (Admin/Secretary only) -->
+<!-- ======================================== -->
+<nz-modal
+  [nzVisible]="showTypeEditModal()"
+  (nzVisibleChange)="showTypeEditModal.set($event)"
+  nzTitle="Change Ticket Type"
+  [nzOkLoading]="savingType()"
+  nzOkText="Save"
+  (nzOnOk)="confirmTypeEdit()"
+  (nzOnCancel)="closeTypeEditModal()"
+  nzWidth="400px"
+>
+  <ng-container *nzModalContent>
+    <nz-form-item>
+      <nz-form-label nzRequired>Type</nz-form-label>
+      <nz-form-control>
+        <nz-select
+          [ngModel]="editingType()"
+          (ngModelChange)="editingType.set($event)"
+          style="width: 100%"
+        >
+          <nz-option nzValue="MIS" nzLabel="MIS - Management Information System"></nz-option>
+          <nz-option nzValue="ITS" nzLabel="ITS - Information Technology Services"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <p style="color: #888; font-size: 12px; margin: 0">
+      Changing the type will recreate the ticket details for the selected department.
+    </p>
+  </ng-container>
+</nz-modal>
+
+<!-- ======================================== -->
+<!-- PRIORITY EDIT MODAL (Admin/Secretary only) -->
+<!-- ======================================== -->
+<nz-modal
+  [nzVisible]="showPriorityEditModal()"
+  (nzVisibleChange)="showPriorityEditModal.set($event)"
+  nzTitle="Change Ticket Priority"
+  [nzOkLoading]="savingPriority()"
+  nzOkText="Save"
+  (nzOnOk)="confirmPriorityEdit()"
+  (nzOnCancel)="closePriorityEditModal()"
+  nzWidth="400px"
+>
+  <ng-container *nzModalContent>
+    <nz-form-item>
+      <nz-form-label nzRequired>Priority</nz-form-label>
+      <nz-form-control>
+        <nz-select
+          [ngModel]="editingPriority()"
+          (ngModelChange)="editingPriority.set($event)"
+          style="width: 100%"
+        >
+          <nz-option nzValue="LOW" nzLabel="Low"></nz-option>
+          <nz-option nzValue="MEDIUM" nzLabel="Medium"></nz-option>
+          <nz-option nzValue="HIGH" nzLabel="High"></nz-option>
+          <nz-option nzValue="CRITICAL" nzLabel="Critical"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
   </ng-container>
 </nz-modal>
 

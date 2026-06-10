@@ -216,6 +216,13 @@ export class MainLayout {
           'DIRECTOR',
         ],
       },
+      // Surveys - admin, secretary, director
+      {
+        icon: 'smile',
+        label: 'Surveys',
+        path: '/surveys',
+        roles: ['ADMIN', 'SECRETARY', 'DIRECTOR'],
+      },
       // Documentation - admin sidebar link (all roles can access via URL)
       {
         icon: 'read',

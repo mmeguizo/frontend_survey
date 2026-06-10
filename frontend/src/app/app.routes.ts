@@ -97,6 +97,11 @@ export const routes: Routes = [
           import('./features/solutions/solutions.page').then((m) => m.SolutionsPage),
       },
       {
+        path: 'surveys',
+        canActivate: [roleGuard(['ADMIN', 'SECRETARY', 'DIRECTOR'])],
+        loadComponent: () => import('./features/surveys/surveys.page').then((m) => m.SurveysPage),
+      },
+      {
         path: 'docs',
         loadComponent: () => import('./features/docs/docs.page').then((m) => m.DocsPage),
       },

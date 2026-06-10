@@ -3,8 +3,6 @@ import { Apollo, gql } from 'apollo-angular';
 import { Subscription as RxSubscription } from 'rxjs';
 import { AuthService } from './auth.service';
 
-// ─── Subscription Queries ──────────────────────────────────
-
 const NOTIFICATION_CREATED_SUBSCRIPTION = gql`
   subscription NotificationCreated($userId: Int!) {
     notificationCreated(userId: $userId) {
@@ -82,8 +80,6 @@ const TICKET_ASSIGNMENT_ACTIVITY_SUBSCRIPTION = gql`
   }
 `;
 
-// ─── Types ─────────────────────────────────────────────────
-
 export interface TicketStatusChangedEvent {
   ticketId: number;
   ticketNumber: string;
@@ -139,58 +135,54 @@ export interface ActivityFeedItem {
   timestamp: string;
 }
 
-// ─── Service ───────────────────────────────────────────────
-
 @Injectable({ providedIn: 'root' })
 export class RealtimeService {
   private readonly apollo = inject(Apollo);
   private readonly authService = inject(AuthService);
   private readonly ngZone = inject(NgZone);
 
-  // Active subscriptions (for cleanup)
   private subscriptions: RxSubscription[] = [];
 
-  // Signals for real-time events
   readonly lastNotification = signal<NotificationEvent | null>(null);
   readonly lastStatusChange = signal<TicketStatusChangedEvent | null>(null);
   readonly lastTicketCreated = signal<TicketCreatedEvent | null>(null);
   readonly lastAssignment = signal<TicketAssignedEvent | null>(null);
   readonly lastAssignmentActivity = signal<TicketAssignedEvent | null>(null);
   readonly activityFeed = signal<ActivityFeedItem[]>([]);
-
-  // Signal to force-refresh a specific ticket (triggered by notification click)
   readonly forceTicketRefresh = signal<string | null>(null);
-
-  // Connection state
   readonly connected = signal(false);
 
-  /**
-   * Trigger a forced refresh of a ticket by its ticketNumber.
-   * Used when clicking a notification to ensure the ticket detail page reloads.
-   */
+  private currentUserRole = signal<string>('');
+
+  setUserRole(role: string): void {
+    this.currentUserRole.set(role);
+  }
+
+  /** Role-based activity filtering */
+  private userCanSeeActivity(item: ActivityFeedItem): boolean {
+    const role = this.currentUserRole();
+    if (['ADMIN', 'SECRETARY', 'DIRECTOR'].includes(role)) return true;
+    if (role === 'MIS_HEAD') return item.details?.includes('MIS') ?? true;
+    if (role === 'ITS_HEAD') return item.details?.includes('ITS') ?? true;
+    return true;
+  }
+
   triggerTicketRefresh(ticketNumber: string): void {
-    // Set to null first, then set the value to ensure the signal always fires
     this.forceTicketRefresh.set(null);
     this.forceTicketRefresh.set(ticketNumber);
   }
 
-  /**
-   * Start all real-time subscriptions for the current user.
-   * Call this once after login.
-   */
   startListening(): void {
-    // Must be in browser and have a user
     if (typeof window === 'undefined') return;
     const user = this.authService.currentUser();
     if (!user) return;
 
-    // Don't double-subscribe
     this.stopListening();
+    this.setUserRole(user.role);
 
     console.log('[Realtime] Starting WebSocket subscriptions for user', user.id);
     this.connected.set(true);
 
-    // 1. Notification subscription (per-user)
     this.subscriptions.push(
       this.apollo
         .subscribe<{ notificationCreated: NotificationEvent }>({
@@ -199,17 +191,13 @@ export class RealtimeService {
         })
         .subscribe({
           next: ({ data }) => {
-            if (data?.notificationCreated) {
-              this.ngZone.run(() => {
-                this.lastNotification.set(data!.notificationCreated);
-              });
-            }
+            if (data?.notificationCreated)
+              this.ngZone.run(() => this.lastNotification.set(data!.notificationCreated));
           },
           error: (err) => console.error('[Realtime] notificationCreated error:', err),
         }),
     );
 
-    // 2. Ticket status changes (all tickets)
     this.subscriptions.push(
       this.apollo
         .subscribe<{ ticketStatusChanged: TicketStatusChangedEvent }>({
@@ -220,7 +208,8 @@ export class RealtimeService {
             if (data?.ticketStatusChanged) {
               this.ngZone.run(() => {
                 this.lastStatusChange.set(data!.ticketStatusChanged);
-                this.pushActivity(this.buildStatusActivity(data!.ticketStatusChanged));
+                const activity = this.buildStatusActivity(data!.ticketStatusChanged);
+                if (activity && this.userCanSeeActivity(activity)) this.pushActivity(activity);
               });
             }
           },
@@ -228,7 +217,6 @@ export class RealtimeService {
         }),
     );
 
-    // 3. New ticket created (useful for secretary/admin dashboards)
     this.subscriptions.push(
       this.apollo
         .subscribe<{ ticketCreated: TicketCreatedEvent }>({
@@ -239,7 +227,8 @@ export class RealtimeService {
             if (data?.ticketCreated) {
               this.ngZone.run(() => {
                 this.lastTicketCreated.set(data!.ticketCreated);
-                this.pushActivity(this.buildCreatedActivity(data!.ticketCreated));
+                const activity = this.buildCreatedActivity(data!.ticketCreated);
+                if (this.userCanSeeActivity(activity)) this.pushActivity(activity);
               });
             }
           },
@@ -247,7 +236,6 @@ export class RealtimeService {
         }),
     );
 
-    // 4. Global assignment activity for shared dashboards
     this.subscriptions.push(
       this.apollo
         .subscribe<{ ticketAssignmentActivity: TicketAssignedEvent }>({
@@ -258,7 +246,8 @@ export class RealtimeService {
             if (data?.ticketAssignmentActivity) {
               this.ngZone.run(() => {
                 this.lastAssignmentActivity.set(data.ticketAssignmentActivity);
-                this.pushActivity(this.buildAssignmentActivity(data.ticketAssignmentActivity));
+                const activity = this.buildAssignmentActivity(data.ticketAssignmentActivity);
+                if (this.userCanSeeActivity(activity)) this.pushActivity(activity);
               });
             }
           },
@@ -266,7 +255,6 @@ export class RealtimeService {
         }),
     );
 
-    // 5. Ticket assigned to this user
     this.subscriptions.push(
       this.apollo
         .subscribe<{ ticketAssigned: TicketAssignedEvent }>({
@@ -275,21 +263,14 @@ export class RealtimeService {
         })
         .subscribe({
           next: ({ data }) => {
-            if (data?.ticketAssigned) {
-              this.ngZone.run(() => {
-                this.lastAssignment.set(data!.ticketAssigned);
-              });
-            }
+            if (data?.ticketAssigned)
+              this.ngZone.run(() => this.lastAssignment.set(data!.ticketAssigned));
           },
           error: (err) => console.error('[Realtime] ticketAssigned error:', err),
         }),
     );
   }
 
-  /**
-   * Stop all active subscriptions.
-   * Call this on logout.
-   */
   stopListening(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
     this.subscriptions = [];
@@ -299,7 +280,7 @@ export class RealtimeService {
 
   private pushActivity(item: ActivityFeedItem | null): void {
     if (!item) return;
-
+    if (!this.userCanSeeActivity(item)) return;
     this.activityFeed.update((entries) => {
       const nextEntries = [item, ...entries.filter((entry) => entry.id !== item.id)];
       nextEntries.sort(
@@ -338,10 +319,7 @@ export class RealtimeService {
   }
 
   private buildStatusActivity(event: TicketStatusChangedEvent): ActivityFeedItem | null {
-    if (event.newStatus === 'ASSIGNED') {
-      return null;
-    }
-
+    if (event.newStatus === 'ASSIGNED') return null;
     return {
       id: `status:${event.ticketId}:${event.timestamp}:${event.newStatus}`,
       kind: 'status',
@@ -356,7 +334,7 @@ export class RealtimeService {
   }
 
   private getStatusActivityColor(status: string): string {
-    const colorMap: Record<string, string> = {
+    const colors: Record<string, string> = {
       FOR_REVIEW: 'gold',
       REVIEWED: 'blue',
       DIRECTOR_APPROVED: 'cyan',
@@ -366,8 +344,7 @@ export class RealtimeService {
       CLOSED: 'default',
       CANCELLED: 'error',
     };
-
-    return colorMap[status] ?? 'default';
+    return colors[status] ?? 'default';
   }
 
   private formatStatus(status: string): string {

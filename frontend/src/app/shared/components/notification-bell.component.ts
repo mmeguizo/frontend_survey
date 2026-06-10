@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, ViewChild, DestroyRef, effect } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  ViewChild,
+  DestroyRef,
+  effect,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -13,7 +21,10 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
-import { TicketNotificationService, TicketNotification } from '../../core/services/ticket-notification.service';
+import {
+  TicketNotificationService,
+  TicketNotification,
+} from '../../core/services/ticket-notification.service';
 import { AuthService } from '../../core/services/auth.service';
 import { RealtimeService } from '../../core/services/realtime.service';
 
@@ -79,7 +90,10 @@ import { RealtimeService } from '../../core/services/realtime.service';
               ></nz-empty>
             } @else {
               <nz-list nzItemLayout="horizontal">
-                @for (notification of notificationService.notifications().slice(0, 10); track notification.id) {
+                @for (
+                  notification of notificationService.notifications().slice(0, 10);
+                  track notification.id
+                ) {
                   <nz-list-item
                     class="notification-item"
                     [class.unread]="!notification.isRead"
@@ -89,16 +103,22 @@ import { RealtimeService } from '../../core/services/realtime.service';
                       <nz-list-item-meta-avatar>
                         <nz-avatar
                           [nzIcon]="notificationService.getNotificationIcon(notification.type)"
-                          [ngStyle]="{ 'background-color': notificationService.getNotificationColor(notification.type) }"
+                          [ngStyle]="{
+                            'background-color': notificationService.getNotificationColor(
+                              notification.type
+                            ),
+                          }"
                         ></nz-avatar>
                       </nz-list-item-meta-avatar>
                       <nz-list-item-meta-title>
-                        {{ notification.title}}
+                        {{ notification.title }}
                         <!-- {{ notification.title === 'Ticket Approved' ? 'Ticket Endorsed' : notification.title }} -->
                       </nz-list-item-meta-title>
                       <nz-list-item-meta-description>
                         <div class="notification-message">{{ notification.message }}</div>
-                        <div class="notification-time">{{ notification.createdAt | date: 'short' }}</div>
+                        <div class="notification-time">
+                          {{ notification.createdAt | date: 'short' }}
+                        </div>
                         <!-- <div class="notification-time">{{ formatTime(notification.createdAt) }}</div> -->
                       </nz-list-item-meta-description>
                     </nz-list-item-meta>
@@ -120,107 +140,114 @@ import { RealtimeService } from '../../core/services/realtime.service';
       </div>
     </nz-dropdown-menu>
   `,
-  styles: [`
-    .bell-button {
-      position: relative;
-    }
-
-    .notification-icon {
-      font-size: 20px;
-      color: #595959;
-      transition: color 0.3s;
-    }
-
-    .notification-icon.shake {
-      animation: bell-shake 2s ease-in-out infinite;
-      color: #1890ff;
-    }
-
-    @keyframes bell-shake {
-      0%, 100% {
-        transform: rotate(0deg);
+  styles: [
+    `
+      .bell-button {
+        position: relative;
       }
-      5%, 15% {
-        transform: rotate(-15deg);
+
+      .notification-icon {
+        font-size: 20px;
+        color: #595959;
+        transition: color 0.3s;
       }
-      10%, 20% {
-        transform: rotate(15deg);
+
+      .notification-icon.shake {
+        animation: bell-shake 2s ease-in-out infinite;
+        color: #1890ff;
       }
-      25% {
-        transform: rotate(0deg);
+
+      @keyframes bell-shake {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        5%,
+        15% {
+          transform: rotate(-15deg);
+        }
+        10%,
+        20% {
+          transform: rotate(15deg);
+        }
+        25% {
+          transform: rotate(0deg);
+        }
       }
-    }
 
-    .notification-dropdown {
-      width: 360px;
-      background: white;
-      box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08);
-      border-radius: 4px;
-    }
+      .notification-dropdown {
+        width: 360px;
+        background: white;
+        box-shadow:
+          0 3px 6px -4px rgba(0, 0, 0, 0.12),
+          0 6px 16px 0 rgba(0, 0, 0, 0.08);
+        border-radius: 4px;
+      }
 
-    .notification-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-    }
+      .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+      }
 
-    .notification-header .title {
-      font-weight: 600;
-      font-size: 16px;
-    }
+      .notification-header .title {
+        font-weight: 600;
+        font-size: 16px;
+      }
 
-    .notification-content {
-      max-height: 400px;
-      overflow-y: auto;
-    }
+      .notification-content {
+        max-height: 400px;
+        overflow-y: auto;
+      }
 
-    .notification-item {
-      cursor: pointer;
-      transition: background-color 0.2s;
-      padding: 12px 16px !important;
-    }
+      .notification-item {
+        cursor: pointer;
+        transition: background-color 0.2s;
+        padding: 12px 16px !important;
+      }
 
-    .notification-item:hover {
-      background-color: #f5f5f5;
-    }
+      .notification-item:hover {
+        background-color: #f5f5f5;
+      }
 
-    .notification-item.unread {
-      background-color: #e6f7ff;
-    }
+      .notification-item.unread {
+        background-color: #e6f7ff;
+      }
 
-    .notification-item.unread:hover {
-      background-color: #bae7ff;
-    }
+      .notification-item.unread:hover {
+        background-color: #bae7ff;
+      }
 
-    .notification-message {
-      font-size: 13px;
-      color: #595959;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 280px;
-    }
+      .notification-message {
+        font-size: 13px;
+        color: #595959;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 280px;
+      }
 
-    .notification-time {
-      font-size: 12px;
-      color: #8c8c8c;
-      margin-top: 4px;
-    }
+      .notification-time {
+        font-size: 12px;
+        color: #8c8c8c;
+        margin-top: 4px;
+      }
 
-    .notification-footer {
-      padding: 8px 16px;
-    }
+      .notification-footer {
+        padding: 8px 16px;
+      }
 
-    .empty-state {
-      padding: 24px 0;
-    }
+      .empty-state {
+        padding: 24px 0;
+      }
 
-    ::ng-deep .ant-list-item-meta-title {
-      font-weight: 500;
-      margin-bottom: 4px !important;
-    }
-  `],
+      ::ng-deep .ant-list-item-meta-title {
+        font-weight: 500;
+        margin-bottom: 4px !important;
+      }
+    `,
+  ],
 })
 export class NotificationBellComponent implements OnInit {
   readonly notificationService = inject(TicketNotificationService);
@@ -238,8 +265,20 @@ export class NotificationBellComponent implements OnInit {
       const notification = this.realtimeService.lastNotification();
       if (notification) {
         // Increment unread count and refresh notification list
-        this.notificationService.unreadCount.update(c => c + 1);
+        this.notificationService.unreadCount.update((c) => c + 1);
         this.notificationService.getMyNotifications().subscribe();
+      }
+    });
+
+    // Re-subscribe to WebSocket when auth state changes (fixes logout/login issue)
+    effect(() => {
+      const isAuth = this.authService.isAuthenticated();
+      const user = this.authService.currentUser();
+      if (isAuth && user) {
+        // Small delay to ensure auth state is fully established
+        setTimeout(() => this.realtimeService.startListening(), 300);
+      } else {
+        this.realtimeService.stopListening();
       }
     });
   }
@@ -259,7 +298,7 @@ export class NotificationBellComponent implements OnInit {
         .pipe(
           filter(() => this.authService.isAuthenticated()),
           switchMap(() => this.notificationService.getUnreadCount()),
-          takeUntilDestroyed(this.destroyRef)
+          takeUntilDestroyed(this.destroyRef),
         )
         .subscribe({
           error: (error) => {

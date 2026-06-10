@@ -1648,6 +1648,64 @@ export class TicketService {
   }
 
   /**
+   * Update ticket type (ITS ↔ MIS) - Admin/Secretary only
+   */
+  updateTicketType(ticketId: number, type: string): Observable<any> {
+    return this.apollo
+      .mutate<{ updateTicketType: any }>({
+        mutation: gql`
+          mutation UpdateTicketType($ticketId: Int!, $type: TicketType!) {
+            updateTicketType(ticketId: $ticketId, type: $type) {
+              id
+              ticketNumber
+              type
+              priority
+              status
+            }
+          }
+        `,
+        variables: { ticketId, type },
+      })
+      .pipe(
+        map((result) => {
+          if (!result.data?.updateTicketType) {
+            throw new Error('Failed to update ticket type');
+          }
+          return result.data.updateTicketType;
+        }),
+      );
+  }
+
+  /**
+   * Update ticket priority - Admin/Secretary only
+   */
+  updateTicketPriority(ticketId: number, priority: string): Observable<any> {
+    return this.apollo
+      .mutate<{ updateTicketPriority: any }>({
+        mutation: gql`
+          mutation UpdateTicketPriority($ticketId: Int!, $priority: Priority!) {
+            updateTicketPriority(ticketId: $ticketId, priority: $priority) {
+              id
+              ticketNumber
+              type
+              priority
+              status
+            }
+          }
+        `,
+        variables: { ticketId, priority },
+      })
+      .pipe(
+        map((result) => {
+          if (!result.data?.updateTicketPriority) {
+            throw new Error('Failed to update ticket priority');
+          }
+          return result.data.updateTicketPriority;
+        }),
+      );
+  }
+
+  /**
    * Submit satisfaction survey for a resolved/closed ticket
    */
   submitSatisfaction(ticketId: number, rating: number, comment?: string): Observable<any> {
