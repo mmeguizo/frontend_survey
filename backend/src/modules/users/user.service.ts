@@ -4,6 +4,7 @@ import { prisma } from "../../lib/prisma";
 import { UserRepository, userRepository } from "./user.repository";
 import { StorageService, storageService } from "../storage/storage.service";
 import { JWTService, jwtService } from "../auth/jwt.service";
+import { googleAuthService } from "../auth/google-auth.service";
 import {
   ValidationError,
   UnauthorizedError,
@@ -162,7 +163,7 @@ export class UserService {
     if (!user.password) {
       logger.warn(`Login failed: no password set - ${email}`);
       throw new UnauthorizedError(
-        "This account uses SSO login. Please sign in with CHMSU SSO.",
+        "This account uses Google Sign-In. Please sign in with Google.",
       );
     }
 
@@ -181,13 +182,65 @@ export class UserService {
     return { token, user };
   }
 
-  async upsertFromAuth0(
+  async googleAuth(
+    code: string,
+    redirectUri: string,
+  ): Promise<{ token: string; user: User }> {
+    const tokens = await googleAuthService.exchangeCodeForToken(code, redirectUri);
+    if (!tokens) {
+      throw new UnauthorizedError("Failed to exchange Google authorization code");
+    }
+
+    const googleUser = await googleAuthService.verifyIdToken(tokens.id_token);
+    if (!googleUser) {
+      throw new UnauthorizedError("Failed to verify Google ID token");
+    }
+
+    if (!googleUser.sub) {
+      throw new UnauthorizedError("Invalid Google user profile: missing subject");
+    }
+
+    let email = googleUser.email || `${googleUser.sub}@google.com`;
+    let name = googleUser.name || null;
+    let picture = googleUser.picture || null;
+
+    if (!googleUser.email || !googleUser.name) {
+      const userInfo = await googleAuthService.fetchUserInfo(tokens.access_token);
+      if (userInfo) {
+        email = userInfo.email || email;
+        name = userInfo.name || name;
+        picture = userInfo.picture || picture;
+      }
+    }
+
+    const result = await this.upsertFromGoogle(googleUser.sub, email, name, picture);
+
+    if (!result.user.isActive) {
+      logger.warn(`Google login blocked: account deactivated - ${result.user.email}`);
+      throw new UnauthorizedError(
+        "Your account has been deactivated. Please contact an administrator.",
+      );
+    }
+
+    await this.userRepo.update(result.user.id, { lastLoginAt: new Date() });
+
+    const token = await this.jwt.sign(
+      result.user.id,
+      result.user.email,
+      result.user.role,
+    );
+
+    logger.info(`Google login successful for user ${result.user.id}`);
+    return { token, user: result.user };
+  }
+
+  async upsertFromGoogle(
     externalId: string,
     email: string,
     name?: string | null,
     picture?: string | null,
   ): Promise<{ user: User; created: boolean }> {
-    logger.info(`Upserting user from Auth0: ${externalId}`);
+    logger.info(`Upserting user from Google: ${externalId}`);
 
     // Download avatar if it's a remote URL
     let avatarUrl: string | null = null;
@@ -305,7 +358,48 @@ export class UserService {
       adminId,
       at: new Date(),
     });
-    await this.userRepo.delete(userId);
+
+    // Delete all related records before deleting the user to avoid FK violations
+    await prisma.$transaction([
+      // Reassign tickets created by this user to the admin doing the deletion
+      prisma.ticket.updateMany({
+        where: { createdById: userId },
+        data: { createdById: adminId },
+      }),
+      // Nullify nullable review/approval references on tickets
+      prisma.ticket.updateMany({
+        where: { secretaryReviewedById: userId },
+        data: { secretaryReviewedById: null },
+      }),
+      prisma.ticket.updateMany({
+        where: { directorApprovedById: userId },
+        data: { directorApprovedById: null },
+      }),
+      // Nullify deactivatedById on other users deactivated by this user
+      prisma.user.updateMany({
+        where: { deactivatedById: userId },
+        data: { deactivatedById: null },
+      }),
+      prisma.ticketAssignment.deleteMany({ where: { userId } }),
+      prisma.ticketNote.deleteMany({ where: { userId } }),
+      prisma.ticketStatusHistory.deleteMany({ where: { userId } }),
+      prisma.clientSatisfactionSurvey.deleteMany({ where: { userId } }),
+      prisma.knowledgeArticle.deleteMany({ where: { createdById: userId } }),
+      prisma.chatSession.deleteMany({ where: { userId } }),
+      prisma.troubleshootingSolution.deleteMany({ where: { createdById: userId } }),
+      // TicketAttachment has nullable FK, so set to null instead of deleting
+      prisma.ticketAttachment.updateMany({
+        where: { uploadedById: userId },
+        data: { uploadedById: null },
+      }),
+      prisma.ticketAttachment.updateMany({
+        where: { deletedById: userId },
+        data: { deletedById: null },
+      }),
+      prisma.userSkill.deleteMany({ where: { userId } }),
+      prisma.notification.deleteMany({ where: { userId } }),
+      prisma.user.delete({ where: { id: userId } }),
+    ]);
   }
 
   async getUserSkills(userId: number): Promise<string[]> {

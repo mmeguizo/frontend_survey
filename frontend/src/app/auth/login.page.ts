@@ -28,12 +28,11 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NgOptimizedImage } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthService } from '@auth0/auth0-angular';
 import { AuthApiService } from '../api/auth-api.service';
 import { firstValueFrom } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
-// Add to existing imports (around line 17)
 import { AuthService as AppAuthService } from '../core/services/auth.service';
+import { environment } from '../core/config/environment';
 type LoginForm = FormGroup<{
   email: FormControl<string>;
   password: FormControl<string>;
@@ -108,8 +107,7 @@ export class LoginPage {
   });
 
   ngOnInit(): void {
-    // Check for Auth0 errors in URL on page load
-    this.checkAuth0Errors();
+    this.checkAuthErrors();
   }
 
   readonly busy = signal(false);
@@ -187,25 +185,15 @@ export class LoginPage {
     }
   }
 
-  private checkAuth0Errors(): void {
+  private checkAuthErrors(): void {
     const error = this.route.snapshot.queryParams['error'];
     const errorDescription = this.route.snapshot.queryParams['error_description'];
 
     if (error) {
-      // Display error as toast
       const displayMessage = errorDescription || 'Authentication failed. Please try again.';
-
       this.message.error(displayMessage, { nzDuration: 5000 });
-
-      // Also set in the error signal for display in template
       this.error.set(displayMessage);
 
-      console.error('Auth0 error:', {
-        error,
-        description: errorDescription,
-      });
-
-      // Clear error params from URL
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: {},
@@ -214,19 +202,23 @@ export class LoginPage {
     }
   }
 
-  // Start Auth0 login redirect flow
-  loginWithAuth0(): void {
+  loginWithGoogle(): void {
     if (typeof window === 'undefined') return;
     this.error.set(null);
     this.ssoBusy.set(true);
 
-    const auth = this.injector.get(AuthService, null);
-    if (auth) {
-      // Set target to /callback so Auth0 SDK stays on callback page after processing
-      // Our callback component will then fetch user and navigate to the correct route
-      auth.loginWithRedirect({
-        appState: { target: '/callback' },
-      });
-    }
+    const state = Math.random().toString(36).substring(2, 15);
+    sessionStorage.setItem('google_oauth_state', state);
+
+    const params = new URLSearchParams({
+      client_id: environment.google.clientId,
+      redirect_uri: window.location.origin + '/callback',
+      response_type: 'code',
+      scope: 'openid email profile',
+      state,
+    });
+
+    window.location.href =
+      'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
   }
 }

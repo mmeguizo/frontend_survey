@@ -4,9 +4,10 @@ if (!jwtSecret && process.env.NODE_ENV === "production") {
 }
 
 export const authConfig = {
-  auth0: {
-    domain: process.env.AUTH0_DOMAIN || "",
-    audience: process.env.AUTH0_AUDIENCE || undefined,
+  google: {
+    clientId: process.env.OAUTH_CLIENT_ID || "",
+    clientSecret: process.env.OAUTH_CLIENT_SECRET || "",
+    redirectUri: process.env.OAUTH_REDIRECT_URI || "",
   },
   jwt: {
     secret: jwtSecret || "dev-only-secret-do-not-use-in-production",

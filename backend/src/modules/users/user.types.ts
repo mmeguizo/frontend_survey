@@ -66,6 +66,7 @@ export const userTypeDefs = gql`
     updateMyProfile(input: UpdateProfileInput!): User!
     setMyPassword(password: String!): User!
     login(email: String!, password: String!): LoginPayload!
+    googleAuth(code: String!, redirectUri: String!): LoginPayload!
     toggleUserActive(id: Int!): User!
     deleteUser(id: Int!): Boolean!
     updateUserSkills(userId: Int!, skills: [String!]!): User!

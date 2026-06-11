@@ -819,7 +819,7 @@ export class ChatService {
     status += `- **Priority**: ${ticket.priority}\n`;
     status += `- **Assigned to**: ${assigned}\n`;
     if (ticket.assignedDeveloperName)
-      status += `- **Developer/Technician**: ${ticket.assignedDeveloperName}\n`;
+      status += `- **Staff**: ${ticket.assignedDeveloperName}\n`;
     if (ticket.dateToVisit)
       status += `- **Date to Visit**: ${new Date(ticket.dateToVisit).toLocaleDateString()}\n`;
     if (ticket.resolution) status += `- **Resolution**: ${ticket.resolution}\n`;

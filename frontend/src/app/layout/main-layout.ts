@@ -4,7 +4,6 @@ import {
   Component,
   effect,
   inject,
-  Injector,
   PLATFORM_ID,
   computed,
   signal,
@@ -24,7 +23,6 @@ import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { AuthService as Auth0Service } from '@auth0/auth0-angular';
 import { firstValueFrom } from 'rxjs';
 import { UserApiService } from '../api/user-api.service';
 import { AuthService } from '../core/services/auth.service';
@@ -239,7 +237,6 @@ export class MainLayout {
   private readonly fb = inject(FormBuilder);
   private readonly message = inject(NzMessageService);
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly injector = inject(Injector);
   private readonly api = inject(UserApiService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
@@ -266,24 +263,6 @@ export class MainLayout {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      // Auth already initialized via APP_INITIALIZER in app.config.ts
-      const auth = this.injector.get(Auth0Service, null as any) as Auth0Service | null;
-      if (auth) {
-        auth.user$.pipe(takeUntilDestroyed()).subscribe((profile: any) => {
-          const tokenAvatar =
-            profile && typeof profile.picture === 'string' ? profile.picture.trim() : '';
-
-          const email = profile?.email ?? null;
-          if (email) {
-            this.userEmail.set(email);
-          }
-
-          if (tokenAvatar) {
-            this.avatarUrl.set(tokenAvatar);
-            this.cdr.markForCheck();
-          }
-        });
-      }
       const storedUser = this.authService.currentUser();
       const storedAvatar = resolveAvatarUrl(storedUser);
       if (storedAvatar && !this.avatarUrl()) {
@@ -419,19 +398,6 @@ export class MainLayout {
       const localToken = localStorage.getItem('auth_token');
       if (localToken) {
         token = localToken;
-      } else {
-        const auth = this.injector.get(Auth0Service, null as any) as Auth0Service | null;
-        if (auth) {
-          try {
-            token = await firstValueFrom(auth.getAccessTokenSilently());
-          } catch (err: any) {
-            const errMsg = err?.message || String(err);
-            if (errMsg.includes('Missing Refresh Token') || errMsg.includes('login_required')) {
-              this.message.error('Session expired. Please log out and log back in.');
-              return;
-            }
-          }
-        }
       }
 
       if (!token) {
@@ -490,13 +456,6 @@ export class MainLayout {
         }
       } catch (err) {
         console.warn('Failed to decode JWT token', err);
-      }
-    } else {
-      const auth = this.injector.get(Auth0Service, null as any) as Auth0Service | null;
-      if (auth) {
-        try {
-          token = await firstValueFrom(auth.getAccessTokenSilently());
-        } catch {}
       }
     }
 
@@ -565,18 +524,7 @@ export class MainLayout {
     localStorage.removeItem('current_user');
     localStorage.removeItem('token');
 
-    const auth = this.injector.get(Auth0Service, null as any) as Auth0Service | null;
-    if (auth) {
-      auth.isAuthenticated$.pipe().subscribe((isAuth: boolean) => {
-        if (isAuth) {
-          auth.logout({ logoutParams: { returnTo: window.location.origin } });
-        } else {
-          window.location.href = '/login';
-        }
-      });
-    } else {
-      window.location.href = '/login';
-    }
+    window.location.href = '/login';
   }
 
   onAvatarLoad(): void {

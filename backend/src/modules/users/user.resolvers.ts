@@ -117,6 +117,12 @@ export const userResolvers = {
     ): Promise<{ token: string; user: User }> => {
       return userService.login(args);
     },
+    googleAuth: async (
+      _: any,
+      args: { code: string; redirectUri: string },
+    ): Promise<{ token: string; user: User }> => {
+      return userService.googleAuth(args.code, args.redirectUri);
+    },
     toggleUserActive: async (
       _: any,
       args: { id: number },

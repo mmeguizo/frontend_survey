@@ -7,22 +7,16 @@ export interface Environment {
   production: boolean;
   apiUrl: string;
   wsUrl: string;
-  auth0: {
-    domain: string;
+  google: {
     clientId: string;
-    audience: string;
   };
 }
 
 export const environment: Environment = {
   production: false,
-  apiUrl: 'http://10.100.168.9:4000/graphql',
-  // apiUrl: 'http://localhost:4000/graphql',
-  wsUrl: 'ws://10.100.168.9:4000/graphql',
-  // wsUrl: 'ws://localhost:4000/graphql',
-  auth0: {
-    domain: 'dev-r7i2pqcybdndjxwt.us.auth0.com',
-    clientId: 'WkpoCJqPf7qphHyBAvNF3PWPuVIb8xfl',
-    audience: 'https://ictsystem.api',
+  apiUrl: 'http://localhost:4000/graphql',
+  wsUrl: 'ws://localhost:4000/graphql',
+  google: {
+    clientId: '1081954751485-a4s2spmm54c954e1ejsu179dieca71ii.apps.googleusercontent.com',
   },
 };

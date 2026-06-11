@@ -17,7 +17,7 @@
       </div>
       <h1 id="login-title">ICT TICKET</h1>
       <p class="subtitle center-text" nz-typography nzType="secondary">
-        Sign in with your local account or CHMSU SSO.
+        Sign in with your local account or Google Sign-In.
       </p>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" nz-form novalidate>
@@ -106,11 +106,11 @@
             class="sso-button"
             type="button"
             [disabled]="busy() || ssoBusy()"
-            (click)="loginWithAuth0()"
+            (click)="loginWithGoogle()"
           >
-            {{ ssoBusy() ? 'Redirecting…' : 'Sign in with CHMSU SSO' }}
+            {{ ssoBusy() ? 'Redirecting…' : 'Sign in with Google' }}
           </button>
-          <p class="sso-note">SSO powered by Auth0 (Google)</p>
+          <p class="sso-note">Google Sign-In</p>
         </div>
 
         @if (loggedIn()) {

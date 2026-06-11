@@ -52,9 +52,6 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import type { GraphQLError } from 'graphql';
-import { provideAuth0, AuthService } from '@auth0/auth0-angular';
-import { from } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { environment } from './core/config/environment';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
@@ -94,8 +91,7 @@ export const appConfig: ApplicationConfig = {
 
       // Only use auth on the browser, not during SSR
       if (typeof window !== 'undefined') {
-        const auth0Service = inject(AuthService); // Auth0's service
-        const appAuthService = inject(AppAuthService); // Our custom service
+        const appAuthService = inject(AppAuthService);
 
         // Error link to handle unauthorized errors and auto-logout
         // Use a flag to prevent multiple logout calls
@@ -194,40 +190,16 @@ export const appConfig: ApplicationConfig = {
           }
         });
 
-        // Create auth link to add Authorization header
-        // Checks local JWT first (email/password login), then falls back to Auth0
+        // Create auth link to add Authorization header (local JWT only)
         const authLink = setContext(async () => {
-          // 1. Check local JWT token first (email/password login)
           const localToken = appAuthService.getToken();
           if (localToken) {
-            // console.log('[Apollo] Using local JWT token:', localToken);
             return {
               headers: {
                 Authorization: `Bearer ${localToken}`,
               },
             };
           }
-
-          // 2. Fall back to Auth0 token (SSO login)
-          try {
-            const auth0Token = await auth0Service.getAccessTokenSilently().toPromise();
-            if (auth0Token) {
-              // console.log('[Apollo] Using Auth0 token');
-              return {
-                headers: {
-                  Authorization: `Bearer ${auth0Token}`,
-                },
-              };
-            }
-          } catch (error) {
-            if (!localToken) {
-              // console.log('[Apollo] Using local JWT token:', localToken);
-              console.warn('[Apollo] Failed to get Auth0 access token:', error);
-            }
-          }
-
-          // 3. No token available
-          // console.log('[Apollo] No auth token available');
           return { headers: {} };
         });
 
@@ -329,22 +301,6 @@ export const appConfig: ApplicationConfig = {
           },
         }),
       };
-    }),
-    // Auth0 authentication
-    provideAuth0({
-      domain: environment.auth0.domain,
-      clientId: environment.auth0.clientId,
-      authorizationParams: {
-        // Redirect to /callback after Auth0 login to properly process auth
-        redirect_uri: typeof window !== 'undefined' ? `${window.location.origin}/callback` : '',
-        audience: environment.auth0.audience,
-        scope: 'openid profile email offline_access',
-      },
-      useRefreshTokens: true,
-      cacheLocation: 'localstorage',
-      errorPath: '/login',
-      // Let Auth0 SDK handle the callback, but we control navigation via appState
-      skipRedirectCallback: false,
     }),
     provideNzIcons([
       UserOutline,

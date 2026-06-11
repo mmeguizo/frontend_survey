@@ -20,9 +20,42 @@ interface LoginVariables {
   password: string;
 }
 
+interface GoogleAuthData {
+  googleAuth: {
+    token: string;
+    user: {
+      id: number;
+      email: string;
+      name: string | null;
+      avatarUrl: string | null;
+      role: string;
+    };
+  };
+}
+
+interface GoogleAuthVariables {
+  code: string;
+  redirectUri: string;
+}
+
 const LOGIN_MUTATION = gql`
   mutation Login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
+      token
+      user {
+        id
+        email
+        name
+        avatarUrl
+        role
+      }
+    }
+  }
+`;
+
+const GOOGLE_AUTH_MUTATION = gql`
+  mutation GoogleAuth($code: String!, $redirectUri: String!) {
+    googleAuth(code: $code, redirectUri: $redirectUri) {
       token
       user {
         id
@@ -40,10 +73,16 @@ export class AuthApiService {
   private readonly apollo = inject(Apollo);
 
   login(email: string, password: string) {
-    // console.log('[AuthApiService] login attempt for:', email);
     return this.apollo.mutate<LoginData, LoginVariables>({
       mutation: LOGIN_MUTATION,
       variables: { email, password },
+    });
+  }
+
+  googleAuth(code: string, redirectUri: string) {
+    return this.apollo.mutate<GoogleAuthData, GoogleAuthVariables>({
+      mutation: GOOGLE_AUTH_MUTATION,
+      variables: { code, redirectUri },
     });
   }
 }

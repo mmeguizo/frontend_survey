@@ -1643,7 +1643,7 @@ export class TicketService {
 
       const commentText =
         options?.comment ||
-        `Acknowledged by ${head?.name || "Head"}, assigned to developer: ${assignedDeveloperName.trim()}`;
+        `Acknowledged by ${head?.name || "Head"}, assigned to staff: ${assignedDeveloperName.trim()}`;
 
       await tx.ticketStatusHistory.create({
         data: {
@@ -1656,7 +1656,7 @@ export class TicketService {
       });
 
       // Add internal note with assignment details
-      let noteContent = `Developer assigned: **${assignedDeveloperName.trim()}**`;
+      let noteContent = `Staff assigned: **${assignedDeveloperName.trim()}**`;
       if (options?.dateToVisit) {
         noteContent += `\nVisit date: ${options.dateToVisit.toLocaleDateString()}`;
       }

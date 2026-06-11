@@ -31,7 +31,6 @@ import {
 } from "./modules/storage/upload.middleware";
 import { prisma } from "./lib/prisma";
 import { jwtService } from "./modules/auth/jwt.service";
-import { auth0Service } from "./modules/auth/auth0.service";
 import { NotificationService } from "./modules/notifications/notification.service";
 import { SLACronService } from "./lib/sla-cron.service";
 
@@ -122,23 +121,13 @@ async function start() {
         return res.status(401).json({ error: "Authentication required" });
       }
 
-      // Try JWT first, then Auth0
+      // Try JWT only
       let userId: number | null = null;
 
       const jwtUser = await jwtService.verify(token);
       if (jwtUser) {
         const id = parseInt(jwtUser.sub, 10);
         if (!isNaN(id)) userId = id;
-      }
-
-      if (!userId) {
-        const auth0User = await auth0Service.verifyToken(token);
-        if (auth0User?.sub) {
-          const dbUser = await prisma.user.findFirst({
-            where: { externalId: auth0User.sub },
-          });
-          if (dbUser) userId = dbUser.id;
-        }
       }
 
       if (!userId) {
@@ -286,15 +275,6 @@ async function start() {
       if (jwtUser) {
         const id = parseInt(jwtUser.sub, 10);
         if (!isNaN(id)) userId = id;
-      }
-      if (!userId) {
-        const auth0User = await auth0Service.verifyToken(token);
-        if (auth0User?.sub) {
-          const dbUser = await prisma.user.findFirst({
-            where: { externalId: auth0User.sub },
-          });
-          if (dbUser) userId = dbUser.id;
-        }
       }
       if (!userId) {
         return res.status(401).json({ error: "Invalid or expired token" });
