@@ -40,16 +40,16 @@
 
     ::ng-deep .ant-card-body {
       flex: 1;
-      overflow: hidden;
       padding: 16px;
       display: flex;
       flex-direction: column;
+      min-height: 0;
 
       .ant-table-wrapper {
         flex: 1;
-        overflow: hidden;
         display: flex;
         flex-direction: column;
+        overflow: hidden;
 
         .ant-table {
           flex: 1;
