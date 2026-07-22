@@ -177,7 +177,7 @@ export class GeminiService {
       .filter(Boolean)
       .join("\n");
 
-    const text = await llmClient.chatCompletion(
+    const { text } = await llmClient.chatCompletion(
       [
         { role: "system", content: SYSTEM_PROMPT },
         {
@@ -221,7 +221,7 @@ export class GeminiService {
    */
   async extractSearchKeywords(description: string): Promise<string[]> {
     try {
-      const text = await llmClient.chatCompletion(
+      const { text } = await llmClient.chatCompletion(
         [
           {
             role: "user",
@@ -257,7 +257,7 @@ Description: ${description}`,
     }
 
     try {
-      const text = await llmClient.chatCompletion(
+      const { text } = await llmClient.chatCompletion(
         [
           { role: "system", content: NLP_SYSTEM_PROMPT },
           {

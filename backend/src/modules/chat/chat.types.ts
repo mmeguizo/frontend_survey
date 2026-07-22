@@ -38,6 +38,7 @@ export const chatTypeDefs = gql`
   type ChatResponse {
     reply: String!
     metadata: String
+    provider: String
     session: ChatSession!
   }
 

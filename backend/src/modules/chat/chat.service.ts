@@ -280,7 +280,7 @@ export class ChatService {
     sessionId: number,
     userId: number,
     userMessage: string,
-  ): Promise<{ reply: string; metadata?: string }> {
+  ): Promise<{ reply: string; metadata?: string; provider?: string }> {
     // 1. Verify session ownership + get user info
     const session = await prisma.chatSession.findUnique({
       where: { id: sessionId },
@@ -447,8 +447,8 @@ export class ChatService {
       }
     }
 
-    // 6. Call Gemini with context + conversation history
-    const reply = await this.callGemini(
+    // 6. Call LLM with context + conversation history
+    const { reply, provider } = await this.callGemini(
       session.messages,
       userMessage,
       contextStr,
@@ -462,6 +462,7 @@ export class ChatService {
       metadata.ticketIds = ragContext.resolvedTickets.map((t: any) => t.id);
     if (ragContext.solutions.length > 0)
       metadata.solutionIds = ragContext.solutions.map((s: any) => s.id);
+    if (provider) metadata.provider = provider;
 
     const metadataStr =
       Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null;
@@ -474,7 +475,7 @@ export class ChatService {
       userMessage,
     );
 
-    return { reply, metadata: metadataStr || undefined };
+    return { reply, metadata: metadataStr || undefined, provider };
   }
 
   private async persistAssistantReply(
@@ -2171,9 +2172,12 @@ Tell the user which report type you detected based on their request, and offer t
     history: Array<{ role: string; content: string }>,
     currentMessage: string,
     contextData: string,
-  ): Promise<string> {
+  ): Promise<{ reply: string; provider: string }> {
     if (!this.isAvailable()) {
-      return this.fallbackResponse(currentMessage, contextData);
+      return {
+        reply: this.fallbackResponse(currentMessage, contextData),
+        provider: "Offline",
+      };
     }
 
     try {
@@ -2201,16 +2205,21 @@ Tell the user which report type you detected based on their request, and offer t
 
       messages.push({ role: "user", content: prompt });
 
-      return await llmClient.chatCompletion(messages, {
+      const result = await llmClient.chatCompletion(messages, {
         temperature: 0.4,
         maxTokens: 4096,
         topP: 0.9,
       });
+
+      return { reply: result.text, provider: result.provider };
     } catch (err: any) {
       logger.error(
         `[ChatService] LLM call failed (${err.message}). Using local curated fallback.`,
       );
-      return this.fallbackResponse(currentMessage, contextData);
+      return {
+        reply: this.fallbackResponse(currentMessage, contextData),
+        provider: "Offline",
+      };
     }
   }
 

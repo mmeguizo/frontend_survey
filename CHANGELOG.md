@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## [Unreleased] - 2026-07-22
+
+### Added
+
+- **AI chat fallback resilience**
+  - Added Hugging Face Inference API as a free-tier LLM fallback after Perplexity.
+  - Added configurable per-provider timeout (`AI_REQUEST_TIMEOUT_MS`, default 45s) with Promise.race fallback logic.
+  - `LlmClient.chatCompletion()` now returns `{ text, provider }` so callers know which model answered.
+  - Chat responses expose `provider` via GraphQL so the UI can show a provider chip.
+  - Created `docs/AI_TASKS.md` as a living registry of small, scoped AI improvement tasks.
+
+### Changed
+
+- AI chat now falls back through Gemini → Perplexity → Hugging Face → offline curated response instead of immediately returning a basic offline message.
+- AI loading UX now shows "Switching to backup AI model…" after ~8 seconds when the primary provider is slow.
+- Chat header subtitle and assistant replies now display the active AI provider (Gemini / Perplexity / Hugging Face / Offline).
+- Updated `.github/agents/chmsu.agent.md` to reference `docs/AI_TASKS.md` for small-chunk agent work.
+
+### Documentation
+
+- Updated `docs/AI_INTEGRATION_POINTS.md` with the new provider fallback architecture.
+- Updated `backend/.env.example` with AI provider and timeout variables.
+
 ## [Unreleased] - 2026-06-10
 
 ### Added

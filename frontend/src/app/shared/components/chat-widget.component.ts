@@ -227,7 +227,7 @@ marked.use({
               </div>
               <div class="brand-text">
                 <span class="chat-header-title">ICT AI Assistant</span>
-                <span class="header-subtitle">Powered by Gemini</span>
+                <span class="header-subtitle">{{ headerSubtitle() }}</span>
               </div>
             </div>
           }
@@ -422,9 +422,19 @@ marked.use({
                   <div class="message-avatar">
                     <ng-container *ngTemplateOutlet="botSvg"></ng-container>
                   </div>
-                  <div class="message-bubble typing">
-                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                  <div class="message-bubble typing-bubble">
+                    <span class="typing-status">{{ typingStatus() }}</span>
+                    <div class="typing">
+                      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                    </div>
                   </div>
+                </div>
+              }
+
+              @if (replyState() === 'done' && lastProvider()) {
+                <div class="provider-chip" [class.offline]="lastProvider() === 'Offline'">
+                  <span nz-icon [nzType]="lastProvider() === 'Offline' ? 'disconnect' : 'robot'"></span>
+                  {{ lastProvider() === 'Offline' ? 'Offline mode' : 'Answered by ' + lastProvider() }}
                 </div>
               }
             }
@@ -1036,10 +1046,21 @@ marked.use({
         }
       }
 
+      .typing-bubble {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+      }
+
+      .typing-status {
+        font-size: 13px;
+        color: #595959;
+      }
+
       .typing {
         display: flex;
         gap: 4px;
-        padding: 12px 16px;
 
         .dot {
           width: 8px;
@@ -1054,6 +1075,27 @@ marked.use({
           &:nth-child(3) {
             animation-delay: 0.4s;
           }
+        }
+      }
+
+      .provider-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: 40px;
+        margin-top: -8px;
+        margin-bottom: 8px;
+        padding: 2px 8px;
+        background: #f0f5ff;
+        border: 1px solid #d6e4ff;
+        border-radius: 12px;
+        font-size: 11px;
+        color: #2f54eb;
+
+        &.offline {
+          background: #fffbe6;
+          border-color: #ffe58f;
+          color: #614700;
         }
       }
 
@@ -1281,6 +1323,9 @@ export class ChatWidgetComponent implements AfterViewChecked, OnInit {
   readonly loadingMessages = signal(false);
   readonly sending = signal(false);
   readonly creatingTicket = signal(false);
+  readonly replyState = signal<'idle' | 'thinking' | 'fallback' | 'done'>('idle');
+  readonly lastProvider = signal<string | null>(null);
+  private fallbackTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly userAvatarErrorSrc = signal<string | null>(null);
 
   /** Whether current user is staff/admin (has access to analytics, reports) */
@@ -1311,6 +1356,22 @@ export class ChatWidgetComponent implements AfterViewChecked, OnInit {
   readonly currentUserInitial = computed(() =>
     getAvatarInitial(this.authService.currentUser()?.name, this.authService.currentUser()?.email),
   );
+
+  /** Subtitle text showing current AI provider or loading state */
+  readonly headerSubtitle = computed(() => {
+    const state = this.replyState();
+    const provider = this.lastProvider();
+    if (state === 'fallback') return 'Switching to backup AI model…';
+    if (state === 'thinking') return 'AI is thinking…';
+    if (provider && provider !== 'Offline') return `Powered by ${provider}`;
+    return 'Powered by Gemini';
+  });
+
+  /** Status line shown inside the typing bubble */
+  readonly typingStatus = computed(() => {
+    if (this.replyState() === 'fallback') return 'Switching to backup AI model, please wait…';
+    return 'ICT AI is thinking';
+  });
 
   inputMessage = '';
 
@@ -1398,6 +1459,15 @@ export class ChatWidgetComponent implements AfterViewChecked, OnInit {
     this.messages.update((m) => [...m, tempMsg]);
     this.inputMessage = '';
     this.sending.set(true);
+    this.replyState.set('thinking');
+    this.lastProvider.set(null);
+    this.clearFallbackTimer();
+    // After a few seconds, tell the user we are falling back to a backup model
+    this.fallbackTimer = setTimeout(() => {
+      if (this.sending()) {
+        this.replyState.set('fallback');
+      }
+    }, 8000);
     this.scrollToBottom();
 
     this.chatService.sendMessage(session.id, text).subscribe({
@@ -1417,14 +1487,26 @@ export class ChatWidgetComponent implements AfterViewChecked, OnInit {
         if (response.session) {
           this.activeSession.set(response.session);
         }
+        this.lastProvider.set(response.provider || null);
+        this.replyState.set('done');
         this.sending.set(false);
+        this.clearFallbackTimer();
         this.scrollToBottom();
       },
       error: () => {
         this.message.error('Failed to get AI response');
+        this.replyState.set('idle');
         this.sending.set(false);
+        this.clearFallbackTimer();
       },
     });
+  }
+
+  private clearFallbackTimer() {
+    if (this.fallbackTimer !== null) {
+      clearTimeout(this.fallbackTimer);
+      this.fallbackTimer = null;
+    }
   }
 
   sendQuick(text: string) {

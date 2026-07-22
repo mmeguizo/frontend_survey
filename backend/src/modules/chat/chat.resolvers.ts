@@ -36,7 +36,7 @@ export const chatResolvers = {
       ctx: any,
     ) => {
       if (!ctx.currentUser) throw new Error("Authentication required");
-      const { reply, metadata } = await chatService.sendMessage(
+      const { reply, metadata, provider } = await chatService.sendMessage(
         args.sessionId,
         ctx.currentUser.id,
         args.message,
@@ -47,7 +47,7 @@ export const chatResolvers = {
         ctx.currentUser.id,
       );
 
-      return { reply, metadata, session };
+      return { reply, metadata, provider, session };
     },
 
     createTicketFromChat: async (

@@ -54,7 +54,7 @@ export const aiResolvers = {
 
       if (!geminiService.isAvailable()) {
         throw new Error(
-          "AI analysis is not available — GEMINI_API_KEY not configured",
+          "AI analysis is not available — no LLM provider is configured. Set GEMINI_API_KEY, PERPLEXITY_API_KEY, or HF_TOKEN in .env",
         );
       }
 

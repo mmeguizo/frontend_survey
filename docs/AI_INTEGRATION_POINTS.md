@@ -250,22 +250,60 @@ async predictSLABreach(ticketId: number): Promise<{
 
 ---
 
+## AI Provider Fallback Architecture
+
+The system uses a resilient, cascading fallback strategy so users are not left with a generic offline message when one provider is slow or unavailable.
+
+### Provider Priority
+
+1. **Google Gemini** (primary) — `gemini-2.5-flash`
+2. **Perplexity** (fallback) — `sonar`
+3. **Hugging Face Inference API** (free-tier fallback) — configurable, default `Qwen/Qwen2.5-72B-Instruct`
+4. **Offline curated response** — uses local RAG context and templates
+
+### Timeout and Retry Behavior
+
+- Each provider is wrapped in a strict timeout (`AI_REQUEST_TIMEOUT_MS`, default 45s).
+- If a provider times out or errors, the client immediately tries the next provider.
+- The provider that ultimately answers is returned to the caller and shown in the UI.
+
+### Configuration
+
+```env
+GEMINI_API_KEY=your-gemini-api-key
+GEMINI_MODEL=gemini-2.5-flash
+PERPLEXITY_API_KEY=your-perplexity-key
+HF_TOKEN=your-huggingface-token
+HF_MODEL=Qwen/Qwen2.5-72B-Instruct
+AI_REQUEST_TIMEOUT_MS=45000
+```
+
+### Frontend UX
+
+- Initial state: "AI is thinking…"
+- After ~8 seconds: "Switching to backup AI model…"
+- After response: a small provider chip appears below the assistant reply (e.g., "Answered by Gemini", "Answered by Hugging Face", or "Offline mode").
+
+## Task Registry
+
+Small, scoped AI improvements are tracked in `docs/AI_TASKS.md`. Agents and contributors should pick one task at a time to avoid timeouts and keep changes reviewable.
+
 ## Technical Requirements
 
 ### For AI Integration
-1. **API Keys:** OpenAI API key or Claude API key
+1. **API Keys:** Google Gemini, Perplexity, or Hugging Face token (at least one required)
 2. **Environment Variables:**
    ```env
-   OPENAI_API_KEY=sk-...
-   AI_MODEL=gpt-4
-   AI_TEMPERATURE=0.3
+   GEMINI_API_KEY=your-gemini-api-key
+   PERPLEXITY_API_KEY=your-perplexity-key
+   HF_TOKEN=your-huggingface-token
+   AI_REQUEST_TIMEOUT_MS=45000
    ```
 
 3. **Dependencies:**
    ```json
-   "openai": "^4.0.0",
-   // or
-   "@anthropic-ai/sdk": "^0.5.0"
+   "@google/generative-ai": "^0.24.1",
+   "openai": "^6.42.0"
    ```
 
 ### For Machine Learning

@@ -42,4 +42,13 @@ export const config = {
     token: process.env.HF_TOKEN || "",
     model: process.env.HF_MODEL || "Qwen/Qwen2.5-72B-Instruct",
   },
+
+  ai: {
+    // How long to wait for a single provider before trying the next one.
+    // Default 45s is generous enough for free-tier Hugging Face cold starts
+    // but short enough to fail over before the frontend gives up.
+    requestTimeoutMs: Number(
+      process.env.AI_REQUEST_TIMEOUT_MS || 45000,
+    ),
+  },
 };

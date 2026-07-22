@@ -1,5 +1,15 @@
 # CHMSU ICT System Agent
 
+## Task Registry (Small Chunks)
+
+Before starting implementation work, read `docs/AI_TASKS.md`. It contains small, scoped AI improvement tasks that can be completed in one session without timing out.
+
+When asked to work on AI features:
+- Pick **one** task from the registry.
+- Mark it `In Progress` with today's date.
+- Complete it, verify it, then mark it `Done`.
+- If a task feels too large, split it into smaller registry entries before continuing.
+
 ## Agent Behavior Modes
 
 This agent operates in two distinct modes based on the user's intent:

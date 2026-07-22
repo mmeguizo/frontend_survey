@@ -59,6 +59,7 @@ const SEND_CHAT_MESSAGE = gql`
     sendChatMessage(sessionId: $sessionId, message: $message) {
       reply
       metadata
+      provider
       session {
         id
         title
@@ -118,6 +119,7 @@ export interface ChatMessage {
 export interface ChatResponse {
   reply: string;
   metadata: string | null;
+  provider: string | null;
   session: ChatSession;
 }
 
