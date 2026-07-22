@@ -162,7 +162,7 @@ Use the same scale for both questionnaires unless otherwise stated.
 
 ---
 
-## Part C. PSSUQ-Style Usability Questionnaire
+## Part C. Standard PSSUQ 16-Item Usability Questionnaire
 
 **Respondents:** 10 end users  
 **Suggested Users:** CHMSU employees, faculty, staff, student assistants, or office personnel who may submit or monitor ICT support requests.
@@ -182,32 +182,37 @@ Use the same scale for both questionnaires unless otherwise stated.
 
 | No. | Statement | 5 | 4 | 3 | 2 | 1 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Overall, I am satisfied with how easy it is to use this ICT ticketing system. | | | | | |
-| 2 | The system helps me submit or monitor ICT service requests effectively. | | | | | |
-| 3 | I can complete ticket-related tasks quickly using this system. | | | | | |
-| 4 | The steps for creating, viewing, and tracking a ticket are easy to follow. | | | | | |
-| 5 | The system gives clear feedback after I perform an action. | | | | | |
-| 6 | The system helps reduce the effort needed to request ICT support. | | | | | |
+| 1 | Overall, I am satisfied with how easy it is to use this system. | | | | | |
+| 2 | It was simple to use this system. | | | | | |
+| 3 | I was able to complete the tasks and scenarios quickly using this system. | | | | | |
+| 4 | I felt comfortable using this system. | | | | | |
+| 5 | It was easy to learn to use this system. | | | | | |
+| 6 | I believe I could become productive quickly using this system. | | | | | |
 
 ### C2. Information Quality
 
 | No. | Statement | 5 | 4 | 3 | 2 | 1 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 7 | The messages, labels, and instructions are clear. | | | | | |
-| 8 | Error messages explain what went wrong and how I can fix it. | | | | | |
-| 9 | The ticket details, status, control number, and timeline are easy to understand. | | | | | |
-| 10 | The dashboard and ticket lists show the information I need. | | | | | |
-| 11 | The knowledge base, documentation, or help content is useful when I need guidance. | | | | | |
+| 7 | The system gave error messages that clearly told me how to fix problems. | | | | | |
+| 8 | Whenever I made a mistake using the system, I could recover easily and quickly. | | | | | |
+| 9 | The information, such as online help, on-screen messages, and other documentation, provided with this system was clear. | | | | | |
+| 10 | It was easy to find the information I needed. | | | | | |
+| 11 | The information provided for the system was easy to understand. | | | | | |
+| 12 | The information was effective in helping me complete the tasks and scenarios. | | | | | |
 
 ### C3. Interface Quality
 
 | No. | Statement | 5 | 4 | 3 | 2 | 1 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 12 | The interface layout is clean and organized. | | | | | |
-| 13 | Buttons, menus, icons, and forms are placed where I expect them to be. | | | | | |
-| 14 | Text is readable and the visual design is comfortable to use. | | | | | |
-| 15 | The system works well on the device I used for testing. | | | | | |
-| 16 | Overall, I am satisfied with this ICT ticketing system. | | | | | |
+| 13 | The organization of information on the system screens was clear. | | | | | |
+| 14 | The interface of this system was pleasant. | | | | | |
+| 15 | I liked using the interface of this system. | | | | | |
+
+### C4. Overall Satisfaction
+
+| No. | Statement | 5 | 4 | 3 | 2 | 1 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 16 | Overall, I am satisfied with this system. | | | | | |
 
 ### User Comments
 
@@ -219,13 +224,13 @@ Use the same scale for both questionnaires unless otherwise stated.
 | What improvement would make the system better? | |
 | Would you recommend using this system for ICT support requests? | [ ] Yes [ ] No [ ] Not sure |
 
-### PSSUQ-Style Scoring Template
+### PSSUQ Scoring Template
 
 | Subscale | Item Numbers | Total Score | Mean |
 | --- | --- | --- | --- |
 | System Usefulness | 1-6 | | |
-| Information Quality | 7-11 | | |
-| Interface Quality | 12-15 | | |
+| Information Quality | 7-12 | | |
+| Interface Quality | 13-15 | | |
 | Overall Satisfaction | 1-16 | | |
 
 ---
@@ -275,4 +280,3 @@ Use the same scale for both questionnaires unless otherwise stated.
 2. Divide the total by the number of answered items.
 3. Compute the grand mean for all experts and all users separately.
 4. Summarize common comments and list the top issues to fix before final deployment.
-

@@ -100,26 +100,28 @@ MCCALL_SECTIONS = [
 
 PSSUQ_SECTIONS = [
     ("System Usefulness", [
-        "Overall, I am satisfied with how easy it is to use this ICT ticketing system.",
-        "The system helps me submit or monitor ICT service requests effectively.",
-        "I can complete ticket-related tasks quickly using this system.",
-        "The steps for creating, viewing, and tracking a ticket are easy to follow.",
-        "The system gives clear feedback after I perform an action.",
-        "The system helps reduce the effort needed to request ICT support.",
+        "Overall, I am satisfied with how easy it is to use this system.",
+        "It was simple to use this system.",
+        "I was able to complete the tasks and scenarios quickly using this system.",
+        "I felt comfortable using this system.",
+        "It was easy to learn to use this system.",
+        "I believe I could become productive quickly using this system.",
     ]),
     ("Information Quality", [
-        "The messages, labels, and instructions are clear.",
-        "Error messages explain what went wrong and how I can fix it.",
-        "The ticket details, status, control number, and timeline are easy to understand.",
-        "The dashboard and ticket lists show the information I need.",
-        "The knowledge base, documentation, or help content is useful when I need guidance.",
+        "The system gave error messages that clearly told me how to fix problems.",
+        "Whenever I made a mistake using the system, I could recover easily and quickly.",
+        "The information, such as online help, on-screen messages, and other documentation, provided with this system was clear.",
+        "It was easy to find the information I needed.",
+        "The information provided for the system was easy to understand.",
+        "The information was effective in helping me complete the tasks and scenarios.",
     ]),
     ("Interface Quality", [
-        "The interface layout is clean and organized.",
-        "Buttons, menus, icons, and forms are placed where I expect them to be.",
-        "Text is readable and the visual design is comfortable to use.",
-        "The system works well on the device I used for testing.",
-        "Overall, I am satisfied with this ICT ticketing system.",
+        "The organization of information on the system screens was clear.",
+        "The interface of this system was pleasant.",
+        "I liked using the interface of this system.",
+    ]),
+    ("Overall Satisfaction", [
+        "Overall, I am satisfied with this system.",
     ]),
 ]
 
@@ -429,7 +431,7 @@ def build_pssuq():
     doc = setup_document("PSSUQ User Questionnaire")
     add_title(
         doc,
-        "PSSUQ User Usability Questionnaire",
+        "Standard PSSUQ 16-Item User Questionnaire",
         "CHMSU Intelligent Service Request Monitoring and Analysis Platform",
     )
     add_note_box(
@@ -472,8 +474,8 @@ def build_pssuq():
         doc,
         [
             ("System Usefulness", "1-6", "", ""),
-            ("Information Quality", "7-11", "", ""),
-            ("Interface Quality", "12-15", "", ""),
+            ("Information Quality", "7-12", "", ""),
+            ("Interface Quality", "13-15", "", ""),
             ("Overall Satisfaction", "1-16", "", ""),
         ],
         "subscale",
