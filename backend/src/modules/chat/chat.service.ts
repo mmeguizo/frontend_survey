@@ -1,5 +1,5 @@
-import { llmClient, type LlmMessage } from "../../lib/llm-client";
-import { Prisma } from "@prisma/client";
+import { llmClient, type LlmMessage, type LlmStreamChunk } from "../../lib/llm-client";
+import { Prisma, NotificationType, Role } from "@prisma/client";
 import { config } from "../../config";
 import { logger } from "../../lib/logger";
 import { prisma } from "../../lib/prisma";
@@ -17,7 +17,9 @@ import { embeddingService } from "./embedding.service";
  * 5. If no answer found, AI can guide ticket creation
  */
 
-const CHAT_SYSTEM_PROMPT = `You are a friendly, expert AI support assistant for the CHMSU ICT Department help desk (Carlos Hilado Memorial State University).
+import { CHAT_PROMPT_VERSION } from "../ai/prompt-version";
+
+const CHAT_SYSTEM_PROMPT = `[Prompt v${CHAT_PROMPT_VERSION}] You are a friendly, expert AI support assistant for the CHMSU ICT Department help desk (Carlos Hilado Memorial State University).
 Your goal is to help users resolve ICT issues with accurate, personalized, and conversational troubleshooting guidance.
 
 TONE & STYLE (HUMAN-LIKE ALIGNMENT):
@@ -196,6 +198,48 @@ const OUT_OF_SCOPE_PATTERNS = [
 export class ChatService {
   isAvailable(): boolean {
     return llmClient.isPerplexityAvailable() || llmClient.isGeminiAvailable();
+  }
+
+  private lastAiAlertTime = 0;
+
+  private async alertOnConsecutiveFailure(): Promise<void> {
+    const failures = llmClient.consecutiveFailures;
+    if (failures < 3) return;
+
+    const now = Date.now();
+    if (now - this.lastAiAlertTime < 3600000) return;
+    this.lastAiAlertTime = now;
+
+    const error = llmClient.lastError;
+    try {
+      const admins = await prisma.user.findMany({
+        where: { role: Role.ADMIN },
+        select: { id: true },
+      });
+      if (admins.length === 0) return;
+
+      for (const admin of admins) {
+        await prisma.notification.create({
+          data: {
+            userId: admin.id,
+            type: NotificationType.STATUS_CHANGED,
+            title: "⚠️ AI Provider Failure Alert",
+            message: `AI provider${error ? ` "${error.provider}"` : ""} has failed ${failures} times consecutively${error ? `: ${error.message}` : ""}. Last failure at ${error?.timestamp ? new Date(error.timestamp).toLocaleString() : "unknown"}.`,
+            metadata: {
+              consecutiveFailures: failures,
+              lastProvider: error?.provider || null,
+              lastError: error?.message || null,
+              lastTimestamp: error?.timestamp || null,
+            },
+          },
+        });
+      }
+      logger.warn(
+        `[ChatService] AI failure alert sent to ${admins.length} admin(s) (${failures} consecutive failures)`,
+      );
+    } catch (err: any) {
+      logger.error(`[ChatService] Failed to send AI failure alert: ${err.message}`);
+    }
   }
 
   // ========================================
@@ -448,11 +492,17 @@ export class ChatService {
     }
 
     // 6. Call LLM with context + conversation history
+    const startTime = Date.now();
     const { reply, provider } = await this.callGemini(
       session.messages,
       userMessage,
       contextStr,
     );
+    const durationMs = Date.now() - startTime;
+
+    if (provider === "Offline") {
+      await this.alertOnConsecutiveFailure();
+    }
 
     // 7. Save assistant reply
     const metadata: any = {};
@@ -462,7 +512,10 @@ export class ChatService {
       metadata.ticketIds = ragContext.resolvedTickets.map((t: any) => t.id);
     if (ragContext.solutions.length > 0)
       metadata.solutionIds = ragContext.solutions.map((s: any) => s.id);
-    if (provider) metadata.provider = provider;
+    metadata.provider = provider || null;
+    metadata.durationMs = durationMs;
+    metadata.fallback = provider === "Offline";
+    metadata.promptVersion = CHAT_PROMPT_VERSION;
 
     const metadataStr =
       Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null;
@@ -476,6 +529,192 @@ export class ChatService {
     );
 
     return { reply, metadata: metadataStr || undefined, provider };
+  }
+
+  // ========================================
+  // STREAMING CHAT
+  // ========================================
+
+  /**
+   * Stream a chat message, yielding partial text chunks as they arrive from the LLM.
+   * Follows the same RAG flow as sendMessage() but yields chunks progressively.
+   * The complete reply is saved to the DB once streaming finishes.
+   */
+  async *streamChatMessage(
+    sessionId: number,
+    userId: number,
+    userMessage: string,
+  ): AsyncGenerator<{ chunk: string; done: boolean; provider?: string }> {
+    // 1. Verify session + get user info
+    const session = await prisma.chatSession.findUnique({
+      where: { id: sessionId },
+      include: {
+        messages: { orderBy: { createdAt: "asc" }, take: 20 },
+        user: { select: { name: true, role: true, email: true } },
+      },
+    });
+
+    if (!session || session.userId !== userId) {
+      throw new Error("Chat session not found");
+    }
+
+    // 2. Save user message
+    await prisma.chatMessage.create({
+      data: { sessionId, role: "USER", content: userMessage },
+    });
+
+    const userRole = session.user?.role || "USER";
+
+    // 3. Check for quick replies (help, out-of-scope) — these can return immediately
+    const helpResponse = this.checkHelpCommand(userMessage, userRole);
+    if (helpResponse) {
+      yield { chunk: helpResponse, done: true, provider: undefined };
+      await this.persistAssistantReply(sessionId, helpResponse, null, session.messages.length, userMessage);
+      return;
+    }
+
+    const outOfScopeResponse = this.checkOutOfScopeQuery(userMessage, userRole);
+    if (outOfScopeResponse) {
+      yield { chunk: outOfScopeResponse, done: true, provider: undefined };
+      await this.persistAssistantReply(sessionId, outOfScopeResponse, null, session.messages.length, userMessage);
+      return;
+    }
+
+    // 4. Ticket status query
+    const ticketContext = await this.checkTicketStatusQuery(userMessage, userId);
+    const isStaffOrAdmin = STAFF_ROLES.includes(userRole as any);
+    const analyticsRequest = await this.checkAnalyticsQuery(userMessage, userRole);
+    const reportRequest = this.checkReportRequest(userMessage, userRole);
+    const deletionPolicy = this.checkDeletionPolicyQuery(userMessage, userRole);
+
+    const ticketCreationIntentPatterns = [
+      /\b(request|open|unlock|extend|create|submit|emergency|help|can i|please)\b/i,
+      /\bcreate\s+(a|new)?\s*ticket\b/i,
+    ];
+    const hasTicketCreationIntent = ticketCreationIntentPatterns.some((p) => p.test(userMessage));
+
+    if (!isStaffOrAdmin && !ticketContext && !hasTicketCreationIntent && (analyticsRequest || reportRequest)) {
+      const denyReply =
+        "I'm sorry, but analytics and report generation are available only to ICT staff and administrators. " +
+        "I can still help with troubleshooting, knowledge base lookups, checking your ticket status, or creating a new support ticket.";
+      yield { chunk: denyReply, done: true, provider: undefined };
+      await this.persistAssistantReply(sessionId, denyReply, null, session.messages.length, userMessage);
+      return;
+    }
+
+    const analyticsContext = isStaffOrAdmin ? analyticsRequest : null;
+    const reportContext = isStaffOrAdmin ? reportRequest : null;
+    const slaContext = isStaffOrAdmin ? await this.getSLAContext(userMessage, userRole) : null;
+
+    // 5. RAG context retrieval (same as sendMessage)
+    const ragContext = await this.retrieveContext(userMessage);
+
+    // 6. Build context string
+    let contextStr = "";
+
+    if (session.user) {
+      contextStr += `\n--- CURRENT USER ---\nName: ${session.user.name}\nRole: ${session.user.role}\n`;
+    }
+    if (ticketContext) contextStr += "\n--- TICKET STATUS DATA ---\n" + ticketContext + "\n";
+    if (analyticsContext) contextStr += "\n--- ANALYTICS DATA ---\n" + analyticsContext + "\n";
+    if (deletionPolicy) contextStr += "\n--- SAFETY POLICY ---\n" + deletionPolicy + "\n";
+    if (reportContext) contextStr += "\n--- REPORT GENERATION ---\n" + reportContext + "\n";
+    if (slaContext) contextStr += "\n--- SLA WARNINGS ---\n" + slaContext + "\n";
+
+    if (!isStaffOrAdmin) {
+      contextStr +=
+        "\n--- ACCESS LEVEL ---\nThis user has a regular USER role. Do NOT offer analytics, statistics, reports, or any admin/staff features. Only help with troubleshooting, knowledge base lookups, checking their own ticket status, and creating new tickets.\n";
+    }
+
+    if (ragContext.kbArticles.length > 0) {
+      contextStr += "\n--- KNOWLEDGE BASE ARTICLES ---\n";
+      for (const article of ragContext.kbArticles) {
+        contextStr += `[Article ID: ${article.id}] Title: ${article.title}\nCategory: ${article.category}\nContent: ${article.content.substring(0, 1500)}\nLink format: [KB: ${article.title}](kb:${article.id})\n\n`;
+      }
+    }
+
+    if (ragContext.resolvedTickets.length > 0) {
+      contextStr += "\n--- RESOLVED TICKETS (similar issues) ---\n";
+      for (const ticket of ragContext.resolvedTickets) {
+        contextStr += `Issue: ${ticket.title}\nDescription: ${ticket.description?.substring(0, 300) || "N/A"}\nResolution: ${ticket.resolution || "Resolved"}\n`;
+        if (ticket.notes) contextStr += `Notes:\n${ticket.notes.substring(0, 1200)}\n`;
+        contextStr += "\n";
+      }
+    }
+
+    if (ragContext.solutions.length > 0) {
+      contextStr += "\n--- TROUBLESHOOTING SOLUTIONS ---\n";
+      for (const sol of ragContext.solutions) {
+        contextStr += `Problem: ${sol.problem}\nSolution: ${sol.solution.substring(0, 500)}\nRelevance: ${sol.score ? `${(sol.score * 100).toFixed(0)}%` : "keyword match"}\n\n`;
+      }
+    }
+
+    // 7. Stream LLM response
+    const messages: LlmMessage[] = [
+      { role: "system", content: CHAT_SYSTEM_PROMPT },
+      {
+        role: "assistant",
+        content: "Understood. I'm ready to help users with ICT support issues. I'll use the provided context data to give accurate answers and guide ticket creation when needed.",
+      },
+    ];
+
+    const recentHistory = session.messages.slice(-10);
+    for (const msg of recentHistory) {
+      messages.push({ role: msg.role === "USER" ? "user" : "assistant", content: msg.content });
+    }
+
+    let prompt = userMessage;
+    if (contextStr.trim()) {
+      prompt = `CONTEXT DATA (from our internal knowledge base and resolved tickets):\n${contextStr}\n\nUSER QUESTION: ${userMessage}`;
+    }
+    messages.push({ role: "user", content: prompt });
+
+    let fullReply = "";
+    let finalProvider: string | undefined;
+    const startTime = Date.now();
+
+    try {
+      const stream = llmClient.streamChatCompletion(messages, {
+        temperature: 0.4,
+        maxTokens: 4096,
+        topP: 0.9,
+      });
+
+      for await (const chunk of stream) {
+        // Skip empty finalization chunks
+        if (chunk.done && !chunk.text) continue;
+        fullReply += chunk.text;
+        finalProvider = chunk.provider;
+        yield { chunk: chunk.text, done: chunk.done, provider: chunk.provider };
+      }
+    } catch (err: any) {
+      logger.error(`[ChatService] Streaming LLM failed (${err.message}). Using fallback.`);
+      const fallbackText = this.fallbackResponse(userMessage, contextStr);
+      fullReply = fallbackText;
+      finalProvider = "Offline";
+      yield { chunk: fallbackText, done: true, provider: "Offline" };
+    }
+
+    if (finalProvider === "Offline") {
+      await this.alertOnConsecutiveFailure();
+    }
+
+    const durationMs = Date.now() - startTime;
+
+    // 8. Save complete assistant reply
+    const metadata: any = {};
+    if (ragContext.kbArticles.length > 0) metadata.kbArticleIds = ragContext.kbArticles.map((a: any) => a.id);
+    if (ragContext.resolvedTickets.length > 0) metadata.ticketIds = ragContext.resolvedTickets.map((t: any) => t.id);
+    if (ragContext.solutions.length > 0) metadata.solutionIds = ragContext.solutions.map((s: any) => s.id);
+    metadata.provider = finalProvider || null;
+    metadata.durationMs = durationMs;
+    metadata.fallback = finalProvider === "Offline";
+    metadata.promptVersion = CHAT_PROMPT_VERSION;
+
+    const metadataStr = Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null;
+    if (fullReply.trim()) {
+      await this.persistAssistantReply(sessionId, fullReply, metadataStr, session.messages.length, userMessage);
+    }
   }
 
   private async persistAssistantReply(
@@ -2235,6 +2474,159 @@ Tell the user which report type you detected based on their request, and offer t
       ) ||
       /\b(create\s+ticket|just\s+create|help\s+me\s+create)\b/i.test(message);
 
+    // --- Issue-specific fallback templates ---
+    const issueTemplates: Array<{ pattern: RegExp; response: string }> = [
+      {
+        pattern: /\b(password|forgot.*(login|pass)|account.*(lock|reset)|can't.*(log|sign))/i,
+        response: `I can help you with a password or account issue! Here are a few things you can try first:
+
+1. **Self-service password reset** — Visit the ICT portal at [Password Reset](kb:password-reset) and follow the steps.
+2. **Verify your identity** — Make sure your registered mobile number or email is accessible for the OTP.
+3. **MFA / Authenticator app** — If you're locked out of your authenticator app, contact the ICT help desk to have it reset.
+
+If you've already tried these steps and still can't access your account, I can raise a ticket for the ICT team:
+
+\`\`\`ticket-data
+{
+  "title": "Support Request: Password Reset / Account Help",
+  "description": "User requested account/password assistance via chat: '${message.replace(/"/g, '\\"')}'",
+  "type": "MIS",
+  "priority": "HIGH",
+  "category": "ACCOUNT",
+  "staffNote": "⚠️ Created via offline fallback — user may need MFA reset or account unlock."
+}
+\`\`\`
+
+Would you like to submit this ticket, or try the self-service options first?`,
+      },
+      {
+        pattern: /\b(printer|paper.?jam|can't print|not printing|print.?queue|toner|ink)/i,
+        response: `Let's troubleshoot your printer issue. Try these steps:
+
+1. **Check power and connections** — Make sure the printer is turned on and the USB/network cable is securely connected.
+2. **Check paper and ink/toner** — Open the printer and look for paper jams, low ink, or empty trays.
+3. **Clear the print queue** — Go to *Settings > Devices > Printers & Scanners*, select your printer, and click *Open print queue*. Cancel any stuck documents and try printing again.
+4. **Restart the printer** — Turn it off, wait 30 seconds, and turn it back on.
+
+If none of these steps resolve the problem, I can create a support ticket for a technician:
+
+\`\`\`ticket-data
+{
+  "title": "Support Request: Printer / Hardware Issue",
+  "description": "User reported printer issue via chat: '${message.replace(/"/g, '\\"')}'",
+  "type": "ITS",
+  "priority": "MEDIUM",
+  "category": "HARDWARE",
+  "staffNote": "⚠️ Created via offline fallback — basic troubleshooting steps were provided."
+}
+\`\`\`
+
+Would you like to submit the ticket, or try the steps above?`,
+      },
+      {
+        pattern: /\b(wi.?fi|wifi|internet|connect.*network|no.*connection|network.*down|can't browse)/i,
+        response: `Here are some steps to get you back online:
+
+1. **Toggle Wi-Fi** — Turn Wi-Fi off and on again on your device.
+2. **Restart your router** — Unplug the power, wait 30 seconds, and plug it back in. Wait 2 minutes for it to reboot.
+3. **Try a wired connection** — If possible, connect your device directly to the network with an Ethernet cable.
+4. **Check other devices** — If other devices work but yours doesn't, the issue is likely device-specific.
+
+If the problem persists, I can log a ticket for the network team:
+
+\`\`\`ticket-data
+{
+  "title": "Support Request: Wi-Fi / Network Issue",
+  "description": "User reported network connectivity issue via chat: '${message.replace(/"/g, '\\"')}'",
+  "type": "ITS",
+  "priority": "HIGH",
+  "category": "NETWORK",
+  "staffNote": "⚠️ Created via offline fallback — basic network troubleshooting was provided."
+}
+\`\`\`
+
+Need me to submit the ticket, or would you like to try the steps above first?`,
+      },
+      {
+        pattern: /\b(projector|av.?equip|presentation.*room|borrow.*projector|audio.?visual|screen.*conf(erence)?)/i,
+        response: `Here's how to arrange AV equipment for your presentation:
+
+1. **Check availability** — AV equipment (projectors, screens, speakers) can be booked through the ICT office.
+2. **What you need** — Let me know which room you're presenting in and what equipment you need (projector, laptop adapters, speakers, microphone).
+3. **Booking lead time** — Please request at least 24 hours in advance to ensure availability.
+4. **Pickup location** — Equipment is collected from the ICT Help Desk (Building A, Ground Floor).
+
+I can set up a ticket to book the equipment for you:
+
+\`\`\`ticket-data
+{
+  "title": "Support Request: AV Equipment Booking",
+  "description": "User requested AV equipment via chat: '${message.replace(/"/g, '\\"')}'",
+  "type": "ITS",
+  "priority": "MEDIUM",
+  "category": "GENERAL",
+  "staffNote": "⚠️ Created via offline fallback — please confirm room, date, and equipment needed."
+}
+\`\`\`
+
+Would you like me to submit this booking request?`,
+      },
+      {
+        pattern: /\b(install.*(software|program|app)|need.*(program|tool|app)|email.*(setup|config)|outlook|applicat(ion| software))/i,
+        response: `To request new software or set up an application:
+
+1. **Approval required** — Software installations require your supervisor's approval for licensing and compliance.
+2. **Request process** — Submit a ticket with the software name, version (if known), and why you need it.
+3. **Self-service options** — Check the ICT Software Center on your computer for pre-approved applications you can install directly.
+4. **Email setup** — For Outlook or email configuration, you'll need your full email address and server settings (provided after ticket approval).
+
+I can start the request process for you:
+
+\`\`\`ticket-data
+{
+  "title": "Support Request: Software / Application Request",
+  "description": "User requested software or application setup via chat: '${message.replace(/"/g, '\\"')}'",
+  "type": "ITS",
+  "priority": "MEDIUM",
+  "category": "SOFTWARE",
+  "staffNote": "⚠️ Created via offline fallback — supervisor approval may be required before installation."
+}
+\`\`\`
+
+Shall I submit this request?`,
+      },
+      {
+        pattern: /\b(computer.*(slow|freeze|crash)|laptop.*(turn|start|battery)|blue.?screen|device.*(issue|problem)|pc.*not)/i,
+        response: `Let's troubleshoot your computer issue:
+
+1. **Restart your computer** — A simple restart often resolves temporary glitches. Save your work and reboot.
+2. **Check for updates** — Go to *Settings > Update & Security > Windows Update* and install any pending updates.
+3. **Run in Safe Mode** — If the computer crashes on startup, try booting in Safe Mode (press F8 during boot) to diagnose the issue.
+4. **Check disk space** — Low disk space can cause slow performance. Free up space by deleting temporary files.
+
+If these steps don't help, I can create a ticket for our hardware team:
+
+\`\`\`ticket-data
+{
+  "title": "Support Request: Computer / Device Issue",
+  "description": "User reported computer issue via chat: '${message.replace(/"/g, '\\"')}'",
+  "type": "ITS",
+  "priority": "MEDIUM",
+  "category": "HARDWARE",
+  "staffNote": "⚠️ Created via offline fallback — basic troubleshooting steps were provided."
+}
+\`\`\`
+
+Would you like to submit a ticket for further assistance?`,
+      },
+    ];
+
+    for (const tmpl of issueTemplates) {
+      if (tmpl.pattern.test(message)) {
+        return tmpl.response;
+      }
+    }
+
     if (isTicketIntent) {
       // Intelligently guess details from context/message
       const msgLower = message.toLowerCase();
@@ -2443,6 +2835,147 @@ If you'd like to adjust or add anything, let me know!`;
     });
 
     return ticket;
+  }
+
+  // ========================================
+  // HEALTH METRICS
+  // ========================================
+
+  async getHealthMetrics(days: number) {
+    const now = new Date();
+    const fromDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+
+    const messages = await prisma.chatMessage.findMany({
+      where: {
+        role: "ASSISTANT",
+        createdAt: { gte: fromDate },
+        metadata: { not: null },
+      },
+      select: { metadata: true },
+    });
+
+    const providerMap = new Map<
+      string,
+      {
+        messageCount: number;
+        fallbackCount: number;
+        failureCount: number;
+        totalDurationMs: number;
+        durationCount: number;
+      }
+    >();
+
+    let totalFallbacks = 0;
+    let totalFailures = 0;
+    let totalDurationMs = 0;
+    let durationCount = 0;
+
+    for (const msg of messages) {
+      if (!msg.metadata) continue;
+      try {
+        const meta = JSON.parse(msg.metadata);
+        const provider = meta.provider || "unknown";
+        const isFallback = meta.fallback === true;
+        const durationMs = meta.durationMs;
+
+        let entry = providerMap.get(provider);
+        if (!entry) {
+          entry = { messageCount: 0, fallbackCount: 0, failureCount: 0, totalDurationMs: 0, durationCount: 0 };
+          providerMap.set(provider, entry);
+        }
+        entry.messageCount++;
+        if (isFallback) {
+          entry.fallbackCount++;
+          totalFallbacks++;
+        }
+        if (typeof durationMs === "number") {
+          entry.totalDurationMs += durationMs;
+          entry.durationCount++;
+          totalDurationMs += durationMs;
+          durationCount++;
+        }
+      } catch {
+        // Malformed metadata — skip
+      }
+    }
+
+    const providerUsage = Array.from(providerMap.entries())
+      .map(([provider, data]) => ({
+        provider,
+        messageCount: data.messageCount,
+        fallbackCount: data.fallbackCount,
+        failureCount: data.failureCount,
+        averageResponseTimeMs:
+          data.durationCount > 0
+            ? Math.round((data.totalDurationMs / data.durationCount) * 100) / 100
+            : null,
+      }))
+      .sort((a, b) => b.messageCount - a.messageCount);
+
+    return {
+      totalMessages: messages.length,
+      providerUsage,
+      totalFallbacks,
+      totalFailures,
+      averageResponseTimeMs:
+        durationCount > 0
+          ? Math.round((totalDurationMs / durationCount) * 100) / 100
+          : null,
+      fromDate: fromDate.toISOString(),
+      toDate: now.toISOString(),
+    };
+  }
+
+  async getPromptVersionStats(days: number) {
+    const now = new Date();
+    const fromDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+
+    const messages = await prisma.chatMessage.findMany({
+      where: {
+        role: "ASSISTANT",
+        createdAt: { gte: fromDate },
+        metadata: { not: null },
+      },
+      select: { metadata: true },
+    });
+
+    const versionMap = new Map<
+      string,
+      { messageCount: number; totalDurationMs: number; durationCount: number }
+    >();
+
+    for (const msg of messages) {
+      if (!msg.metadata) continue;
+      try {
+        const meta = JSON.parse(msg.metadata);
+        const version = meta.promptVersion || "unknown";
+        const durationMs = meta.durationMs;
+
+        let entry = versionMap.get(version);
+        if (!entry) {
+          entry = { messageCount: 0, totalDurationMs: 0, durationCount: 0 };
+          versionMap.set(version, entry);
+        }
+        entry.messageCount++;
+        if (typeof durationMs === "number") {
+          entry.totalDurationMs += durationMs;
+          entry.durationCount++;
+        }
+      } catch {
+        // Malformed metadata — skip
+      }
+    }
+
+    return Array.from(versionMap.entries())
+      .map(([promptVersion, data]) => ({
+        promptVersion,
+        messageCount: data.messageCount,
+        averageResponseTimeMs:
+          data.durationCount > 0
+            ? Math.round((data.totalDurationMs / data.durationCount) * 100) / 100
+            : null,
+      }))
+      .sort((a, b) => b.messageCount - a.messageCount);
   }
 }
 

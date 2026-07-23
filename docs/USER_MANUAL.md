@@ -3,10 +3,11 @@
 **Intelligent Service Request Monitoring and Analysis Platform**
 **Carlos Hilado Memorial State University — ICT Department**
 
-> **Version**: 2.7.1 | **Last Updated**: May 26, 2026
+> **Version**: 2.8.0 | **Last Updated**: July 22, 2026
 
-> **Current Release Highlights**: Smart routing by expertise, AI Quick Draft & Form Pre-fill,
-> floating draggable AI chat, admin skills management, and manual ITS ticket detail fixes.
+> **Current Release Highlights**: AI chat streaming with real-time responses, provider fallback
+> chain (Gemini → Perplexity → Hugging Face → Offline), AI Chat Health dashboard for admins,
+> department-aware quick prompts, and prompt versioning infrastructure.
 
 ---
 
@@ -458,6 +459,7 @@ When the work is complete:
 - **User Management**: View, create, edit, deactivate, and conditionally delete user accounts
 - **Role Assignment**: Change user roles (USER, SECRETARY, DIRECTOR, etc.)
 - **Skills / Expertise Management**: Assign staff skills so smart routing can match the right specialist
+- **AI Chat Health Card**: View key AI chat metrics — total messages, fallback count, failure rate, and average response time across all providers. A per-provider breakdown table shows performance details. An orange alert banner appears if the failure rate exceeds 50%.
 - **System Overview**: See all tickets regardless of department
 - **Acknowledge Schedules**: Process PENDING_ACKNOWLEDGMENT tickets
 - **Documentation Center**: Review the in-app changelog and user manual at `/docs`
@@ -623,7 +625,7 @@ Notifications are delivered in **real-time** via WebSocket. If WebSocket is unav
 
 ## 15. AI-Powered Smart Suggestions
 
-The system uses **Google Gemini 2.0 Flash** to provide intelligent analysis of service requests.
+The system uses **Google Gemini 2.0 Flash** (with Perplexity and Hugging Face fallbacks) to provide intelligent analysis of service requests.
 
 ### 15.1 How to Use
 
@@ -661,7 +663,7 @@ After AI analysis, the system also shows:
 
 ## 16. AI Chat Assistant & Analytics
 
-The AI Chat Assistant is an intelligent widget available to all logged-in users. It provides instant help, looks up past solutions, answers questions about the ticketing system, and delivers analytics and statistics on demand.
+The AI Chat Assistant is an intelligent widget available to all logged-in users. It provides instant help, looks up past solutions, answers questions about the ticketing system, and delivers analytics and statistics on demand. Responses are **streamed in real-time** as the AI generates them, with automatic fallback through multiple AI providers for resilience.
 
 ### 16.1 Opening the Chat Widget
 
@@ -673,9 +675,22 @@ The AI Chat Assistant is an intelligent widget available to all logged-in users.
 
 - When the chat opens, a new session is created automatically
 - Type your question or request in the message input at the bottom and press **Enter** or click **Send**
-- The AI responds in real time with formatted, context-aware answers
+- The AI responds in real time with formatted, context-aware answers that stream in as they are generated
+- The active AI provider is shown next to each assistant reply (Gemini / Perplexity / Hugging Face / Offline)
+- If the primary provider is slow, a "Switching to backup AI model…" message appears after ~8 seconds
+- If stream is interrupted, a "Reconnecting…" indicator appears and the system falls back to a full-response mutation
 
-### 16.3 What You Can Ask
+### 16.3 Quick Prompts
+
+When you open the chat, you'll see **quick prompt buttons** tailored to your role:
+
+- **ITS staff** (ITS_HEAD, TECHNICAL): "Overdue ITS Tickets", "Maintenance Queue"
+- **MIS staff** (MIS_HEAD, DEVELOPER): "Pending MIS Requests", "Account Requests"
+- **Admins**: Both ITS and MIS quick prompts
+
+Click any quick prompt to instantly send that query to the AI.
+
+### 16.4 What You Can Ask
 
 #### Troubleshooting & Solutions
 
@@ -743,7 +758,7 @@ Staff roles receive **aggregate user counts only** in chat. Person-level user-di
 - _"How do I submit a ticket?"_
 - _"What are the different ticket statuses?"_
 
-### 16.4 How the Solutions Database Works
+### 16.5 How the Solutions Database Works
 
 Every time a staff member **resolves** a ticket (marks it as RESOLVED or CLOSED with a resolution), the system automatically:
 
@@ -754,7 +769,7 @@ Every time a staff member **resolves** a ticket (marks it as RESOLVED or CLOSED 
 
 This means the AI gets smarter over time — every resolved ticket adds to the knowledge base that powers future answers.
 
-### 16.5 Creating a Ticket from Chat
+### 16.6 Creating a Ticket from Chat
 
 If the AI can't resolve your issue, you can convert the conversation into a ticket:
 
@@ -762,13 +777,13 @@ If the AI can't resolve your issue, you can convert the conversation into a tick
 2. You'll be prompted to fill in ticket details (title, description, type, priority)
 3. The conversation context is preserved in the new ticket
 
-### 16.6 Chat History
+### 16.7 Chat History
 
 - Your chat sessions are saved and accessible when you reopen the chat
 - Click the **session list** icon to view past conversations
 - Delete sessions you no longer need
 
-### 16.7 Excel Report Generation (Admin/Staff Only)
+### 16.8 Excel Report Generation (Admin/Staff Only)
 
 Admins and staff roles (`ADMIN`, `DEVELOPER`, `TECHNICAL`, `MIS_HEAD`, `ITS_HEAD`, `DIRECTOR`, `SECRETARY`) can ask the AI to generate downloadable Excel reports.
 
@@ -794,7 +809,7 @@ Admins and staff roles (`ADMIN`, `DEVELOPER`, `TECHNICAL`, `MIS_HEAD`, `ITS_HEAD
 
 **Note:** Regular users (USER role) cannot generate reports. If a regular user asks for a report, the AI will explain that this feature requires staff or admin privileges.
 
-### 16.8 Tips for Best Results
+### 16.9 Tips for Best Results
 
 - **Be specific**: "Email won't load in Chrome on Windows" gets better results than "email broken"
 - **Include error messages**: Copy-paste any error text for more accurate solutions

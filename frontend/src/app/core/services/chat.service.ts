@@ -92,6 +92,17 @@ const DELETE_CHAT_SESSION = gql`
   }
 `;
 
+const CHAT_REPLY_STREAM = gql`
+  subscription ChatReplyStream($sessionId: Int!, $message: String!) {
+    chatReplyStream(sessionId: $sessionId, message: $message) {
+      sessionId
+      chunk
+      done
+      provider
+    }
+  }
+`;
+
 // ========================================
 // Interfaces
 // ========================================
@@ -130,6 +141,13 @@ export interface TicketFromChat {
   status: string;
   type: string;
   priority: string;
+}
+
+export interface ChatReplyChunk {
+  sessionId: number;
+  chunk: string;
+  done: boolean;
+  provider: string | null;
 }
 
 // ========================================
@@ -191,6 +209,20 @@ export class ChatService {
         map((r) => {
           if (!r.data?.sendChatMessage) throw new Error('Failed to send message');
           return r.data.sendChatMessage;
+        }),
+      );
+  }
+
+  streamMessage(sessionId: number, message: string): Observable<ChatReplyChunk> {
+    return this.apollo
+      .subscribe<{ chatReplyStream: ChatReplyChunk }>({
+        query: CHAT_REPLY_STREAM,
+        variables: { sessionId, message },
+      })
+      .pipe(
+        map((r) => {
+          if (!r.data?.chatReplyStream) throw new Error('No stream data');
+          return r.data.chatReplyStream;
         }),
       );
   }

@@ -1,0 +1,2 @@
+export const CHAT_PROMPT_VERSION = "1.0.0";
+export const TICKET_ANALYSIS_PROMPT_VERSION = "1.0.0";

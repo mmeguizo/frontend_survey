@@ -1,6 +1,7 @@
 import { llmClient } from "../../lib/llm-client";
 import { config } from "../../config";
 import { logger } from "../../lib/logger";
+import { TICKET_ANALYSIS_PROMPT_VERSION } from "./prompt-version";
 
 /** Structured output from the AI ticket analysis */
 export interface TicketAnalysis {
@@ -11,6 +12,7 @@ export interface TicketAnalysis {
   possibleRootCause: string;
   suggestedSolutions: string[];
   keywords: string[];
+  promptVersion: string;
 }
 
 /** Structured output from the AI natural language ticket parsing */
@@ -34,59 +36,43 @@ export interface ParsedTicketResult {
   softwareInstall?: boolean | null;
 }
 
-const NLP_SYSTEM_PROMPT = `You are an AI assistant integrated into an ICT Support Ticketing System.
-Your task is to analyze a natural language support request and extract structured output to fully pre-populate a support ticket form.
+const NLP_SYSTEM_PROMPT = `[Prompt v${TICKET_ANALYSIS_PROMPT_VERSION}] You are an ICT support ticket parser. Analyze user input and extract structured ticket data. Output valid JSON only.
 
-Analyze the user's input and classify it accurately:
+Department: ITS=hardware/network/printer/equipment; MIS=accounts/website/software/database/apps.
 
-1. DEPARTMENT SELECTION:
-- Classify as ITS (Information Technology Services) if the issue involves hardware repair, maintenance of computers, printers, network connection, Wifi, physical cables, borrowing projectors/laptops or other equipment.
-- Classify as MIS (Management Information System) if the issue involves portal accounts, university website edits, databases, local custom software bugs, request for custom web portals, or administrative software.
+Category: e.g. Website, Software, Database, Hardware, Network, Printer, Account, Borrow, Wifi, Security.
 
-2. CATEGORY:
-Generate a simplified category representing the request (e.g. Website, Software, Database, Hardware, Network, Printer, Account, Borrow Request, Wifi, Security, etc.)
+Details: Rewrite description professionally.
 
-3. DETAILS & CLEANING:
-Write a clean, descriptive "details" field that rewrites the original issue description into a neat, technical, professional description.
+Fields:
+- mrn: extract MRN-XXXXX or null
+- maintenanceDesktopLaptop: true if computer/laptop repair
+- maintenanceInternetNetwork: true if wifi/internet/network
+- maintenancePrinter: true if printer/toner
+- borrowRequest: true if borrowing equipment
+- borrowDetails: {purpose, duration, venueRoom, borrowedItems} or null
+- websiteNewRequest: true if new website request
+- websiteUpdate: true if website content change
+- softwareNewRequest: true if new custom software
+- softwareUpdate: true if bug fix/adjustment
+- softwareInstall: true if install software/driver
 
-4. SPECIFIC FIELDS:
-- mrn: If the user mentions any Material Receipt Number, asset tag, or receipt code like "MRN-12345" or "MRN-3312", extract it exactly.
-- Desktop/Laptop repair/checkup (for ITS Form): Set maintenanceDesktopLaptop to true if it involves computer, laptop, or desktop issue.
-- Internet/Network (for ITS Form): Set maintenanceInternetNetwork to true if it involves bad wifi, no internet, ethernet offline.
-- Printer checkup (for ITS Form): Set maintenancePrinter to true if it involves printer jam, toner repair, printer setup.
-- Borrow Request (for ITS Form): Set borrowRequest to true if they are borrowing equipment (like projectors, speakers, etc.). Put details in borrowDetails (e.g. "Purpose: Lecture\\nDuration: 2 hours\\nVenue: Room 101\\nBorrowed Items: Projector").
-- Website New Request (for MIS Form): Set websiteNewRequest to true if it is a request for a new website.
-- Website Update (for MIS Form): Set websiteUpdate to true if they want to update/make content changes on an existing website/page.
-- Software New Request (for MIS Form): Set softwareNewRequest to true if they ask to develop a new web application or custom local software system.
-- Software Update (for MIS Form): Set softwareUpdate to true if they are reporting bugs or asking for updates/adjustments to existing custom software.
-- Software Install (for MIS Form): Set softwareInstall to true if they are asking to install utility software, database software, or drivers on their system.
+Priority: CRITICAL=server down/multi-office; HIGH=user blocked; MEDIUM=workaround exists; LOW=minor.
 
-5. PRIORITY CLASSIFICATION:
-Assign Priority: LOW, MEDIUM, HIGH, or CRITICAL based on:
-- CRITICAL = Server offline, multiple offices blocked, severe security breach.
-- HIGH = Single staff cannot do vital workflow (e.g., computer cannot boot, primary school printer offline).
-- MEDIUM = Issue is present but work can continue.
-- LOW = Suggestion, informational request, or minor aesthetic edit.
-
-Return the result ONLY in JSON format utilizing this exact structure:
+Output format:
 {
-  "department": "MIS" or "ITS",
-  "title": "Clean 3-7 words title for the ticket",
-  "category": "Clean brief category",
-  "priority": "LOW", "MEDIUM", "HIGH" or "CRITICAL",
-  "details": "Professional cleaned up description",
-  "mrn": "extracted MRN or null",
+  "department": "MIS|ITS",
+  "title": "3-7 word title",
+  "category": "brief category",
+  "priority": "LOW|MEDIUM|HIGH|CRITICAL",
+  "details": "professional description",
+  "mrn": "extracted or null",
   "maintenanceDesktopLaptop": true/false,
   "maintenanceInternetNetwork": true/false,
   "maintenancePrinter": true/false,
-  "maintenanceDetails": "Specific details for repair or null",
+  "maintenanceDetails": "details or null",
   "borrowRequest": true/false,
-  "borrowDetails": {
-    "purpose": "..." or null,
-    "duration": "..." or null,
-    "venueRoom": "..." or null,
-    "borrowedItems": "..." or null
-  },
+  "borrowDetails": {"purpose":"...","duration":"...","venueRoom":"...","borrowedItems":"..."} or null,
   "websiteNewRequest": true/false,
   "websiteUpdate": true/false,
   "softwareNewRequest": true/false,
@@ -94,50 +80,17 @@ Return the result ONLY in JSON format utilizing this exact structure:
   "softwareInstall": true/false
 }`;
 
-const SYSTEM_PROMPT = `You are an AI assistant integrated into an ICT Support Ticketing System.
-Your task is to analyze support tickets submitted by users in a university or office environment and produce structured outputs that help ICT staff respond efficiently.
+const SYSTEM_PROMPT = `[Prompt v${TICKET_ANALYSIS_PROMPT_VERSION}] You are an ICT support ticket analyst. Analyze tickets and return structured output. Output valid JSON only.
 
-You must perform the following tasks:
+1. Clean & rewrite: Professional description preserving original meaning.
+2. Summarize: 1-2 sentence summary.
+3. Classify category: Network, Hardware, Software, Account Access, Printer, Security, or Other.
+4. Assign priority: CRITICAL=many users/servers affected; HIGH=user blocked; MEDIUM=workaround exists; LOW=minor.
+5. Suggest 3-5 troubleshooting steps.
+6. Identify possible root cause (1-2 sentences).
+7. Generate 5 search keywords.
 
-1. CLEAN AND REWRITE THE TICKET
-Rewrite the ticket into a clear and professional problem description while keeping the original meaning.
-
-2. SUMMARIZE THE ISSUE
-Provide a short 1–2 sentence summary of the problem.
-
-3. CLASSIFY THE CATEGORY
-Classify the ticket into ONE of these categories:
-- Network
-- Hardware
-- Software
-- Account Access
-- Printer
-- Security
-- Other
-
-4. DETERMINE PRIORITY LEVEL
-Assign a priority level:
-- LOW
-- MEDIUM
-- HIGH
-- CRITICAL
-
-Use the following logic:
-CRITICAL = affects many users, servers, or core systems
-HIGH = prevents a user from working
-MEDIUM = issue but work can continue
-LOW = minor inconvenience
-
-5. SUGGEST POSSIBLE SOLUTIONS
-Provide 3–5 troubleshooting steps an ICT technician could try.
-
-6. DETECT POSSIBLE ROOT CAUSE
-Give a short explanation of the likely technical cause.
-
-7. GENERATE HELPFUL KEYWORDS
-Generate 5 keywords that can help search for similar issues later.
-
-Return the result ONLY in JSON format using this structure:
+Output format:
 {
   "clean_ticket": "",
   "summary": "",
@@ -148,11 +101,7 @@ Return the result ONLY in JSON format using this structure:
   "keywords": ["", "", ""]
 }
 
-Important rules:
-- Do not invent information not present in the ticket.
-- Focus on common ICT troubleshooting knowledge.
-- Be concise and technical.
-- Output valid JSON only.`;
+Rules: Do not invent info. Use common ICT knowledge. Be concise and technical.`;
 
 export class GeminiService {
   /** Check if any LLM provider is available */
@@ -449,6 +398,7 @@ Description: ${description}`,
         ? parsed.suggested_solutions
         : [],
       keywords: Array.isArray(parsed.keywords) ? parsed.keywords : [],
+      promptVersion: TICKET_ANALYSIS_PROMPT_VERSION,
     };
   }
 

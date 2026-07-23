@@ -17,6 +17,54 @@
       <div class="doc-content">
         <div class="version-header">
           <nz-tag nzColor="green">Latest</nz-tag>
+          <h3>Version 2.8.0 <small>— July 22, 2026</small></h3>
+        </div>
+        <h4>Added — AI Chat Streaming, Health Dashboard &amp; Provider Fallback</h4>
+        <ul>
+          <li>
+            <strong>AI chat streaming (GraphQL Subscriptions)</strong> — Real-time response
+            streaming via <code>chatReplyStream</code> subscription. Supports Gemini native
+            streaming, Perplexity SSE fallback, and Hugging Face simulated chunk streaming.
+            Responses appear incrementally with 80ms debounced markdown rendering.
+          </li>
+          <li>
+            <strong>Provider fallback resilience</strong> — Chat falls back through
+            Gemini &rarr; Perplexity &rarr; Hugging Face &rarr; offline curated templates with
+            configurable per-provider timeout. Each reply shows which provider handled it.
+          </li>
+          <li>
+            <strong>6 offline fallback templates</strong> — Issue-specific templates for
+            Password Reset, Printer Issue, Wi-Fi/Network, Projector/AV Booking, Software
+            Install, and Computer Issue, each with a <code>ticket-data</code> block for escalation.
+          </li>
+          <li>
+            <strong>AI Chat Health Dashboard (Admin)</strong> — New admin-only analytics card
+            showing total messages, fallback count, failure rate, average response time, and
+            per-provider breakdown table. Orange alert banner when failure rate exceeds 50%.
+          </li>
+          <li>
+            <strong>Prompt versioning infrastructure</strong> — Central prompt version constants,
+            <code>promptVersion</code> stored on every AI message, admin query for version
+            adoption stats.
+          </li>
+          <li>
+            <strong>Provider failure alerting</strong> — Consecutive failure counter triggers
+            admin in-app notifications at 3 consecutive failures (1-hour throttle).
+          </li>
+          <li>
+            <strong>Department-aware quick prompts</strong> — Chat quick prompts adapt to user
+            role: ITS staff see "Overdue ITS Tickets" + "Maintenance Queue"; MIS staff see
+            "Pending MIS Requests" + "Account Requests".
+          </li>
+          <li>
+            <strong>Optimized AI prompts</strong> — <code>SYSTEM_PROMPT</code> reduced ~62%
+            and <code>NLP_SYSTEM_PROMPT</code> reduced ~35% for faster Gemini responses.
+          </li>
+        </ul>
+
+        <nz-divider></nz-divider>
+
+        <div class="version-header">
           <h3>Version 2.7.1 <small>— May 26, 2026</small></h3>
         </div>
         <h4>Fixed — Ticket Reliability, Chat UX &amp; Documentation Sync</h4>

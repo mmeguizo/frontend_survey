@@ -1,7 +1,7 @@
 # ICT Ticket System - Backend API Documentation
 
-**Version**: 2.4.0  
-**Last Updated**: July 15, 2025  
+**Version**: 2.5.0  
+**Last Updated**: July 22, 2026  
 **Base URL**: `http://localhost:4000/graphql`
 
 ---
@@ -45,8 +45,11 @@ The ICT Ticket System Backend provides a GraphQL API for managing service reques
 ✅ File attachment support  
 ✅ Role-based access control  
 ✅ AI Chat Assistant with RAG (vector + full-text search)  
+✅ AI Chat streaming via GraphQL Subscriptions  
+✅ Provider fallback chain (Gemini → Perplexity → Hugging Face → Offline)  
 ✅ Auto-saved Solutions Database from resolved tickets  
 ✅ Read-only analytics queries via AI Chat  
+✅ AI Chat Health Metrics dashboard (admin-only)  
 ✅ Excel report generation (downloadable via REST endpoint)  
 ✅ AI-triggered report downloads with role-based access
 
@@ -719,6 +722,134 @@ query {
 
 ### AI Chat API
 
+#### Chat Reply Stream (Subscription)
+
+Subscribe to receive real-time streaming responses from the AI.
+
+```graphql
+subscription {
+  chatReplyStream(sessionId: Int!, message: String!) {
+    content     # Partial chunk of the AI response
+    done        # true when the response is complete
+    session {
+      id
+      title
+    }
+  }
+}
+```
+
+| Field       | Type   | Required | Description                           |
+| ----------- | ------ | -------- | ------------------------------------- |
+| `sessionId` | Int    | ✅       | ID of the chat session                |
+| `message`   | String | ✅       | User's question or request            |
+
+**Behavior**:
+
+- The AI response is split into **chunks** streamed one at a time via pub/sub
+- Each chunk has `content` (partial text) and `done` (boolean — true on final chunk)
+- The full message is persisted to the database when `done` is true
+- Supports Gemini native streaming, Perplexity SSE streaming, and Hugging Face simulated streaming
+- The `provider` field returned indicates which AI provider handled the request
+- If streaming fails mid-response, the frontend shows "Reconnecting…" and falls back to the `sendChatMessage` mutation
+
+**Access**: Session owner only
+
+---
+
+#### Prompt Version Stats Query (Admin Only)
+
+Get statistics on which prompt versions are being used in chat.
+
+```graphql
+query {
+  chatPromptVersionStats(days: Int!) {
+    promptVersion
+    count
+    lastUsed
+  }
+}
+```
+
+| Field | Type | Required | Description                                     |
+| ----- | ---- | -------- | ----------------------------------------------- |
+| `days`| Int  | ✅       | Number of days to look back (e.g., 7, 30)       |
+
+**Access**: ADMIN role only
+
+**Example Response**:
+```json
+[
+  { "promptVersion": "1.0", "count": 42, "lastUsed": "2026-07-22T10:00:00Z" },
+  { "promptVersion": "1.1", "count": 15, "lastUsed": "2026-07-20T08:30:00Z" }
+]
+```
+
+---
+
+#### Chat Health Metrics Query (Admin Only)
+
+Get AI chat performance and reliability metrics.
+
+```graphql
+query {
+  chatHealthMetrics(days: Int!) {
+    totalMessages
+    totalFallbacks
+    totalFailures
+    avgResponseTimeMs
+    providerUsage {
+      provider
+      messageCount
+      fallbackCount
+      failureCount
+      avgDurationMs
+    }
+  }
+}
+```
+
+| Field | Type | Required | Description                                     |
+| ----- | ---- | -------- | ----------------------------------------------- |
+| `days`| Int  | ✅       | Number of days to look back (e.g., 7, 30)       |
+
+**Access**: ADMIN role only
+
+**Example Response**:
+```json
+{
+  "totalMessages": 527,
+  "totalFallbacks": 18,
+  "totalFailures": 3,
+  "avgResponseTimeMs": 4230,
+  "providerUsage": [
+    {
+      "provider": "gemini",
+      "messageCount": 480,
+      "fallbackCount": 0,
+      "failureCount": 1,
+      "avgDurationMs": 3890
+    },
+    {
+      "provider": "perplexity",
+      "messageCount": 35,
+      "fallbackCount": 35,
+      "failureCount": 1,
+      "avgDurationMs": 6320
+    },
+    {
+      "provider": "huggingface",
+      "messageCount": 12,
+      "fallbackCount": 12,
+      "failureCount": 1,
+      "avgDurationMs": 12100
+    }
+  ]
+}
+```
+
+---
+
 #### Chat Sessions Query
 
 Retrieve all chat sessions for the authenticated user.
@@ -842,7 +973,7 @@ mutation {
 - Person-level user directory answers are **ADMIN only**; other staff roles receive aggregate user summaries only
 - If the question is about deletion policy, the AI explains the safeguard rules but does **not** execute destructive actions
 - Questions about notifications, chat history, attachments, ticket counters, and migration/internal tables return an explicit unsupported-data response
-- Returns `reply` (AI response) and `metadata` (JSON string with `solutionIds`, `kbArticleIds`, etc.)
+- Returns `reply` (AI response), `provider` (string: "gemini", "perplexity", "huggingface", or "offline"), and `metadata` (JSON string with `solutionIds`, `kbArticleIds`, etc.)
 
 **Analytics Questions Detected**:
 
@@ -1580,6 +1711,18 @@ query DashboardData {
 ---
 
 ## Changelog
+
+### Version 2.5.0 (July 22, 2026)
+
+✅ **AI Chat Streaming**: New `chatReplyStream` GraphQL subscription for real-time streaming responses. Supports Gemini native streaming, Perplexity SSE, and Hugging Face simulated streaming.  
+✅ **Provider Fallback Chain**: AI chat falls back Gemini → Perplexity → Hugging Face → Offline curated templates. Configurable timeout per provider (`AI_REQUEST_TIMEOUT_MS`, default 45s).  
+✅ **6 Offline Fallback Templates**: Issue-specific templates for Password Reset, Printer Issue, Wi-Fi/Network, Projector/AV Booking, Software Install, Computer Issue — each with a `ticket-data` block for escalation.  
+✅ **Chat Health Dashboard**: New `chatHealthMetrics(days)` query with `ChatHealthMetrics` and `ProviderUsageEntry` types — total messages, fallbacks, failures, avg response time, and per-provider breakdown. Admin-only.  
+✅ **Prompt Version Tracking**: New `chatPromptVersionStats(days)` query. `promptVersion` constant stored on every AI message. `promptVersion` field on `TicketAIAnalysis` GraphQL type.  
+✅ **Provider Event Logging**: `provider`, `durationMs`, and `fallback` metadata on every AI assistant message for per-provider performance tracking.  
+✅ **Failure Alerting**: Consecutive failure counter + admin notifications at 3 consecutive failures (1-hour throttle). Admin page alert banner when failure rate > 50%.  
+✅ **Department-Aware Quick Prompts**: Chat quick prompts adapt to user role — ITS staff see ITS-related prompts, MIS staff see MIS-related prompts.  
+✅ **Optimized AI Prompts**: `SYSTEM_PROMPT` reduced 62%, `NLP_SYSTEM_PROMPT` reduced 35% for faster responses.
 
 ### Version 2.4.0 (July 15, 2025)
 

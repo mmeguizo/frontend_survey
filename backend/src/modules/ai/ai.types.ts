@@ -12,6 +12,7 @@ export const aiTypeDefs = gql`
     possibleRootCause: String!
     suggestedSolutions: [String!]!
     keywords: [String!]!
+    promptVersion: String
   }
 
   """

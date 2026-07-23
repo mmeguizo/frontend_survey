@@ -1,4 +1,20 @@
 <div class="admin-page">
+  @if (showHealthAlert() && healthMetrics(); as m) {
+    <div class="health-alert-banner">
+      <div class="health-alert-content">
+        <nz-icon nzType="warning" nzTheme="fill" style="color: #fa8c16; font-size: 18px;"></nz-icon>
+        <span>
+          <strong>AI Health Alert:</strong>
+          High failure rate ({{ m.totalFailures }}/{{ m.totalMessages }}{{ m.averageResponseTimeMs !== null ? ', avg ' + (m.averageResponseTimeMs | number:'1.0-0') + 'ms response' : '' }}).
+          <a href="#" (click)="$event.preventDefault(); scrollToHealthCard()">View details</a>
+        </span>
+      </div>
+      <button class="health-alert-close" (click)="dismissHealthAlert()" aria-label="Dismiss">
+        <nz-icon nzType="close" nzTheme="outline"></nz-icon>
+      </button>
+    </div>
+  }
+
   <div class="page-header">
     <h1><nz-icon nzType="team" nzTheme="outline"></nz-icon> User Management</h1>
     <button nz-button nzType="primary" (click)="openCreateModal()">
@@ -21,6 +37,78 @@
         (ngModelChange)="onSearchChange($event)"
       />
     </nz-input-group>
+  </nz-card>
+
+  <!-- AI Chat Health -->
+  <nz-card
+    nzTitle="AI Chat Health (Last 7 Days)"
+    class="health-card"
+    [nzLoading]="healthLoading()"
+  >
+    @if (healthMetrics(); as m) {
+      <div class="health-grid">
+        <div class="health-stat">
+          <span class="health-value">{{ m.totalMessages }}</span>
+          <span class="health-label">Total Messages</span>
+        </div>
+        <div class="health-stat">
+          <span class="health-value" [class.warning]="m.totalFallbacks > 0">
+            {{ m.totalFallbacks }}
+          </span>
+          <span class="health-label">Fallbacks</span>
+        </div>
+        <div class="health-stat">
+          <span class="health-value" [class.danger]="m.totalFailures > 0">
+            {{ m.totalFailures }}
+          </span>
+          <span class="health-label">Failures</span>
+        </div>
+        <div class="health-stat">
+          <span class="health-value">{{ m.averageResponseTimeMs !== null ? (m.averageResponseTimeMs | number:'1.0-0') + 'ms' : '—' }}</span>
+          <span class="health-label">Avg Response Time</span>
+        </div>
+      </div>
+      @if (m.providerUsage.length > 0) {
+        <nz-table
+          #providerTable
+          [nzData]="m.providerUsage"
+          nzSize="small"
+          [nzShowPagination]="false"
+          nzFrontPagination
+          class="provider-table"
+        >
+          <thead>
+            <tr>
+              <th>Provider</th>
+              <th class="num-col">Messages</th>
+              <th class="num-col">Fallbacks</th>
+              <th class="num-col">Failures</th>
+              <th class="num-col">Avg Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of providerTable.data; track entry.provider) {
+              <tr>
+                <td>
+                  <nz-tag
+                    [nzColor]="entry.provider === 'Offline' ? 'default' : entry.provider === 'Gemini' ? 'blue' : entry.provider === 'Perplexity' ? 'green' : 'orange'"
+                  >
+                    <nz-icon nzType="robot" nzTheme="outline"></nz-icon>
+                    {{ entry.provider }}
+                  </nz-tag>
+                </td>
+                <td class="num-col">{{ entry.messageCount }}</td>
+                <td class="num-col" [class.warning]="entry.fallbackCount > 0">{{ entry.fallbackCount }}</td>
+                <td class="num-col" [class.danger]="entry.failureCount > 0">{{ entry.failureCount }}</td>
+                <td class="num-col">{{ entry.averageResponseTimeMs !== null ? (entry.averageResponseTimeMs | number:'1.0-0') + 'ms' : '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </nz-table>
+      } @else {
+        <p class="empty-health">No AI chat data yet for the last 7 days.</p>
+      }
+    }
   </nz-card>
 
   <!-- Users Table -->

@@ -1,5 +1,6 @@
 import { chatService } from "./chat.service";
 import { prisma } from "../../lib/prisma";
+import { pubsub, EVENTS } from "../../lib/pubsub";
 import { embeddingService } from "./embedding.service";
 import { solutionService } from "../solutions/solution.service";
 
@@ -21,6 +22,22 @@ export const chatResolvers = {
         throw new Error("Only admins can view all chat sessions");
       }
       return chatService.getAllSessions();
+    },
+
+    chatHealthMetrics: async (_: any, args: { days: number }, ctx: any) => {
+      if (!ctx.currentUser) throw new Error("Authentication required");
+      if (ctx.currentUser.role !== "ADMIN") {
+        throw new Error("Only admins can view chat health metrics");
+      }
+      return chatService.getHealthMetrics(args.days);
+    },
+
+    chatPromptVersionStats: async (_: any, args: { days: number }, ctx: any) => {
+      if (!ctx.currentUser) throw new Error("Authentication required");
+      if (ctx.currentUser.role !== "ADMIN") {
+        throw new Error("Only admins can view prompt version stats");
+      }
+      return chatService.getPromptVersionStats(args.days);
     },
   },
 
@@ -120,6 +137,35 @@ export const chatResolvers = {
         embeddingsGenerated: processed,
         embeddingsFailed: failed,
       };
+    },
+  },
+
+  Subscription: {
+    chatReplyStream: {
+      subscribe: async function* (
+        _: any,
+        args: { sessionId: number; message: string },
+        ctx: any,
+      ) {
+        if (!ctx.currentUser) throw new Error("Authentication required");
+
+        const stream = chatService.streamChatMessage(
+          args.sessionId,
+          ctx.currentUser.id,
+          args.message,
+        );
+
+        for await (const chunk of stream) {
+          yield {
+            chatReplyStream: {
+              sessionId: args.sessionId,
+              chunk: chunk.chunk,
+              done: chunk.done,
+              provider: chunk.provider || null,
+            },
+          };
+        }
+      },
     },
   },
 

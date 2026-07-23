@@ -52,6 +52,37 @@ export const chatTypeDefs = gql`
     staffNote: String
   }
 
+  type ChatReplyChunk {
+    sessionId: Int!
+    chunk: String!
+    done: Boolean!
+    provider: String
+  }
+
+  type ChatHealthMetrics {
+    totalMessages: Int!
+    providerUsage: [ProviderUsageEntry!]!
+    totalFallbacks: Int!
+    totalFailures: Int!
+    averageResponseTimeMs: Float
+    fromDate: String!
+    toDate: String!
+  }
+
+  type ProviderUsageEntry {
+    provider: String!
+    messageCount: Int!
+    fallbackCount: Int!
+    failureCount: Int!
+    averageResponseTimeMs: Float
+  }
+
+  type PromptVersionStats {
+    promptVersion: String!
+    messageCount: Int!
+    averageResponseTimeMs: Float
+  }
+
   type BackfillResult {
     solutionsCreated: Int!
     embeddingsGenerated: Int!
@@ -77,6 +108,14 @@ export const chatTypeDefs = gql`
     Admin-only: view all chat sessions across all users
     """
     allChatSessions: [ChatSessionWithUser!]!
+    """
+    Admin-only: get AI chat health metrics for the last N days
+    """
+    chatHealthMetrics(days: Int! = 7): ChatHealthMetrics!
+    """
+    Admin-only: get prompt version stats for the last N days
+    """
+    chatPromptVersionStats(days: Int! = 30): [PromptVersionStats!]!
   }
 
   extend type Mutation {
@@ -85,5 +124,13 @@ export const chatTypeDefs = gql`
     createTicketFromChat(input: CreateTicketFromChatInput!): Ticket!
     deleteChatSession(id: Int!): Boolean!
     backfillSolutionEmbeddings: BackfillResult!
+  }
+
+  extend type Subscription {
+    """
+    Stream chat reply chunks for real-time partial response display.
+    The client subscribes before sending a message and unsubscribes when done=true.
+    """
+    chatReplyStream(sessionId: Int!, message: String!): ChatReplyChunk!
   }
 `;

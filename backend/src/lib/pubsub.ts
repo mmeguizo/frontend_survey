@@ -29,4 +29,7 @@ export const EVENTS = {
 
   /** Fired when a new notification is created for a user */
   NOTIFICATION_CREATED: 'NOTIFICATION_CREATED',
+
+  /** Fired when a chat reply chunk is ready for streaming */
+  CHAT_REPLY_CHUNK: 'CHAT_REPLY_CHUNK',
 } as const;

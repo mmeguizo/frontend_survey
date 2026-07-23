@@ -62,3 +62,12 @@ mutation CreateTicketFromChat($input: CreateTicketFromChatInput!) {
 mutation DeleteChatSession($id: Int!) {
   deleteChatSession(id: $id)
 }
+
+subscription ChatReplyStream($sessionId: Int!, $message: String!) {
+  chatReplyStream(sessionId: $sessionId, message: $message) {
+    sessionId
+    chunk
+    done
+    provider
+  }
+}

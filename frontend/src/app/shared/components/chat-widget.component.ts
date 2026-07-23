@@ -5,6 +5,7 @@ import {
   ViewChild,
   AfterViewChecked,
   HostListener,
+  OnDestroy,
   inject,
   signal,
   computed,
@@ -15,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subscription } from 'rxjs';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -25,7 +27,7 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { ChatService, ChatSession, ChatMessage } from '../../core/services/chat.service';
+import { ChatService, ChatSession, ChatMessage, ChatReplyChunk } from '../../core/services/chat.service';
 import { AuthService } from '../../core/services/auth.service';
 import { environment } from '../../core/config/environment';
 import { getAvatarInitial, resolveAvatarUrl } from '../avatar.utils';
@@ -56,23 +58,74 @@ const USER_QUICK_PROMPTS: QuickPrompt[] = [
   { prompt: 'I want to create a support ticket', label: 'Create Ticket', emoji: '🎫' },
 ];
 
-const STAFF_QUICK_PROMPTS: QuickPrompt[] = [
-  {
-    prompt: 'Show me the ICT statistics and analytics',
-    label: 'ICT Analytics',
-    emoji: '📊',
-  },
-  {
-    prompt: 'Generate a full Excel report of all tickets',
-    label: 'Download Report',
-    emoji: '📥',
-  },
-  {
-    prompt: 'Show me overdue tickets and SLA warnings',
-    label: 'SLA Warnings',
-    emoji: '⚠️',
-  },
-];
+type UserDepartment = 'ITS' | 'MIS' | 'BOTH' | 'GENERAL';
+
+function roleToDepartment(role: string | undefined): UserDepartment {
+  switch (role) {
+    case 'ITS_HEAD':
+    case 'TECHNICAL':
+      return 'ITS';
+    case 'MIS_HEAD':
+      return 'MIS';
+    case 'ADMIN':
+    case 'DEVELOPER':
+      return 'BOTH';
+    default:
+      return 'GENERAL';
+  }
+}
+
+function staffQuickPrompts(department: UserDepartment): QuickPrompt[] {
+  const prompts: QuickPrompt[] = [
+    {
+      prompt: 'Show me the ICT statistics and analytics',
+      label: 'ICT Analytics',
+      emoji: '📊',
+    },
+    {
+      prompt: 'Generate a full Excel report of all tickets',
+      label: 'Download Report',
+      emoji: '📥',
+    },
+    {
+      prompt: 'Show me overdue tickets and SLA warnings',
+      label: 'SLA Warnings',
+      emoji: '⚠️',
+    },
+  ];
+
+  if (department === 'ITS' || department === 'BOTH') {
+    prompts.push(
+      {
+        prompt: 'Show me overdue ITS tickets',
+        label: 'Overdue ITS Tickets',
+        emoji: '🔧',
+      },
+      {
+        prompt: 'What is the hardware maintenance queue status?',
+        label: 'Maintenance Queue',
+        emoji: '🛠️',
+      },
+    );
+  }
+
+  if (department === 'MIS' || department === 'BOTH') {
+    prompts.push(
+      {
+        prompt: 'Show me pending software and website requests',
+        label: 'Pending MIS Requests',
+        emoji: '🌐',
+      },
+      {
+        prompt: 'Show account management and access requests',
+        label: 'Account Requests',
+        emoji: '👤',
+      },
+    );
+  }
+
+  return prompts;
+}
 
 const HELP_QUICK_PROMPT: QuickPrompt = {
   prompt: '/help',
@@ -417,7 +470,23 @@ marked.use({
                 }
               }
 
-              @if (sending()) {
+              @if (streaming() && streamingRendered()) {
+                <div class="message message-assistant">
+                  <div class="message-avatar">
+                    <ng-container *ngTemplateOutlet="botSvg"></ng-container>
+                  </div>
+                  <div class="message-bubble stream-bubble"
+                       [innerHTML]="streamingRendered()"
+                       (click)="onMessageClick($event)">
+                  </div>
+                  @if (fallbackActive()) {
+                    <div class="reconnecting-indicator">
+                      <span nz-icon nzType="sync" nzTheme="outline" nzSpin></span>
+                      Reconnecting…
+                    </div>
+                  }
+                </div>
+              } @else if (sending() && !streaming()) {
                 <div class="message message-assistant">
                   <div class="message-avatar">
                     <ng-container *ngTemplateOutlet="botSvg"></ng-container>
@@ -1099,6 +1168,20 @@ marked.use({
         }
       }
 
+      .reconnecting-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: 40px;
+        margin-top: 4px;
+        padding: 2px 8px;
+        background: #fff7e6;
+        border: 1px solid #ffd591;
+        border-radius: 12px;
+        font-size: 11px;
+        color: #d46b08;
+      }
+
       .chat-input-actions {
         display: flex;
         align-items: center;
@@ -1165,7 +1248,7 @@ marked.use({
     `,
   ],
 })
-export class ChatWidgetComponent implements AfterViewChecked, OnInit {
+export class ChatWidgetComponent implements AfterViewChecked, OnInit, OnDestroy {
   @ViewChild('chatWindow') chatWindow?: ElementRef<HTMLDivElement>;
   @ViewChild('messagesContainer') messagesContainer?: ElementRef<HTMLDivElement>;
 
@@ -1328,6 +1411,16 @@ export class ChatWidgetComponent implements AfterViewChecked, OnInit {
   private fallbackTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly userAvatarErrorSrc = signal<string | null>(null);
 
+  // Streaming state
+  readonly streaming = signal(false);
+  readonly streamingContent = signal('');
+  readonly streamingRendered = signal('');
+  readonly streamingProvider = signal<string | null>(null);
+  readonly fallbackActive = signal(false);
+  private streamSub: Subscription | null = null;
+  private renderDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private accumulatedContent = '';
+
   /** Whether current user is staff/admin (has access to analytics, reports) */
   readonly isStaffOrAdmin = computed(() => {
     const role = this.authService.currentUser()?.role;
@@ -1342,11 +1435,14 @@ export class ChatWidgetComponent implements AfterViewChecked, OnInit {
     ].includes(role || '');
   });
 
-  readonly quickPrompts = computed<QuickPrompt[]>(() => [
-    ...COMMON_QUICK_PROMPTS,
-    ...(this.isStaffOrAdmin() ? STAFF_QUICK_PROMPTS : USER_QUICK_PROMPTS),
-    HELP_QUICK_PROMPT,
-  ]);
+  readonly quickPrompts = computed<QuickPrompt[]>(() => {
+    const dept = roleToDepartment(this.authService.currentUser()?.role);
+    return [
+      ...COMMON_QUICK_PROMPTS,
+      ...(this.isStaffOrAdmin() ? staffQuickPrompts(dept) : USER_QUICK_PROMPTS),
+      HELP_QUICK_PROMPT,
+    ];
+  });
 
   readonly currentUserAvatarSrc = computed(() => {
     const avatarSrc = resolveAvatarUrl(this.authService.currentUser());
@@ -1462,42 +1558,98 @@ export class ChatWidgetComponent implements AfterViewChecked, OnInit {
     this.replyState.set('thinking');
     this.lastProvider.set(null);
     this.clearFallbackTimer();
+    this.clearStreaming();
+
     // After a few seconds, tell the user we are falling back to a backup model
     this.fallbackTimer = setTimeout(() => {
-      if (this.sending()) {
+      if (this.sending() && !this.streaming()) {
         this.replyState.set('fallback');
       }
     }, 8000);
     this.scrollToBottom();
 
-    this.chatService.sendMessage(session.id, text).subscribe({
-      next: (response) => {
-        // Add assistant reply
-        const assistantMsg: ChatMessage = {
-          id: Date.now() + 1,
-          sessionId: session.id,
-          role: 'ASSISTANT',
-          content: response.reply,
-          metadata: response.metadata,
-          createdAt: new Date().toISOString(),
-        };
-        this.messages.update((m) => [...m, assistantMsg]);
-
-        // Update session info
-        if (response.session) {
-          this.activeSession.set(response.session);
+    // Try streaming first
+    this.streamSub = this.chatService.streamMessage(session.id, text).subscribe({
+      next: (chunk: ChatReplyChunk) => {
+        if (!this.streaming()) {
+          // First chunk — switch from typing indicator to live content
+          this.streaming.set(true);
+          this.accumulatedContent = '';
+          this.clearFallbackTimer();
         }
-        this.lastProvider.set(response.provider || null);
-        this.replyState.set('done');
-        this.sending.set(false);
-        this.clearFallbackTimer();
-        this.scrollToBottom();
+
+        this.accumulatedContent += chunk.chunk;
+        this.streamingContent.set(this.accumulatedContent);
+        this.streamingProvider.set(chunk.provider);
+
+        if (chunk.provider) {
+          this.lastProvider.set(chunk.provider);
+        }
+
+        this.updateStreamingHtml();
+
+        if (chunk.done) {
+          // Streaming complete — finalize the message
+          const assistantMsg: ChatMessage = {
+            id: Date.now() + 1,
+            sessionId: session.id,
+            role: 'ASSISTANT',
+            content: this.accumulatedContent,
+            metadata: null,
+            createdAt: new Date().toISOString(),
+          };
+          this.messages.update((m) => [...m, assistantMsg]);
+          this.replyState.set('done');
+          this.sending.set(false);
+          this.streaming.set(false);
+          this.streamingContent.set('');
+          this.streamingRendered.set('');
+          this.streamSub = null;
+          this.scrollToBottom();
+        }
       },
       error: () => {
-        this.message.error('Failed to get AI response');
-        this.replyState.set('idle');
-        this.sending.set(false);
-        this.clearFallbackTimer();
+        // Streaming failed — show reconnecting indicator, fall back to mutation
+        this.fallbackActive.set(true);
+        this.streamSub = null;
+
+        this.chatService.sendMessage(session.id, text).subscribe({
+          next: (response) => {
+            // Replace any partial streaming content with the full response
+            const assistantMsg: ChatMessage = {
+              id: Date.now() + 1,
+              sessionId: session.id,
+              role: 'ASSISTANT',
+              content: response.reply,
+              metadata: response.metadata,
+              createdAt: new Date().toISOString(),
+            };
+            this.messages.update((m) => [...m, assistantMsg]);
+
+            if (response.session) {
+              this.activeSession.set(response.session);
+            }
+            this.lastProvider.set(response.provider || null);
+            this.replyState.set('done');
+            this.sending.set(false);
+            this.streaming.set(false);
+            this.streamingContent.set('');
+            this.streamingRendered.set('');
+            this.fallbackActive.set(false);
+            this.clearFallbackTimer();
+            this.scrollToBottom();
+          },
+          error: () => {
+            this.message.error('Failed to get AI response');
+            this.replyState.set('idle');
+            this.sending.set(false);
+            this.streaming.set(false);
+            this.streamingContent.set('');
+            this.streamingRendered.set('');
+            this.fallbackActive.set(false);
+            this.clearFallbackTimer();
+          },
+        });
       },
     });
   }
@@ -1507,6 +1659,38 @@ export class ChatWidgetComponent implements AfterViewChecked, OnInit {
       clearTimeout(this.fallbackTimer);
       this.fallbackTimer = null;
     }
+  }
+
+  private clearStreaming() {
+    this.streaming.set(false);
+    this.streamingContent.set('');
+    this.streamingRendered.set('');
+    this.fallbackActive.set(false);
+    this.accumulatedContent = '';
+    if (this.streamSub) {
+      this.streamSub.unsubscribe();
+      this.streamSub = null;
+    }
+    if (this.renderDebounceTimer !== null) {
+      clearTimeout(this.renderDebounceTimer);
+      this.renderDebounceTimer = null;
+    }
+  }
+
+  private updateStreamingHtml() {
+    if (this.renderDebounceTimer !== null) {
+      clearTimeout(this.renderDebounceTimer);
+    }
+    this.renderDebounceTimer = setTimeout(() => {
+      this.streamingRendered.set(this.renderMarkdown(this.streamingContent()));
+      this.renderDebounceTimer = null;
+      this.scrollToBottom();
+    }, 80);
+  }
+
+  ngOnDestroy() {
+    this.clearStreaming();
+    this.clearFallbackTimer();
   }
 
   sendQuick(text: string) {

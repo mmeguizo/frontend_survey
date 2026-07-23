@@ -7,6 +7,44 @@
   flex-direction: column;
   overflow: hidden;
 
+  .health-alert-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    background: #fffbe6;
+    border: 1px solid #ffe58f;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .health-alert-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+
+    a {
+      color: #2f54eb;
+      text-decoration: underline;
+    }
+  }
+
+  .health-alert-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #8c8c8c;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      color: #262626;
+    }
+  }
+
   .page-header {
     display: flex;
     justify-content: space-between;
@@ -109,5 +147,75 @@
       font-weight: 600;
       background: #fafafa;
     }
+  }
+
+  .health-card {
+    margin-bottom: 16px;
+    flex-shrink: 0;
+
+    ::ng-deep .ant-card-body {
+      padding: 16px;
+    }
+  }
+
+  .health-grid {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .health-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+    padding: 12px 16px;
+    background: #fafafa;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+  }
+
+  .health-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #262626;
+
+    &.warning {
+      color: #d48806;
+    }
+
+    &.danger {
+      color: #cf1322;
+    }
+  }
+
+  .health-label {
+    font-size: 11px;
+    color: #8c8c8c;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  .provider-table {
+    margin-top: 8px;
+
+    ::ng-deep .ant-table-thead > tr > th {
+      font-size: 12px;
+    }
+  }
+
+  .num-col {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .empty-health {
+    text-align: center;
+    color: #999;
+    padding: 24px;
+    margin: 0;
+    font-style: italic;
   }
 }

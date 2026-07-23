@@ -6,6 +6,7 @@ import {
   signal,
   computed,
 } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -22,7 +23,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
-import { AdminApiService, UserData } from '../../api/admin-api.service';
+import { AdminApiService, UserData, ChatHealthMetrics } from '../../api/admin-api.service';
 
 const ALL_ROLES = [
   'ADMIN',
@@ -61,6 +62,7 @@ const ROLE_COLORS: Record<string, string> = {
   selector: 'app-admin',
   imports: [
     FormsModule,
+    DecimalPipe,
     NzCardModule,
     NzIconModule,
     NzTableModule,
@@ -102,6 +104,11 @@ export class AdminPage implements OnInit {
     );
   });
 
+  // AI Chat Health
+  healthMetrics = signal<ChatHealthMetrics | null>(null);
+  healthLoading = signal(false);
+  showHealthAlert = signal(!sessionStorage.getItem('healthAlertDismissed'));
+
   // Create user modal
   isCreateModalVisible = signal(false);
   createForm = signal({
@@ -128,6 +135,7 @@ export class AdminPage implements OnInit {
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadHealthMetrics();
   }
 
   loadUsers(): void {
@@ -141,6 +149,30 @@ export class AdminPage implements OnInit {
         console.error('Failed to load users:', error);
         this.message.error('Failed to load users');
         this.loading.set(false);
+      },
+    });
+  }
+
+  loadHealthMetrics(): void {
+    this.healthLoading.set(true);
+    this.adminApiService.getChatHealthMetrics(7).subscribe({
+      next: (response) => {
+        const metrics = response?.data?.chatHealthMetrics || null;
+        this.healthMetrics.set(metrics);
+        this.healthLoading.set(false);
+
+        if (metrics && metrics.totalMessages > 0) {
+          const failureRate = metrics.totalFailures / metrics.totalMessages;
+          if (failureRate > 0.5) {
+            this.showHealthAlert.set(true);
+          } else {
+            this.showHealthAlert.set(false);
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load health metrics:', err);
+        this.healthLoading.set(false);
       },
     });
   }
@@ -365,5 +397,14 @@ export class AdminPage implements OnInit {
 
   onSearchChange(value: string): void {
     this.searchText.set(value);
+  }
+
+  dismissHealthAlert(): void {
+    this.showHealthAlert.set(false);
+    sessionStorage.setItem('healthAlertDismissed', 'true');
+  }
+
+  scrollToHealthCard(): void {
+    document.querySelector('.health-card')?.scrollIntoView({ behavior: 'smooth' });
   }
 }

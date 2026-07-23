@@ -16,6 +16,24 @@ export interface UserData {
   skills: string[];
 }
 
+export interface ProviderUsageEntry {
+  provider: string;
+  messageCount: number;
+  fallbackCount: number;
+  failureCount: number;
+  averageResponseTimeMs: number | null;
+}
+
+export interface ChatHealthMetrics {
+  totalMessages: number;
+  providerUsage: ProviderUsageEntry[];
+  totalFallbacks: number;
+  totalFailures: number;
+  averageResponseTimeMs: number | null;
+  fromDate: string;
+  toDate: string;
+}
+
 interface GetAllUsersResponse {
   users: UserData[];
 }
@@ -107,6 +125,26 @@ const DELETE_USER_MUTATION = gql`
   }
 `;
 
+const CHAT_HEALTH_METRICS_QUERY = gql`
+  query ChatHealthMetrics($days: Int!) {
+    chatHealthMetrics(days: $days) {
+      totalMessages
+      totalFallbacks
+      totalFailures
+      averageResponseTimeMs
+      fromDate
+      toDate
+      providerUsage {
+        provider
+        messageCount
+        fallbackCount
+        failureCount
+        averageResponseTimeMs
+      }
+    }
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class AdminApiService {
   private readonly apollo = inject(Apollo);
@@ -164,6 +202,14 @@ export class AdminApiService {
         ${USER_FIELDS}
       `,
       variables: { userId, skills },
+    });
+  }
+
+  getChatHealthMetrics(days: number = 7) {
+    return this.apollo.query<{ chatHealthMetrics: ChatHealthMetrics }>({
+      query: CHAT_HEALTH_METRICS_QUERY,
+      variables: { days },
+      fetchPolicy: 'network-only',
     });
   }
 }
