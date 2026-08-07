@@ -1,0 +1,29 @@
+<div class="csm-qr">
+  <!-- ARTA Header Bar -->
+  <div class="csm-arta-bar">
+    <span class="arta-approval">ARTA APPROVAL NO. 2024-001 | VALID UNTIL 2025-12-31</span>
+  </div>
+
+  <!-- Admin Toolbar -->
+  <app-admin-toolbar></app-admin-toolbar>
+
+  <div class="adm-page">
+    <mat-card class="csm-card">
+      <mat-card-content class="csm-qr-content">
+        <div class="csm-qr-code">
+          <img [src]="qrCodeDataUrl" alt="Survey QR Code" class="csm-qr-image">
+        </div>
+        <p class="csm-qr-url">URL: {{ surveyUrl }}</p>
+
+        <div class="csm-actions">
+          <button mat-raised-button color="primary" (click)="print()">
+            <mat-icon>print</mat-icon> Print QR
+          </button>
+          <button mat-stroked-button (click)="copyUrl()">
+            <mat-icon>content_copy</mat-icon> Copy URL
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

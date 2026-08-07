@@ -1,0 +1,395 @@
+<!-- Landing Page -->
+<div class="csm-landing" *ngIf="showLanding">
+  <div class="csm-arta-bar">
+    <span class="arta-approval">ARTA APPROVAL NO. 2024-001 | VALID UNTIL 2025-12-31</span>
+  </div>
+
+  <header class="csm-landing-header">
+    <div class="csm-landing-header-inner">
+      <img src="assets/chmsu-logo.png" alt="CHMSU Logo" class="csm-landing-header-logo">
+      <div class="csm-landing-header-text">
+        <span class="csm-landing-header-uni">Republic of the Philippines</span>
+        <span class="csm-landing-header-name">Carlos Hilado Memorial State University</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="csm-landing-body">
+    <div class="csm-landing-card">
+      <h1 class="csm-landing-title">Client Satisfaction Measurement</h1>
+      <h2 class="csm-landing-subtitle">Citizen's Charter Survey</h2>
+      <p class="csm-landing-desc">
+        We value your feedback! Please take a few minutes to complete this survey
+        about the quality of service you received.
+      </p>
+
+      <div class="csm-landing-qr">
+        <p class="csm-qr-scan-hint">Scan the QR code to open this survey on your phone:</p>
+        <div class="csm-qr-box" *ngIf="qrCodeDataUrl; else qrPlaceholder">
+          <img [src]="qrCodeDataUrl" alt="QR Code to this survey" class="csm-qr-img">
+        </div>
+        <ng-template #qrPlaceholder>
+          <div class="csm-qr-placeholder">
+            <mat-icon>qr_code_scanner</mat-icon>
+            <span>Scan QR Code</span>
+          </div>
+        </ng-template>
+        <p class="csm-qr-hint">Or visit: <strong>{{ surveyUrl }}</strong></p>
+      </div>
+
+      <button mat-raised-button color="primary" class="csm-start-btn" (click)="startSurvey()">
+        <mat-icon>arrow_forward</mat-icon> Start Survey
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Survey Form -->
+<div class="csm-form-container" *ngIf="!showLanding && !isSubmitted">
+  <div class="csm-arta-bar">
+    <span class="arta-approval">ARTA APPROVAL NO. 2024-001 | VALID UNTIL 2025-12-31</span>
+  </div>
+
+  <div class="csm-header">
+    <div class="csm-logo-container">
+      <img src="assets/chmsu-logo.png" alt="CHMSU Logo" class="csm-logo">
+    </div>
+    <div class="csm-title-block">
+      <h1 class="csm-title">Client Satisfaction Measurement</h1>
+      <h2 class="csm-subtitle">Citizen's Charter Survey</h2>
+      <p class="csm-tagline">Carlos Hilado Memorial State University (CHMSU) - ICT Office</p>
+    </div>
+  </div>
+
+  <mat-card class="csm-form-card">
+    <mat-stepper linear #stepper class="csm-stepper">
+      <!-- Step 1: Demographics & Citizen's Charter -->
+      <mat-step [stepControl]="step1Form" label="Step 1: Demographics & Citizen's Charter">
+        <form [formGroup]="step1Form" class="csm-form-section">
+          <fieldset class="csm-fieldset">
+            <legend class="csm-legend">Demographics</legend>
+
+            <div class="csm-row csm-row-date">
+              <mat-form-field appearance="outline" class="csm-field csm-field-half">
+                <mat-label>Date</mat-label>
+                <input matInput type="date" formControlName="date" required>
+                <mat-error *ngIf="step1Form.get('date')?.hasError('required')">Date is required</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="csm-row">
+              <mat-form-field appearance="outline" class="csm-field">
+                <mat-label>Client Type</mat-label>
+                <mat-select formControlName="clientType" required>
+                  @for (opt of clientTypeOptions; track opt.value) {
+                    <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                  }
+                </mat-select>
+                <mat-error *ngIf="step1Form.get('clientType')?.hasError('required')">Client type is required</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="csm-field">
+                <mat-label>Sex</mat-label>
+                <mat-select formControlName="sex" required>
+                  <mat-option value="MALE">Male</mat-option>
+                  <mat-option value="FEMALE">Female</mat-option>
+                </mat-select>
+                <mat-error *ngIf="step1Form.get('sex')?.hasError('required')">Sex is required</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="csm-row">
+              <mat-form-field appearance="outline" class="csm-field">
+                <mat-label>Age</mat-label>
+                <input matInput type="number" formControlName="age" min="1" max="150" required>
+                <mat-error *ngIf="step1Form.get('age')?.hasError('required')">Age is required</mat-error>
+                <mat-error *ngIf="step1Form.get('age')?.hasError('min')">Age must be at least 1</mat-error>
+                <mat-error *ngIf="step1Form.get('age')?.hasError('max')">Age must not exceed 150</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="csm-field">
+                <mat-label>Region of Residence</mat-label>
+                <mat-select formControlName="regionOfResidence" required>
+                  @for (region of regions; track region) {
+                    <mat-option [value]="region">{{ region }}</mat-option>
+                  }
+                </mat-select>
+                <mat-error *ngIf="step1Form.get('regionOfResidence')?.hasError('required')">Region is required</mat-error>
+              </mat-form-field>
+            </div>
+          </fieldset>
+
+          <fieldset class="csm-fieldset">
+            <legend class="csm-legend">Office and Service</legend>
+
+            <div class="csm-office-service-panel">
+              <mat-form-field appearance="outline" class="csm-field">
+                <mat-label>Office</mat-label>
+                <mat-select formControlName="office" required aria-label="Office">
+                  @for (office of offices; track office.id) {
+                    <mat-option [value]="office.id">{{ office.label }}</mat-option>
+                  }
+                </mat-select>
+                <mat-error *ngIf="step1Form.get('office')?.hasError('required')">Please select an office</mat-error>
+              </mat-form-field>
+
+              @if (selectedOffice) {
+                <div class="csm-service-sub-block">
+                  <mat-form-field appearance="outline" class="csm-field">
+                    <mat-label>Service</mat-label>
+                    <input
+                      matInput
+                      placeholder="Search and select a service"
+                      [matAutocomplete]="serviceAuto"
+                      [formControl]="serviceSearchControl"
+                      (focus)="onServiceFocus()"
+                    />
+                    <mat-autocomplete #serviceAuto="matAutocomplete" (optionSelected)="onServiceSelected($event)">
+                      @for (service of availableServices; track service.id) {
+                        <mat-option [value]="service">{{ service.label }}</mat-option>
+                      }
+                    </mat-autocomplete>
+                    <button
+                      matSuffix
+                      mat-icon-button
+                      *ngIf="selectedService"
+                      (click)="clearService(); $event.stopPropagation()"
+                      aria-label="Clear selected service"
+                    >
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                    <mat-hint *ngIf="!selectedService">Type or click to pick from {{ selectedOfficeServices.length }} services.</mat-hint>
+                    <mat-error *ngIf="step1Form.get('service')?.hasError('required') && step1Form.get('service')?.touched">
+                      Please select a service
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+              } @else {
+                <p class="csm-service-prompt">Select an office to see its available services.</p>
+              }
+            </div>
+          </fieldset>
+
+          <fieldset class="csm-fieldset">
+            <legend class="csm-legend">Citizen's Charter (CC)</legend>
+
+            <div
+              class="csm-cc-question"
+              [class.csm-field-invalid]="step1Form.get('cc1Awareness')?.invalid && step1Form.get('cc1Awareness')?.touched"
+            >
+              <p class="csm-cc-label">CC1. Which of the following best describes your awareness of a Citizen's Charter?</p>
+              <mat-radio-group formControlName="cc1Awareness" class="csm-radio-group" aria-label="CC1 Awareness">
+                @for (opt of cc1Options; track opt.value) {
+                  <mat-radio-button [value]="opt.value">{{ opt.value }} - {{ opt.label }}</mat-radio-button>
+                }
+              </mat-radio-group>
+              <div class="csm-error" *ngIf="step1Form.get('cc1Awareness')?.invalid && step1Form.get('cc1Awareness')?.touched">
+                Please answer this question.
+              </div>
+            </div>
+
+            <div
+              class="csm-cc-question"
+              *ngIf="+(step1Form.get('cc1Awareness')?.value ?? '') !== 4"
+              [class.csm-field-invalid]="step1Form.get('cc2Visibility')?.invalid && step1Form.get('cc2Visibility')?.touched"
+            >
+              <p class="csm-cc-label">CC2. If aware, did you see this office's Citizen's Charter?</p>
+              <mat-radio-group formControlName="cc2Visibility" class="csm-radio-group" aria-label="CC2 Visibility">
+                @for (opt of cc2Options; track opt.value) {
+                  <mat-radio-button [value]="opt.value">{{ opt.value }} - {{ opt.label }}</mat-radio-button>
+                }
+              </mat-radio-group>
+              <div class="csm-error" *ngIf="step1Form.get('cc2Visibility')?.invalid && step1Form.get('cc2Visibility')?.touched">
+                Please answer this question.
+              </div>
+            </div>
+
+            <div
+              class="csm-cc-question"
+              *ngIf="+(step1Form.get('cc1Awareness')?.value ?? '') !== 4"
+              [class.csm-field-invalid]="step1Form.get('cc3Helpfulness')?.invalid && step1Form.get('cc3Helpfulness')?.touched"
+            >
+              <p class="csm-cc-label">CC3. If aware, how much did the Citizen's Charter help you in your transaction?</p>
+              <mat-radio-group formControlName="cc3Helpfulness" class="csm-radio-group" aria-label="CC3 Helpfulness">
+                @for (opt of cc3Options; track opt.value) {
+                  <mat-radio-button [value]="opt.value">{{ opt.value }} - {{ opt.label }}</mat-radio-button>
+                }
+              </mat-radio-group>
+              <div class="csm-error" *ngIf="step1Form.get('cc3Helpfulness')?.invalid && step1Form.get('cc3Helpfulness')?.touched">
+                Please answer this question.
+              </div>
+            </div>
+
+            <div class="csm-cc-disabled" *ngIf="+(step1Form.get('cc1Awareness')?.value ?? '') === 4">
+              <p>CC2 and CC3 are not applicable since you are not aware of the Citizen's Charter.</p>
+            </div>
+          </fieldset>
+
+          <div class="csm-nav-buttons">
+            <button mat-raised-button color="primary" type="button" (click)="goNext()" class="csm-next-btn">
+              Next <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Step 2: SQD Ratings -->
+      <mat-step [stepControl]="step2Form" label="Step 2: Service Quality Dimensions">
+        <form [formGroup]="step2Form" class="csm-form-section">
+          <fieldset class="csm-fieldset">
+            <legend class="csm-legend">Service Quality Dimensions (SQD)</legend>
+            <p class="csm-sqd-instruction">
+              <strong>Rating Scale:</strong> 5 - Strongly Agree | 4 - Agree | 3 - Neutral | 2 - Disagree | 1 - Strongly Disagree | 0 - N/A
+            </p>
+
+            <div class="csm-sqd-list">
+              @for (sqd of sqdQuestions; track sqd.key) {
+                <div
+                  class="csm-sqd-item"
+                  [class.csm-field-invalid]="step2Form.get(sqd.key)?.invalid && step2Form.get(sqd.key)?.touched"
+                >
+                  <div class="csm-sqd-question">
+                    <span class="csm-sqd-number">{{ sqd.key.toUpperCase() }}</span>
+                    <div class="csm-sqd-text">
+                      <p class="csm-sqd-en">{{ sqd.en }}</p>
+                      <p class="csm-sqd-tl">{{ sqd.tl }}</p>
+                    </div>
+                  </div>
+                  <mat-radio-group [formControlName]="sqd.key" class="csm-sqd-radio-group" aria-label="{{ sqd.key }} rating">
+                    @for (opt of ratingOptions; track opt.value) {
+                      <mat-radio-button [value]="opt.value" class="csm-sqd-radio">
+                        {{ opt.value === 0 ? 'N/A' : opt.value }}
+                      </mat-radio-button>
+                    }
+                  </mat-radio-group>
+                  <div class="csm-error" *ngIf="step2Form.get(sqd.key)?.invalid && step2Form.get(sqd.key)?.touched">
+                    Please select a rating for this question.
+                  </div>
+                </div>
+              }
+            </div>
+          </fieldset>
+
+          <fieldset class="csm-fieldset">
+            <legend class="csm-legend">Additional Feedback</legend>
+
+            <mat-form-field appearance="outline" class="csm-full-width">
+              <mat-label>Suggestions / Comments</mat-label>
+              <textarea matInput formControlName="suggestions" rows="4" placeholder="Your suggestions for improvement..."></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="csm-full-width">
+              <mat-label>Email Address (optional)</mat-label>
+              <input matInput type="email" formControlName="emailAddress" placeholder="email@example.com">
+              <mat-error *ngIf="step2Form.get('emailAddress')?.hasError('email')">Invalid email format</mat-error>
+            </mat-form-field>
+          </fieldset>
+
+          <div class="csm-nav-buttons">
+            <button mat-button type="button" (click)="goBack()" class="csm-back-btn">
+              <mat-icon>arrow_back</mat-icon> Back
+            </button>
+            <button mat-raised-button color="primary" type="button" (click)="goNext()" class="csm-next-btn">
+              Next <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Step 3: Review & Submit -->
+      <mat-step label="Step 3: Review & Submit">
+        <div class="csm-review-section">
+          <div class="csm-review-header">
+            <h3 class="csm-review-title">Review Your Responses</h3>
+            <p class="csm-review-subtitle">Please check your answers before submitting the survey.</p>
+          </div>
+
+          <div class="csm-review-summary">
+            <div class="csm-review-summary-row">
+              <span class="csm-review-summary-label">Office</span>
+              <span class="csm-review-summary-value">{{ selectedOffice?.label || '—' }}</span>
+            </div>
+            <div class="csm-review-summary-row">
+              <span class="csm-review-summary-label">Service</span>
+              <span class="csm-review-summary-value">{{ selectedServiceLabel || '—' }}</span>
+            </div>
+          </div>
+
+          <div class="csm-review-grid">
+            <div class="csm-review-card">
+              <h4><mat-icon>badge</mat-icon> Demographics</h4>
+              <dl class="csm-review-list">
+                <dt>Client Type</dt><dd>{{ displayValue('clientType') }}</dd>
+                <dt>Date</dt><dd>{{ formatDate(step1Form.get('date')?.value ?? '') }}</dd>
+                <dt>Sex</dt><dd>{{ displayValue('sex') }}</dd>
+                <dt>Age</dt><dd>{{ step1Form.get('age')?.value || '—' }}</dd>
+                <dt>Region</dt><dd>{{ step1Form.get('regionOfResidence')?.value || '—' }}</dd>
+              </dl>
+            </div>
+
+            <div class="csm-review-card">
+              <h4><mat-icon>description</mat-icon> Citizen's Charter</h4>
+              <dl class="csm-review-list">
+                <dt>CC1 Awareness</dt><dd>{{ displayValue('cc1Awareness') }}</dd>
+                @if (+(step1Form.get('cc1Awareness')?.value ?? '') !== 4) {
+                  <dt>CC2 Visibility</dt><dd>{{ displayValue('cc2Visibility') }}</dd>
+                  <dt>CC3 Helpfulness</dt><dd>{{ displayValue('cc3Helpfulness') }}</dd>
+                } @else {
+                  <dt>CC2 / CC3</dt><dd>Not applicable</dd>
+                }
+              </dl>
+            </div>
+
+            <div class="csm-review-card">
+              <h4><mat-icon>star_rate</mat-icon> SQD Ratings</h4>
+              <dl class="csm-review-list">
+                @for (sqd of sqdQuestions; track sqd.key) {
+                  <dt>{{ sqd.key.toUpperCase() }}</dt>
+                  <dd><span class="csm-review-rating">{{ sqdDisplay(sqd.key) }}</span></dd>
+                }
+              </dl>
+            </div>
+
+            <div class="csm-review-card">
+              <h4><mat-icon>feedback</mat-icon> Feedback</h4>
+              <dl class="csm-review-list">
+                <dt>Suggestions</dt><dd>{{ step2Form.get('suggestions')?.value || 'None' }}</dd>
+                <dt>Email Address</dt><dd>{{ step2Form.get('emailAddress')?.value || 'Not provided' }}</dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="csm-nav-buttons csm-review-actions">
+            <button mat-button type="button" (click)="goBack()" class="csm-back-btn">
+              <mat-icon>arrow_back</mat-icon> Back
+            </button>
+            <button mat-raised-button color="primary" (click)="submit()" [disabled]="isSubmitting" class="csm-submit-btn">
+              @if (isSubmitting) {
+                <mat-spinner diameter="20"></mat-spinner> Submitting...
+              } @else {
+                <ng-container>
+                  <mat-icon>send</mat-icon> Submit Survey
+                </ng-container>
+              }
+            </button>
+          </div>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </mat-card>
+</div>
+
+<!-- Thank You -->
+<div class="csm-thank-you" *ngIf="isSubmitted">
+  <div class="csm-thank-you-card">
+    <div class="csm-success-icon">
+      <mat-icon>check_circle</mat-icon>
+    </div>
+    <h1>Thank You!</h1>
+    <p>Your survey has been successfully submitted.</p>
+    <p class="csm-thank-you-note">We appreciate your time and feedback.</p>
+    <button mat-raised-button color="primary" (click)="retry()" class="csm-retry-btn">
+      <mat-icon>refresh</mat-icon> Submit Another Survey
+    </button>
+  </div>
+</div>

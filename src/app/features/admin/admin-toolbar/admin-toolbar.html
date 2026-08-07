@@ -1,0 +1,26 @@
+<div class="adm-toolbar">
+  <div class="adm-brand">
+    <img src="assets/chmsu-logo.png" alt="CHMSU Logo" class="adm-brand-logo">
+    <div class="adm-brand-text">
+      <h1 class="adm-brand-title">SURVEY</h1>
+      <span class="adm-brand-subtitle">Carlos Hilado Memorial State University</span>
+    </div>
+  </div>
+  <nav class="adm-nav">
+    <a routerLink="/admin/surveys" routerLinkActive="adm-nav-active" [routerLinkActiveOptions]="{ exact: true }" class="adm-nav-link">
+      <mat-icon>table_chart</mat-icon> Responses
+    </a>
+    <a routerLink="/admin/analytics" routerLinkActive="adm-nav-active" class="adm-nav-link">
+      <mat-icon>bar_chart</mat-icon> Analytics
+    </a>
+    <a routerLink="/admin/qr" routerLinkActive="adm-nav-active" class="adm-nav-link">
+      <mat-icon>qr_code</mat-icon> QR
+    </a>
+    <a routerLink="/admin/change-password" routerLinkActive="adm-nav-active" class="adm-nav-link">
+      <mat-icon>key</mat-icon> Password
+    </a>
+    <button mat-stroked-button color="warn" class="adm-logout-btn" (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon> Logout
+    </button>
+  </nav>
+</div>
