@@ -30,12 +30,16 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Date From</mat-label>
-        <input matInput type="date" formControlName="dateFrom">
+        <input matInput [matDatepicker]="dateFromPicker" formControlName="dateFrom">
+        <mat-datepicker-toggle matIconSuffix [for]="dateFromPicker"></mat-datepicker-toggle>
+        <mat-datepicker #dateFromPicker></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Date To</mat-label>
-        <input matInput type="date" formControlName="dateTo">
+        <input matInput [matDatepicker]="dateToPicker" formControlName="dateTo">
+        <mat-datepicker-toggle matIconSuffix [for]="dateToPicker"></mat-datepicker-toggle>
+        <mat-datepicker #dateToPicker></mat-datepicker>
       </mat-form-field>
 
       <div class="filter-actions">
@@ -105,8 +109,8 @@
     <div class="table-header">
       <h3>Survey Data</h3>
       <div class="export-buttons">
-        <button mat-raised-button color="primary" (click)="exportToCsv()">
-          <mat-icon>download</mat-icon> Export CSV
+        <button mat-raised-button color="primary" (click)="exportToExcel()">
+          <mat-icon>download</mat-icon> Export Excel
         </button>
         <button mat-raised-button color="accent" (click)="exportToPdf()">
           <mat-icon>picture_as_pdf</mat-icon> Export PDF

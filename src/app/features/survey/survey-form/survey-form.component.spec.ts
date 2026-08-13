@@ -12,8 +12,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
 import { SurveyService } from '../../../core/services/survey.service';
 import { of } from 'rxjs';
@@ -22,7 +20,6 @@ describe('SurveyFormComponent', () => {
   let component: SurveyFormComponent;
   let fixture: ComponentFixture<SurveyFormComponent>;
   let surveyService: jasmine.SpyObj<SurveyService>;
-  let httpMock: HttpTestingController;
 
   beforeEach(async () => {
     const surveyServiceSpy = jasmine.createSpyObj('SurveyService', ['submitSurvey']);
@@ -46,21 +43,17 @@ describe('SurveyFormComponent', () => {
       providers: [
         { provide: SurveyService, useValue: surveyServiceSpy },
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
-        provideHttpClient(),
-        provideHttpClientTesting(),
       ],
     }).compileComponents();
 
     surveyService = TestBed.inject(SurveyService) as jasmine.SpyObj<SurveyService>;
-    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(SurveyFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    httpMock.expectOne('https://psgc.cloud/api/regions').flush([]);
   });
 
   afterEach(() => {
-    httpMock.verify();
+    fixture.destroy();
   });
 
   it('should create', () => {
@@ -70,25 +63,28 @@ describe('SurveyFormComponent', () => {
   it('should initialize form with default values', () => {
     expect(component.step1Form.get('date')?.value).toBeTruthy();
     expect(component.step1Form.get('age')?.value).toBe('');
-    expect(component.step1Form.get('regionOfResidence')?.value).toBe('');
     expect(component.step1Form.get('office')?.value).toBe('');
     expect(component.step1Form.get('service')?.value).toBe('');
   });
 
-  it('should disable CC2/CC3 when CC1=4 (not aware)', () => {
+  it('should keep CC2/CC3 available and required even when CC1=4 (not aware)', () => {
     component.step1Form.get('cc1Awareness')?.setValue('4');
     fixture.detectChanges();
 
-    expect(component.step1Form.get('cc2Visibility')?.disabled).toBeTrue();
-    expect(component.step1Form.get('cc3Helpfulness')?.disabled).toBeTrue();
+    expect(component.step1Form.get('cc2Visibility')?.disabled).toBeFalse();
+    expect(component.step1Form.get('cc3Helpfulness')?.disabled).toBeFalse();
+    expect(component.step1Form.get('cc2Visibility')?.hasError('required')).toBeTrue();
+    expect(component.step1Form.get('cc3Helpfulness')?.hasError('required')).toBeTrue();
   });
 
-  it('should enable CC2/CC3 when CC1!=4', () => {
+  it('should keep CC2/CC3 enabled and required when CC1!=4', () => {
     component.step1Form.get('cc1Awareness')?.setValue('1');
     fixture.detectChanges();
 
     expect(component.step1Form.get('cc2Visibility')?.disabled).toBeFalse();
     expect(component.step1Form.get('cc3Helpfulness')?.disabled).toBeFalse();
+    expect(component.step1Form.get('cc2Visibility')?.hasError('required')).toBeTrue();
+    expect(component.step1Form.get('cc3Helpfulness')?.hasError('required')).toBeTrue();
   });
 
   it('should start survey from landing page', () => {
@@ -224,7 +220,6 @@ describe('SurveyFormComponent', () => {
       date: '2024-01-01',
       sex: 'MALE',
       age: '30',
-      regionOfResidence: 'Region VI',
       office: 'business-affairs',
       service: 'printing-services',
       cc1Awareness: '1',

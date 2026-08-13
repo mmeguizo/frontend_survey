@@ -17,7 +17,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 import { SurveyService } from '../../../core/services/survey.service';
 import { CreateSurveyDto } from '../../../core/models/survey.model';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import * as QRCode from 'qrcode';
 import { OFFICE_SERVICES, SurveyOffice, SurveyService as OfficeServiceItem } from './office-services';
 
@@ -49,7 +49,6 @@ export class SurveyFormComponent implements OnInit {
   private surveyService = inject(SurveyService);
   private snackBar = inject(MatSnackBar);
   private route = inject(ActivatedRoute);
-  private http = inject(HttpClient);
 
   @ViewChild('stepper') stepper!: MatStepper;
 
@@ -92,29 +91,6 @@ export class SurveyFormComponent implements OnInit {
 
   serviceSearchControl = new FormControl<string>('', { nonNullable: true });
 
-  regions: string[] = [];
-  regionsLoading = false;
-
-  private static readonly PHILIPPINE_REGIONS = [
-    'Region I (Ilocos Region)',
-    'Region II (Cagayan Valley)',
-    'Region III (Central Luzon)',
-    'Region IV-A (CALABARZON)',
-    'MIMAROPA Region',
-    'Region V (Bicol Region)',
-    'Region VI (Western Visayas)',
-    'Region VII (Central Visayas)',
-    'Region VIII (Eastern Visayas)',
-    'Region IX (Zamboanga Peninsula)',
-    'Region X (Northern Mindanao)',
-    'Region XI (Davao Region)',
-    'Region XII (SOCCSKSARGEN)',
-    'National Capital Region (NCR)',
-    'Cordillera Administrative Region (CAR)',
-    'Region XIII (Caraga)',
-    'Bangsamoro Autonomous Region In Muslim Mindanao (BARMM)',
-  ];
-
   sqdQuestions = [
     { key: 'sqd0', label: 'SQD 0', en: 'Overall, how will you rate the service you received?', tl: 'Sa kabuuan, paano mo rarating ang serbisyong natanggap mo?' },
     { key: 'sqd1', label: 'SQD 1', en: 'The personnel greeted you promptly and courteously.', tl: 'Ang bata ay nakaraptas at mabait.' },
@@ -141,12 +117,11 @@ export class SurveyFormComponent implements OnInit {
     date: [new Date().toISOString().split('T')[0], Validators.required],
     sex: ['', Validators.required],
     age: ['', [Validators.required, Validators.min(1), Validators.max(150)]],
-    regionOfResidence: ['', Validators.required],
     office: ['', Validators.required],
     service: [''],
     cc1Awareness: ['', Validators.required],
-    cc2Visibility: [''],
-    cc3Helpfulness: [''],
+    cc2Visibility: ['', [Validators.required, Validators.min(1), Validators.max(5)]],
+    cc3Helpfulness: ['', [Validators.required, Validators.min(1), Validators.max(4)]],
   });
 
   get availableServices(): OfficeServiceItem[] {
@@ -174,23 +149,6 @@ export class SurveyFormComponent implements OnInit {
       }
     });
     this.generateQrCode();
-    this.loadRegions();
-  }
-
-  loadRegions(): void {
-    this.regionsLoading = true;
-    this.http
-      .get<{ name: string; code: string }[]>('https://psgc.cloud/api/regions')
-      .subscribe({
-        next: data => {
-          this.regions = (data || []).map(region => region.name);
-          this.regionsLoading = false;
-        },
-        error: () => {
-          this.regions = SurveyFormComponent.PHILIPPINE_REGIONS;
-          this.regionsLoading = false;
-        },
-      });
   }
 
   generateQrCode(): void {
@@ -204,24 +162,6 @@ export class SurveyFormComponent implements OnInit {
   }
 
   constructor() {
-    this.step1Form.get('cc1Awareness')?.valueChanges.subscribe((value: string | null) => {
-      const cc2 = this.step1Form.get('cc2Visibility');
-      const cc3 = this.step1Form.get('cc3Helpfulness');
-      if (+(value ?? '') === 4) {
-        cc2?.disable();
-        cc3?.disable();
-        cc2?.setValue('');
-        cc3?.setValue('');
-      } else {
-        cc2?.enable();
-        cc3?.enable();
-        cc2?.setValidators([Validators.required, Validators.min(1), Validators.max(5)]);
-        cc3?.setValidators([Validators.required, Validators.min(1), Validators.max(4)]);
-      }
-      cc2?.updateValueAndValidity();
-      cc3?.updateValueAndValidity();
-    });
-
     this.step1Form.get('office')?.valueChanges.subscribe((officeId: string | null) => {
       const service = this.step1Form.get('service');
       service?.setValue('');
@@ -362,13 +302,12 @@ export class SurveyFormComponent implements OnInit {
       date: s1.date ?? '',
       sex: s1.sex ?? 'MALE',
       age: +(s1.age ?? 0),
-      regionOfResidence: s1.regionOfResidence ?? '',
       office: this.selectedOffice?.label ?? '',
       service: this.selectedServiceLabel,
       internalExternal: this.serviceClassification,
-      cc1Awareness: +(s1.cc1Awareness ?? '') === 4 ? undefined : +(s1.cc1Awareness ?? 0) || undefined,
-      cc2Visibility: +(s1.cc1Awareness ?? '') === 4 ? undefined : +(s1.cc2Visibility ?? 0) || undefined,
-      cc3Helpfulness: +(s1.cc1Awareness ?? '') === 4 ? undefined : +(s1.cc3Helpfulness ?? 0) || undefined,
+      cc1Awareness: +(s1.cc1Awareness ?? 0) || undefined,
+      cc2Visibility: +(s1.cc2Visibility ?? 0) || undefined,
+      cc3Helpfulness: +(s1.cc3Helpfulness ?? 0) || undefined,
       sqd0: +(s2.sqd0 ?? '') === 0 ? undefined : +(s2.sqd0 ?? 0) || undefined,
       sqd1: +(s2.sqd1 ?? '') === 0 ? undefined : +(s2.sqd1 ?? 0) || undefined,
       sqd2: +(s2.sqd2 ?? '') === 0 ? undefined : +(s2.sqd2 ?? 0) || undefined,

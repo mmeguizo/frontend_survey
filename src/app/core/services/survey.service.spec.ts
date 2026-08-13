@@ -33,7 +33,6 @@ describe('SurveyService', () => {
         date: '2024-01-01',
         sex: 'MALE',
         age: 30,
-        regionOfResidence: 'Region VI',
       };
 
       service.submitSurvey(mockSurvey).subscribe();

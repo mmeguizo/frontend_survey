@@ -5,7 +5,6 @@ export interface Survey {
   date: string;
   sex: string;
   age: number;
-  regionOfResidence: string;
   serviceTalisay: boolean;
   serviceExternal: boolean;
   office?: string;
@@ -36,7 +35,6 @@ export interface CreateSurveyDto {
   date: string;
   sex: 'MALE' | 'FEMALE';
   age: number;
-  regionOfResidence: string;
   serviceTalisay?: boolean;
   serviceExternal?: boolean;
   office?: string;

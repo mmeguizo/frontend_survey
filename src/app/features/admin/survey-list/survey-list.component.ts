@@ -155,21 +155,16 @@ export class SurveyListComponent implements OnInit {
   }
 
   private static readonly EXPORT_HEADERS = [
-    'ID',
-    'Ticket ID',
-    'Client Type',
-    'Date',
-    'Sex',
-    'Age',
-    'Region of Residence',
-    'Office',
-    'Service',
-    'Classification',
-    'Service Talisay',
-    'Service External',
-    'CC1 Awareness',
-    'CC2 Visibility',
-    'CC3 Helpfulness',
+    'DATE',
+    'NAME OF OFFICE',
+    'SERVICE AVAILED',
+    'TYPE OF SERVICE',
+    'CLIENT TYPE',
+    'SEX',
+    'AGE',
+    'CC1',
+    'CC2',
+    'CC3',
     'SQD0',
     'SQD1',
     'SQD2',
@@ -179,53 +174,28 @@ export class SurveyListComponent implements OnInit {
     'SQD6',
     'SQD7',
     'SQD8',
-    'SQD Average',
-    'Email Address',
-    'Suggestions',
+    'COMMENTS AND SUGGESTION',
   ];
 
-  exportCsv(): void {
+  exportExcel(): void {
     if (this.exporting) return;
     this.exporting = true;
     this.surveyService.getSurveys(1, 100000).subscribe({
       next: (response: PaginatedResponse<Survey>) => {
-        const header = SurveyListComponent.EXPORT_HEADERS.join(',');
-        const rows = response.items.map(survey =>
-          [
-            survey.id,
-            survey.ticketId,
-            survey.clientType,
-            survey.date,
-            survey.sex,
-            survey.age,
-            survey.regionOfResidence,
-            survey.office ?? '',
-            survey.service ?? '',
-            survey.internalExternal ?? '',
-            survey.serviceTalisay ? 'Yes' : 'No',
-            survey.serviceExternal ? 'Yes' : 'No',
-            survey.cc1Awareness ?? '',
-            survey.cc2Visibility ?? '',
-            survey.cc3Helpfulness ?? '',
-            survey.sqd0 ?? '',
-            survey.sqd1 ?? '',
-            survey.sqd2 ?? '',
-            survey.sqd3 ?? '',
-            survey.sqd4 ?? '',
-            survey.sqd5 ?? '',
-            survey.sqd6 ?? '',
-            survey.sqd7 ?? '',
-            survey.sqd8 ?? '',
-            this.sqdAvgOf(survey)?.toFixed(2) ?? '',
-            survey.emailAddress ?? '',
-            survey.suggestions ?? '',
-          ]
-            .map(this.csvEscape)
-            .join(',')
-        );
-        const csv = [header, ...rows].join('\r\n');
-        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-        this.downloadBlob(blob, `survey-responses-${new Date().toISOString().slice(0, 10)}.csv`);
+        const rows = response.items.map(survey => this.exportRow(survey));
+        const table = [
+          '<table><thead><tr>',
+          ...SurveyListComponent.EXPORT_HEADERS.map(
+            header => `<th style="font-weight:bold;background-color:#ffff00">${this.excelEscape(header)}</th>`,
+          ),
+          '</tr></thead><tbody>',
+          ...rows.map(row => `<tr>${row.map(value => `<td>${this.excelEscape(value)}</td>`).join('')}</tr>`),
+          '</tbody></table>',
+        ].join('');
+        const blob = new Blob([`<html><body>${table}</body></html>`], {
+          type: 'application/vnd.ms-excel',
+        });
+        this.downloadBlob(blob, `survey-responses-${new Date().toISOString().slice(0, 10)}.xls`);
         this.exporting = false;
       },
       error: (err: unknown) => {
@@ -234,6 +204,10 @@ export class SurveyListComponent implements OnInit {
         this.snackBar.open('Failed to export surveys.', 'Close', { duration: 5000 });
       },
     });
+  }
+
+  exportCsv(): void {
+    this.exportExcel();
   }
 
   exportPdf(): void {
@@ -255,35 +229,7 @@ export class SurveyListComponent implements OnInit {
         autoTable(doc, {
           startY: 72,
           head: [SurveyListComponent.EXPORT_HEADERS],
-          body: response.items.map(survey => [
-            survey.id,
-            survey.ticketId,
-            survey.clientType,
-            survey.date,
-            survey.sex,
-            survey.age,
-            survey.regionOfResidence,
-            survey.office ?? '',
-            survey.service ?? '',
-            survey.internalExternal ?? '',
-            survey.serviceTalisay ? 'Yes' : 'No',
-            survey.serviceExternal ? 'Yes' : 'No',
-            survey.cc1Awareness ?? '',
-            survey.cc2Visibility ?? '',
-            survey.cc3Helpfulness ?? '',
-            survey.sqd0 ?? '',
-            survey.sqd1 ?? '',
-            survey.sqd2 ?? '',
-            survey.sqd3 ?? '',
-            survey.sqd4 ?? '',
-            survey.sqd5 ?? '',
-            survey.sqd6 ?? '',
-            survey.sqd7 ?? '',
-            survey.sqd8 ?? '',
-            this.sqdAvgOf(survey)?.toFixed(2) ?? '',
-            survey.emailAddress ?? '',
-            survey.suggestions ?? '',
-          ]),
+          body: response.items.map(survey => this.exportRow(survey)),
           styles: { fontSize: 7, cellPadding: 3 },
           headStyles: { fillColor: [0, 77, 64], textColor: 255, fontStyle: 'bold' },
           alternateRowStyles: { fillColor: [240, 244, 243] },
@@ -299,9 +245,38 @@ export class SurveyListComponent implements OnInit {
     });
   }
 
-  private csvEscape(value: unknown): string {
+  private exportRow(survey: Survey): (string | number)[] {
+    return [
+      survey.date,
+      survey.office ?? '',
+      survey.service ?? '',
+      survey.internalExternal ?? '',
+      survey.clientType,
+      survey.sex,
+      survey.age,
+      survey.cc1Awareness ?? '',
+      survey.cc2Visibility ?? '',
+      survey.cc3Helpfulness ?? '',
+      survey.sqd0 ?? '',
+      survey.sqd1 ?? '',
+      survey.sqd2 ?? '',
+      survey.sqd3 ?? '',
+      survey.sqd4 ?? '',
+      survey.sqd5 ?? '',
+      survey.sqd6 ?? '',
+      survey.sqd7 ?? '',
+      survey.sqd8 ?? '',
+      survey.suggestions ?? '',
+    ];
+  }
+
+  private excelEscape(value: unknown): string {
     const str = value === null || value === undefined ? '' : String(value);
-    return /[",\r\n]/.test(str) ? '"' + str.replace(/"/g, '""') + '"' : str;
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   private downloadBlob(blob: Blob, filename: string): void {

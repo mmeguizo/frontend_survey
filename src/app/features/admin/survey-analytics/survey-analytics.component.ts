@@ -59,6 +59,8 @@ Chart.register(
     MatSelectModule,
     MatInputModule,
     MatTableModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatPaginatorModule,
     MatSortModule,
     MatProgressSpinnerModule,
@@ -82,8 +84,8 @@ export class SurveyAnalyticsComponent implements OnInit {
   filterForm = this.fb.group({
     clientType: [''],
     office: [''],
-    dateFrom: [''],
-    dateTo: [''],
+    dateFrom: [null as Date | null],
+    dateTo: [null as Date | null],
   });
 
   clientTypes = ['CITIZEN', 'BUSINESS', 'GOVERNMENT'];
@@ -142,14 +144,23 @@ export class SurveyAnalyticsComponent implements OnInit {
 
   applyFilters(): void {
     const { clientType, office, dateFrom, dateTo } = this.filterForm.value;
+    const fromStr = dateFrom ? this.toIsoDate(dateFrom) : '';
+    const toStr = dateTo ? this.toIsoDate(dateTo) : '';
     this.filteredSurveys = this.allSurveys.filter(s => {
       if (clientType && s.clientType !== clientType) return false;
       if (office && s.office !== office) return false;
-      if (dateFrom && s.date < dateFrom) return false;
-      if (dateTo && s.date > dateTo) return false;
+      if (fromStr && s.date < fromStr) return false;
+      if (toStr && s.date > toStr) return false;
       return true;
     });
     this.updateCharts();
+  }
+
+  private toIsoDate(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   updateCharts(): void {
@@ -190,43 +201,70 @@ export class SurveyAnalyticsComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.filterForm.reset({ clientType: '', office: '', dateFrom: '', dateTo: '' });
+    this.filterForm.reset({ clientType: '', office: '', dateFrom: null, dateTo: null });
   }
 
-  exportToCsv(): void {
-    const headers = ['ID', 'Date', 'Client Type', 'Office', 'Service', 'Avg SQD'];
-    const rows = this.filteredSurveys.map(s => [
-      s.id,
-      s.date,
-      s.clientType,
-      s.office || '',
-      s.service || '',
-      this.getAverageSqd(s).toFixed(2),
-    ]);
-    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
+  private static readonly EXPORT_HEADERS = [
+    'DATE', 'NAME OF OFFICE', 'SERVICE AVAILED', 'TYPE OF SERVICE', 'CLIENT TYPE',
+    'SEX', 'AGE', 'CC1', 'CC2', 'CC3', 'SQD0', 'SQD1', 'SQD2', 'SQD3', 'SQD4',
+    'SQD5', 'SQD6', 'SQD7', 'SQD8', 'COMMENTS AND SUGGESTION',
+  ];
+
+  private exportRow(survey: Survey): (string | number)[] {
+    return [
+      survey.date, survey.office || '', survey.service || '', survey.internalExternal || '',
+      survey.clientType, survey.sex, survey.age, survey.cc1Awareness ?? '',
+      survey.cc2Visibility ?? '', survey.cc3Helpfulness ?? '', survey.sqd0 ?? '',
+      survey.sqd1 ?? '', survey.sqd2 ?? '', survey.sqd3 ?? '', survey.sqd4 ?? '',
+      survey.sqd5 ?? '', survey.sqd6 ?? '', survey.sqd7 ?? '', survey.sqd8 ?? '',
+      survey.suggestions || '',
+    ];
+  }
+
+  exportToExcel(): void {
+    const rows = this.filteredSurveys.map(survey => this.exportRow(survey));
+    const table = [
+      '<table><thead><tr>',
+      ...SurveyAnalyticsComponent.EXPORT_HEADERS.map(
+        header => `<th style="font-weight:bold;background-color:#ffff00">${this.excelEscape(header)}</th>`,
+      ),
+      '</tr></thead><tbody>',
+      ...rows.map(row => `<tr>${row.map(value => `<td>${this.excelEscape(value)}</td>`).join('')}</tr>`),
+      '</tbody></table>',
+    ].join('');
+    const blob = new Blob([`<html><body>${table}</body></html>`], {
+      type: 'application/vnd.ms-excel',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'survey-reports.csv';
+    a.download = 'survey-reports.xls';
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  exportToCsv(): void {
+    this.exportToExcel();
   }
 
   exportToPdf(): void {
     const doc = new jsPDF();
     doc.text('Survey Reports', 14, 15);
-    const headers = [['ID', 'Date', 'Client Type', 'Office', 'Service', 'Avg SQD']];
-    const rows = this.filteredSurveys.map(s => [
-      s.id,
-      s.date,
-      s.clientType,
-      s.office || '',
-      s.service || '',
-      this.getAverageSqd(s).toFixed(2),
-    ]);
-    autoTable(doc, { head: headers, body: rows, startY: 20 });
+    autoTable(doc, {
+      head: [SurveyAnalyticsComponent.EXPORT_HEADERS],
+      body: this.filteredSurveys.map(survey => this.exportRow(survey)),
+      startY: 20,
+      headStyles: { fontStyle: 'bold' },
+    });
     doc.save('survey-reports.pdf');
+  }
+
+  private excelEscape(value: unknown): string {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   getAverageSqd(survey: Survey): number {

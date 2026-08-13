@@ -106,16 +106,6 @@
                 <mat-error *ngIf="step1Form.get('age')?.hasError('min')">Age must be at least 1</mat-error>
                 <mat-error *ngIf="step1Form.get('age')?.hasError('max')">Age must not exceed 150</mat-error>
               </mat-form-field>
-
-              <mat-form-field appearance="outline" class="csm-field">
-                <mat-label>Region of Residence</mat-label>
-                <mat-select formControlName="regionOfResidence" required>
-                  @for (region of regions; track region) {
-                    <mat-option [value]="region">{{ region }}</mat-option>
-                  }
-                </mat-select>
-                <mat-error *ngIf="step1Form.get('regionOfResidence')?.hasError('required')">Region is required</mat-error>
-              </mat-form-field>
             </div>
           </fieldset>
 
@@ -190,7 +180,6 @@
 
             <div
               class="csm-cc-question"
-              *ngIf="+(step1Form.get('cc1Awareness')?.value ?? '') !== 4"
               [class.csm-field-invalid]="step1Form.get('cc2Visibility')?.invalid && step1Form.get('cc2Visibility')?.touched"
             >
               <p class="csm-cc-label">CC2. If aware, did you see this office's Citizen's Charter?</p>
@@ -206,7 +195,6 @@
 
             <div
               class="csm-cc-question"
-              *ngIf="+(step1Form.get('cc1Awareness')?.value ?? '') !== 4"
               [class.csm-field-invalid]="step1Form.get('cc3Helpfulness')?.invalid && step1Form.get('cc3Helpfulness')?.touched"
             >
               <p class="csm-cc-label">CC3. If aware, how much did the Citizen's Charter help you in your transaction?</p>
@@ -218,10 +206,6 @@
               <div class="csm-error" *ngIf="step1Form.get('cc3Helpfulness')?.invalid && step1Form.get('cc3Helpfulness')?.touched">
                 Please answer this question.
               </div>
-            </div>
-
-            <div class="csm-cc-disabled" *ngIf="+(step1Form.get('cc1Awareness')?.value ?? '') === 4">
-              <p>CC2 and CC3 are not applicable since you are not aware of the Citizen's Charter.</p>
             </div>
           </fieldset>
 
@@ -239,32 +223,47 @@
           <fieldset class="csm-fieldset">
             <legend class="csm-legend">Service Quality Dimensions (SQD)</legend>
             <p class="csm-sqd-instruction">
-              <strong>Rating Scale:</strong> 5 - Strongly Agree | 4 - Agree | 3 - Neutral | 2 - Disagree | 1 - Strongly Disagree | 0 - N/A
+              <strong>Instruction:</strong> Put a check mark (✓) on the column that best corresponds to your answer.
             </p>
 
-            <div class="csm-sqd-list">
+            <div class="csm-sqd-table" role="table" aria-label="Service Quality Dimensions ratings">
+              <div class="csm-sqd-table-header" role="row">
+                <div class="csm-sqd-question-heading" role="columnheader">Question</div>
+                @for (opt of ratingOptions; track opt.value) {
+                  <div class="csm-sqd-rating-heading" role="columnheader">
+                    <span>{{ opt.label }}</span>
+                    <strong>({{ opt.value }})</strong>
+                  </div>
+              }
+              </div>
+
               @for (sqd of sqdQuestions; track sqd.key) {
                 <div
-                  class="csm-sqd-item"
+                  class="csm-sqd-table-row"
+                  role="row"
                   [class.csm-field-invalid]="step2Form.get(sqd.key)?.invalid && step2Form.get(sqd.key)?.touched"
                 >
-                  <div class="csm-sqd-question">
-                    <span class="csm-sqd-number">{{ sqd.key.toUpperCase() }}</span>
+                  <div class="csm-sqd-question-cell" role="rowheader">
+                    <span class="csm-sqd-number">{{ sqd.key.toUpperCase() }}.</span>
                     <div class="csm-sqd-text">
                       <p class="csm-sqd-en">{{ sqd.en }}</p>
                       <p class="csm-sqd-tl">{{ sqd.tl }}</p>
                     </div>
+                    <div class="csm-error" *ngIf="step2Form.get(sqd.key)?.invalid && step2Form.get(sqd.key)?.touched">
+                      Please select a rating.
+                    </div>
                   </div>
-                  <mat-radio-group [formControlName]="sqd.key" class="csm-sqd-radio-group" aria-label="{{ sqd.key }} rating">
+                  <mat-radio-group
+                    [formControlName]="sqd.key"
+                    class="csm-sqd-radio-group"
+                    aria-label="{{ sqd.key }} rating"
+                  >
                     @for (opt of ratingOptions; track opt.value) {
-                      <mat-radio-button [value]="opt.value" class="csm-sqd-radio">
-                        {{ opt.value === 0 ? 'N/A' : opt.value }}
+                      <mat-radio-button [value]="opt.value" class="csm-sqd-radio" role="cell">
+                        <span class="csm-sqd-radio-label">{{ opt.label }} ({{ opt.value }})</span>
                       </mat-radio-button>
                     }
                   </mat-radio-group>
-                  <div class="csm-error" *ngIf="step2Form.get(sqd.key)?.invalid && step2Form.get(sqd.key)?.touched">
-                    Please select a rating for this question.
-                  </div>
                 </div>
               }
             </div>
@@ -323,7 +322,6 @@
                 <dt>Date</dt><dd>{{ formatDate(step1Form.get('date')?.value ?? '') }}</dd>
                 <dt>Sex</dt><dd>{{ displayValue('sex') }}</dd>
                 <dt>Age</dt><dd>{{ step1Form.get('age')?.value || '—' }}</dd>
-                <dt>Region</dt><dd>{{ step1Form.get('regionOfResidence')?.value || '—' }}</dd>
               </dl>
             </div>
 
@@ -331,12 +329,8 @@
               <h4><mat-icon>description</mat-icon> Citizen's Charter</h4>
               <dl class="csm-review-list">
                 <dt>CC1 Awareness</dt><dd>{{ displayValue('cc1Awareness') }}</dd>
-                @if (+(step1Form.get('cc1Awareness')?.value ?? '') !== 4) {
-                  <dt>CC2 Visibility</dt><dd>{{ displayValue('cc2Visibility') }}</dd>
-                  <dt>CC3 Helpfulness</dt><dd>{{ displayValue('cc3Helpfulness') }}</dd>
-                } @else {
-                  <dt>CC2 / CC3</dt><dd>Not applicable</dd>
-                }
+                <dt>CC2 Visibility</dt><dd>{{ displayValue('cc2Visibility') }}</dd>
+                <dt>CC3 Helpfulness</dt><dd>{{ displayValue('cc3Helpfulness') }}</dd>
               </dl>
             </div>
 
