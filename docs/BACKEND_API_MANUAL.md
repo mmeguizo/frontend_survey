@@ -46,7 +46,7 @@ The ICT Ticket System Backend provides a GraphQL API for managing service reques
 ✅ Role-based access control  
 ✅ AI Chat Assistant with RAG (vector + full-text search)  
 ✅ AI Chat streaming via GraphQL Subscriptions  
-✅ Provider fallback chain (Gemini → Perplexity → Hugging Face → Offline)  
+✅ Provider fallback chain (Gemini → Hugging Face → Offline)  
 ✅ Auto-saved Solutions Database from resolved tickets  
 ✅ Read-only analytics queries via AI Chat  
 ✅ AI Chat Health Metrics dashboard (admin-only)  
@@ -749,7 +749,7 @@ subscription {
 - The AI response is split into **chunks** streamed one at a time via pub/sub
 - Each chunk has `content` (partial text) and `done` (boolean — true on final chunk)
 - The full message is persisted to the database when `done` is true
-- Supports Gemini native streaming, Perplexity SSE streaming, and Hugging Face simulated streaming
+- Supports Gemini native streaming and Hugging Face simulated streaming
 - The `provider` field returned indicates which AI provider handled the request
 - If streaming fails mid-response, the frontend shows "Reconnecting…" and falls back to the `sendChatMessage` mutation
 
@@ -831,7 +831,7 @@ query {
       "avgDurationMs": 3890
     },
     {
-      "provider": "perplexity",
+      "provider": "huggingface",
       "messageCount": 35,
       "fallbackCount": 35,
       "failureCount": 1,
@@ -973,7 +973,7 @@ mutation {
 - Person-level user directory answers are **ADMIN only**; other staff roles receive aggregate user summaries only
 - If the question is about deletion policy, the AI explains the safeguard rules but does **not** execute destructive actions
 - Questions about notifications, chat history, attachments, ticket counters, and migration/internal tables return an explicit unsupported-data response
-- Returns `reply` (AI response), `provider` (string: "gemini", "perplexity", "huggingface", or "offline"), and `metadata` (JSON string with `solutionIds`, `kbArticleIds`, etc.)
+- Returns `reply` (AI response), `provider` (string: "gemini", "huggingface", or "offline"), and `metadata` (JSON string with `solutionIds`, `kbArticleIds`, etc.)
 
 **Analytics Questions Detected**:
 
@@ -1714,8 +1714,8 @@ query DashboardData {
 
 ### Version 2.5.0 (July 22, 2026)
 
-✅ **AI Chat Streaming**: New `chatReplyStream` GraphQL subscription for real-time streaming responses. Supports Gemini native streaming, Perplexity SSE, and Hugging Face simulated streaming.  
-✅ **Provider Fallback Chain**: AI chat falls back Gemini → Perplexity → Hugging Face → Offline curated templates. Configurable timeout per provider (`AI_REQUEST_TIMEOUT_MS`, default 45s).  
+✅ **AI Chat Streaming**: New `chatReplyStream` GraphQL subscription for real-time streaming responses. Supports Gemini native streaming and Hugging Face simulated streaming.  
+✅ **Provider Fallback Chain**: AI chat falls back Gemini → Hugging Face → Offline curated templates. Configurable timeout per provider (`AI_REQUEST_TIMEOUT_MS`, default 45s).  
 ✅ **6 Offline Fallback Templates**: Issue-specific templates for Password Reset, Printer Issue, Wi-Fi/Network, Projector/AV Booking, Software Install, Computer Issue — each with a `ticket-data` block for escalation.  
 ✅ **Chat Health Dashboard**: New `chatHealthMetrics(days)` query with `ChatHealthMetrics` and `ProviderUsageEntry` types — total messages, fallbacks, failures, avg response time, and per-provider breakdown. Admin-only.  
 ✅ **Prompt Version Tracking**: New `chatPromptVersionStats(days)` query. `promptVersion` constant stored on every AI message. `promptVersion` field on `TicketAIAnalysis` GraphQL type.  

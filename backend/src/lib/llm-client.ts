@@ -44,8 +44,9 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
 /**
  * Unified LLM client. Provider priority:
  * 1. Google Gemini (primary) — gemini-2.5-flash
- * 2. Perplexity (fallback) — Sonar model
- * 3. Hugging Face Inference API (free-tier fallback) — Qwen / Mistral / Llama
+ * 2. Hugging Face Inference API (fallback) — Qwen / Mistral / Llama
+ *
+ * Also supports Gemini with Google Search Grounding for web-search queries.
  */
 export class LlmClient {
   private geminiClient: GoogleGenerativeAI | null = null;
@@ -80,10 +81,6 @@ export class LlmClient {
     return Boolean(config.gemini.apiKey);
   }
 
-  isPerplexityAvailable(): boolean {
-    return Boolean(config.perplexity.apiKey);
-  }
-
   isHuggingFaceAvailable(): boolean {
     return Boolean(config.huggingface.token);
   }
@@ -94,12 +91,11 @@ export class LlmClient {
 
     const providers: string[] = [];
     if (this.isGeminiAvailable()) providers.push("Gemini (primary)");
-    if (this.isPerplexityAvailable()) providers.push("Perplexity (fallback)");
-    if (this.isHuggingFaceAvailable()) providers.push("Hugging Face (free fallback)");
+    if (this.isHuggingFaceAvailable()) providers.push("Hugging Face (fallback)");
 
     if (providers.length === 0) {
       logger.warn(
-        "[LlmClient] No LLM provider configured! Set GEMINI_API_KEY, PERPLEXITY_API_KEY, or HF_TOKEN in .env",
+        "[LlmClient] No LLM provider configured! Set GEMINI_API_KEY or HF_TOKEN in .env",
       );
     } else {
       logger.info(`[LlmClient] Providers: ${providers.join(" -> ")}`);
@@ -111,7 +107,7 @@ export class LlmClient {
 
   /**
    * Send a chat completion request.
-   * Tries Gemini -> Perplexity -> Hugging Face, each with a strict timeout.
+   * Tries Gemini -> Hugging Face, each with a strict timeout.
    * Returns the generated text and the provider that succeeded.
    */
   async chatCompletion(
@@ -129,11 +125,6 @@ export class LlmClient {
         name: "Gemini",
         available: this.isGeminiAvailable(),
         call: () => this.callGemini(messages, options),
-      },
-      {
-        name: "Perplexity",
-        available: this.isPerplexityAvailable(),
-        call: () => this.callPerplexity(messages, options),
       },
       {
         name: "Hugging Face",
@@ -216,25 +207,7 @@ export class LlmClient {
       }
     }
 
-    // 2. Try Perplexity streaming
-    if (this.isPerplexityAvailable()) {
-      try {
-        for await (const chunk of this.streamPerplexity(messages, options)) {
-          yield chunk;
-        }
-        this._consecutiveFailures = 0;
-        this._lastError = null;
-        return;
-      } catch (err: any) {
-        const message = err.message || String(err);
-        logger.warn(`[LlmClient] Perplexity streaming failed: ${message}`);
-        errors.push(`Perplexity: ${message}`);
-        this._lastError = { provider: "Perplexity", message, timestamp: new Date().toISOString() };
-        yield { text: "\n\n_(Switching to backup AI model...)_\n\n", provider: "Perplexity", done: false };
-      }
-    }
-
-    // 3. Fallback: non-streaming providers (Hugging Face) — simulate chunks
+    // 2. Fallback: non-streaming providers (Hugging Face) — simulate chunks
     try {
       const { text, provider } = await this.chatCompletion(messages, options);
       // chatCompletion already resets consecutiveFailures on success
@@ -290,69 +263,154 @@ export class LlmClient {
     yield { text: "", provider: "Gemini", done: true };
   }
 
+  // ========================================
+  // GEMINI WITH GOOGLE SEARCH GROUNDING
+  // ========================================
+
   /**
-   * Stream from Perplexity using SSE streaming
+   * Build Gemini-compatible message contents from LlmMessage array.
    */
-  private async *streamPerplexity(
+  private buildGeminiContents(messages: LlmMessage[]): Array<{ role: string; parts: Array<{ text: string }> }> {
+    const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
+    for (const msg of messages) {
+      let role: string;
+      if (msg.role === "assistant") role = "model";
+      else if (msg.role === "system") role = "user";
+      else role = "user";
+      contents.push({ role, parts: [{ text: msg.content }] });
+    }
+    return contents;
+  }
+
+  /**
+   * Build Gemini generation config from LlmOptions.
+   */
+  private buildGenerationConfig(options: LlmOptions): any {
+    const generationConfig: any = {
+      temperature: options.temperature ?? 0.3,
+      maxOutputTokens: options.maxTokens ?? 2048,
+    };
+    if (options.topP !== undefined) generationConfig.topP = options.topP;
+    if (options.responseJson) generationConfig.responseMimeType = "application/json";
+    return generationConfig;
+  }
+
+  /**
+   * Gemini call with Google Search Grounding enabled.
+   * Uses the same API key as normal Gemini calls — no extra credentials.
+   * Returns text + provider name + whether web search was actually used.
+   */
+  async searchGroundedCompletion(
     messages: LlmMessage[],
-    options: LlmOptions,
-  ): AsyncGenerator<LlmStreamChunk> {
-    const adapted = this.adaptForPerplexity(messages);
+    options: LlmOptions = {},
+  ): Promise<LlmResult & { webSearchUsed: boolean }> {
+    this.logStatus();
 
-    const response = await fetch("https://api.perplexity.ai/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${config.perplexity.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: config.perplexity.model,
-        messages: adapted,
-        temperature: options.temperature ?? 0.3,
-        max_tokens: options.maxTokens ?? 2048,
-        stream: true,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Perplexity HTTP ${response.status}: ${errorText.slice(0, 400)}`);
+    if (!this.isGeminiAvailable()) {
+      throw new Error("Gemini API key is required for search grounding");
     }
 
-    const reader = response.body?.getReader();
-    if (!reader) throw new Error("Perplexity response body is not readable");
+    const timeoutMs = config.ai.requestTimeoutMs;
+    const client = this.getGemini();
 
-    const decoder = new TextDecoder();
-    let buffer = "";
+    try {
+      const result = await withTimeout(
+        (async () => {
+          const model = client.getGenerativeModel({
+            model: config.gemini.model,
+            tools: [{ googleSearchRetrieval: {} } as any],
+          });
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+          const contents = this.buildGeminiContents(messages);
+          const generationConfig = this.buildGenerationConfig(options);
+          return model.generateContent({ contents, generationConfig });
+        })(),
+        timeoutMs,
+        "Gemini (Web Search)",
+      );
 
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop() || "";
+      const text = result.response.text();
+      if (!text || !text.trim()) {
+        throw new Error("Gemini (Web Search) returned empty content");
+      }
 
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || !trimmed.startsWith("data: ")) continue;
-        const data = trimmed.slice(6);
-        if (data === "[DONE]") continue;
+      // Check if grounding metadata indicates web search was actually performed
+      const groundingMeta = (result.response.candidates?.[0] as any)?.groundingMetadata;
+      const webSearchUsed =
+        (groundingMeta?.webSearchQueries?.length ?? 0) > 0 ||
+        (groundingMeta?.groundingChunks?.length ?? 0) > 0;
 
-        try {
-          const parsed = JSON.parse(data);
-          const delta = parsed?.choices?.[0]?.delta?.content;
-          if (delta) {
-            yield { text: delta, provider: "Perplexity", done: false };
-          }
-        } catch {
-          // Skip malformed JSON lines
-        }
+      logger.info(`[LlmClient] Search-grounded response generated by Gemini (webSearch=${webSearchUsed})`);
+      this._consecutiveFailures = 0;
+      this._lastError = null;
+      return { text, provider: "Gemini (Web)", webSearchUsed };
+    } catch (err: any) {
+      const message = err.message || String(err);
+      logger.warn(`[LlmClient] Gemini search grounding failed: ${message}`);
+      this._lastError = { provider: "Gemini (Web)", message, timestamp: new Date().toISOString() };
+
+      // Fall back to normal (non-grounded) completion
+      logger.info("[LlmClient] Falling back to standard LLM completion (no web search)");
+      try {
+        const fallback = await this.chatCompletion(messages, options);
+        return { ...fallback, webSearchUsed: false };
+      } catch (fallbackErr: any) {
+        this._consecutiveFailures++;
+        throw new Error(`Search grounding and all fallbacks failed. ${message} | ${fallbackErr.message}`);
       }
     }
-
-    yield { text: "", provider: "Perplexity", done: true };
   }
+
+  /**
+   * Stream a Gemini response with Google Search Grounding enabled.
+   * Falls back to normal streaming if grounding fails.
+   */
+  async *streamSearchGroundedCompletion(
+    messages: LlmMessage[],
+    options: LlmOptions = {},
+  ): AsyncGenerator<LlmStreamChunk> {
+    if (!this.isGeminiAvailable()) {
+      // Fall through to non-grounded streaming
+      yield* this.streamChatCompletion(messages, options);
+      return;
+    }
+
+    const client = this.getGemini();
+
+    try {
+      const model = client.getGenerativeModel({
+        model: config.gemini.model,
+        tools: [{ googleSearchRetrieval: {} } as any],
+      });
+
+      const contents = this.buildGeminiContents(messages);
+      const generationConfig = this.buildGenerationConfig(options);
+      const result = await model.generateContentStream({ contents, generationConfig });
+
+      for await (const chunk of result.stream) {
+        const text = chunk.text();
+        if (text) {
+          yield { text, provider: "Gemini (Web)", done: false };
+        }
+      }
+
+      yield { text: "", provider: "Gemini (Web)", done: true };
+      this._consecutiveFailures = 0;
+      this._lastError = null;
+    } catch (err: any) {
+      const message = err.message || String(err);
+      logger.warn(`[LlmClient] Gemini search grounding stream failed: ${message}`);
+      this._lastError = { provider: "Gemini (Web)", message, timestamp: new Date().toISOString() };
+
+      // Fall back to normal streaming
+      yield { text: "\n\n_(Switching to standard AI model...)_\n\n", provider: "Gemini (Web)", done: false };
+      yield* this.streamChatCompletion(messages, options);
+    }
+  }
+
+  // ========================================
+  // GEMINI (standard — no web search)
+  // ========================================
 
   private async callGemini(
     messages: LlmMessage[],
@@ -361,29 +419,8 @@ export class LlmClient {
     const client = this.getGemini();
     const model = client.getGenerativeModel({ model: config.gemini.model });
 
-    const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
-
-    for (const msg of messages) {
-      // Gemini only supports "user" and "model" roles
-      let role: string;
-      if (msg.role === "assistant") role = "model";
-      else if (msg.role === "system") role = "user";
-      else role = "user";
-      contents.push({ role, parts: [{ text: msg.content }] });
-    }
-
-    const generationConfig: any = {
-      temperature: options.temperature ?? 0.3,
-      maxOutputTokens: options.maxTokens ?? 2048,
-    };
-
-    if (options.topP !== undefined) {
-      generationConfig.topP = options.topP;
-    }
-
-    if (options.responseJson) {
-      generationConfig.responseMimeType = "application/json";
-    }
+    const contents = this.buildGeminiContents(messages);
+    const generationConfig = this.buildGenerationConfig(options);
 
     const result = await model.generateContent({
       contents,
@@ -394,54 +431,7 @@ export class LlmClient {
   }
 
   // ========================================
-  // PERPLEXITY (fallback)
-  // ========================================
-
-  private async callPerplexity(
-    messages: LlmMessage[],
-    options: LlmOptions,
-  ): Promise<string> {
-    // Perplexity Sonar API rejects "system" role - merge into first user message
-    const adapted = this.adaptForPerplexity(messages);
-
-    const body: Record<string, unknown> = {
-      model: config.perplexity.model,
-      messages: adapted,
-      temperature: options.temperature ?? 0.3,
-      max_tokens: options.maxTokens ?? 2048,
-    };
-
-    if (options.topP !== undefined) {
-      body.top_p = options.topP;
-    }
-
-    const response = await fetch("https://api.perplexity.ai/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${config.perplexity.apiKey}`,
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `Perplexity HTTP ${response.status}: ${errorText.slice(0, 400)}`,
-      );
-    }
-
-    const data = (await response.json()) as any;
-    const content = data?.choices?.[0]?.message?.content;
-    if (!content) {
-      throw new Error("Perplexity returned empty content");
-    }
-
-    return content;
-  }
-
-  // ========================================
-  // HUGGING FACE (free-tier fallback)
+  // HUGGING FACE (fallback)
   // ========================================
 
   private async callHuggingFace(
@@ -496,37 +486,6 @@ export class LlmClient {
     }
 
     throw new Error("Hugging Face returned unexpected response shape");
-  }
-
-  private adaptForPerplexity(
-    messages: LlmMessage[],
-  ): Array<{ role: "user" | "assistant"; content: string }> {
-    const systemParts: string[] = [];
-    const result: Array<{ role: "user" | "assistant"; content: string }> = [];
-    let merged = false;
-
-    for (const msg of messages) {
-      if (msg.role === "system") {
-        systemParts.push(msg.content);
-      } else {
-        const role = msg.role === "user" ? "user" : "assistant";
-        if (!merged && systemParts.length && role === "user") {
-          result.push({
-            role: "user",
-            content: systemParts.join("\n\n") + "\n\n" + msg.content,
-          });
-          merged = true;
-        } else {
-          result.push({ role, content: msg.content });
-        }
-      }
-    }
-
-    if (!merged && systemParts.length) {
-      result.unshift({ role: "user", content: systemParts.join("\n\n") });
-    }
-
-    return result;
   }
 
   private adaptForHuggingFace(messages: LlmMessage[]): string {

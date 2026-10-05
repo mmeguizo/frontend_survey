@@ -480,6 +480,7 @@ export const ticketTypeDefs = gql`
       ticketId: Int!
       input: UpdateTicketDescriptionInput!
     ): Ticket!
+    updateTicketPriority(ticketId: Int!, priority: Priority!): Ticket!
     # Head workflow: acknowledge ticket and assign developer name
     acknowledgeAndAssignDeveloper(
       ticketId: Int!

@@ -106,7 +106,7 @@ Rules: Do not invent info. Use common ICT knowledge. Be concise and technical.`;
 export class GeminiService {
   /** Check if any LLM provider is available */
   isAvailable(): boolean {
-    return llmClient.isPerplexityAvailable() || llmClient.isGeminiAvailable();
+    return llmClient.isGeminiAvailable() || llmClient.isHuggingFaceAvailable();
   }
 
   /**

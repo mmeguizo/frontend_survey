@@ -1,0 +1,44 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Survey {
+  id                Int      @id @default(autoincrement())
+  ticketId          String   @unique
+  clientType        String   // CITIZEN, BUSINESS, GOVERNMENT
+  date              String
+  sex               String   // MALE, FEMALE
+  age               Int
+  regionOfResidence String
+  serviceTalisay    Boolean  @default(false)
+  serviceExternal   Boolean  @default(false)
+  cc1Awareness      Int?
+  cc2Visibility     Int?
+  cc3Helpfulness    Int?
+  sqd0              Int?
+  sqd1              Int?
+  sqd2              Int?
+  sqd3              Int?
+  sqd4              Int?
+  sqd5              Int?
+  sqd6              Int?
+  sqd7              Int?
+  sqd8              Int?
+  suggestions       String?  @db.Text
+  emailAddress      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

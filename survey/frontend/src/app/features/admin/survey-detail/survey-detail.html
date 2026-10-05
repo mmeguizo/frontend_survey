@@ -1,0 +1,135 @@
+<div class="csm-survey-detail">
+  <!-- ARTA Header Bar -->
+  <div class="csm-arta-bar">
+    <span class="arta-approval">ARTA APPROVAL NO. 2024-001 | VALID UNTIL 2025-12-31</span>
+  </div>
+
+  <app-admin-toolbar></app-admin-toolbar>
+
+  <div class="adm-page">
+    <div class="csm-detail-top">
+      <button mat-stroked-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon> Back to Responses
+      </button>
+      <h2 class="csm-detail-title" *ngIf="survey">Survey Response #{{ survey.id }}</h2>
+    </div>
+
+    <div *ngIf="loading" class="csm-detail-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <ng-container *ngIf="survey && !loading">
+      <mat-card class="csm-card">
+        <mat-card-header>
+          <mat-card-title>Respondent Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="csm-detail-grid">
+            <div class="csm-detail-item">
+              <span class="csm-detail-label">Ticket ID</span>
+              <span class="csm-detail-value">{{ survey.ticketId }}</span>
+            </div>
+            <div class="csm-detail-item">
+              <span class="csm-detail-label">Client Type</span>
+              <span class="csm-detail-value">{{ survey.clientType }}</span>
+            </div>
+            <div class="csm-detail-item">
+              <span class="csm-detail-label">Sex</span>
+              <span class="csm-detail-value">{{ survey.sex }}</span>
+            </div>
+            <div class="csm-detail-item">
+              <span class="csm-detail-label">Age</span>
+              <span class="csm-detail-value">{{ survey.age }}</span>
+            </div>
+            <div class="csm-detail-item">
+              <span class="csm-detail-label">Region of Residence</span>
+              <span class="csm-detail-value">{{ survey.regionOfResidence }}</span>
+            </div>
+            <div class="csm-detail-item">
+              <span class="csm-detail-label">Date</span>
+              <span class="csm-detail-value">{{ survey.date }}</span>
+            </div>
+            <div class="csm-detail-item csm-detail-wide">
+              <span class="csm-detail-label">Service Availed</span>
+              <span class="csm-detail-value csm-service-badges">
+                <span class="csm-service-badge" [class.csm-service-badge-on]="survey.serviceTalisay">
+                  Talisay
+                </span>
+                <span class="csm-service-badge" [class.csm-service-badge-on]="survey.serviceExternal">
+                  External
+                </span>
+              </span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="csm-card">
+        <mat-card-header>
+          <mat-card-title>Complaint / Concern Questions</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="csm-cc-row">
+            <span class="csm-cc-question">Awareness of the Citizen's Charter</span>
+            <span class="csm-cc-answer">{{ survey.cc1Awareness ?? 'No answer' }}</span>
+          </div>
+          <div class="csm-cc-row">
+            <span class="csm-cc-question">Citizen's Charter was easy to see</span>
+            <span class="csm-cc-answer">{{ survey.cc2Visibility ?? 'No answer' }}</span>
+          </div>
+          <div class="csm-cc-row">
+            <span class="csm-cc-question">Helpfulness of personnel in using the Citizen's Charter</span>
+            <span class="csm-cc-answer">{{ survey.cc3Helpfulness ?? 'No answer' }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="csm-card">
+        <mat-card-header>
+          <mat-card-title>Service Quality Dimensions (SQD) Ratings</mat-card-title>
+          <mat-card-subtitle *ngIf="avgSqd() !== null">
+            Average SQD: {{ avgSqd()?.toFixed(2) }}
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="csm-sqd-row" *ngFor="let row of sqdRows; let i = index">
+            <span class="csm-sqd-key">{{ row.key.toUpperCase() }}</span>
+            <div class="csm-sqd-body">
+              <div class="csm-sqd-question">{{ row.question }}</div>
+              <div class="csm-sqd-rating">
+                <ng-container *ngIf="starList(row.value).length > 0">
+                  <mat-icon *ngFor="let filled of starList(row.value); let s = index" [class.csm-star-filled]="filled" class="csm-star">
+                    {{ filled ? 'star' : 'star_border' }}
+                  </mat-icon>
+                  <span class="csm-rating-label">{{ ratingLabel(row.value) }}</span>
+                </ng-container>
+                <span *ngIf="starList(row.value).length === 0" class="csm-rating-na">No answer</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="csm-card">
+        <mat-card-header>
+          <mat-card-title>Feedback</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="csm-detail-item">
+            <span class="csm-detail-label">Email Address</span>
+            <span class="csm-detail-value">{{ survey.emailAddress || 'Not provided' }}</span>
+          </div>
+          <mat-divider class="csm-divider"></mat-divider>
+          <div class="csm-detail-item">
+            <span class="csm-detail-label">Suggestions / Comments</span>
+            <span class="csm-detail-value csm-suggestion">{{ survey.suggestions || 'Not provided' }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <p class="csm-detail-meta">
+        Submitted: {{ survey.createdAt | date: 'medium' }} &middot; Updated: {{ survey.updatedAt | date: 'medium' }}
+      </p>
+    </ng-container>
+  </div>
+</div>

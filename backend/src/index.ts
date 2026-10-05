@@ -255,10 +255,10 @@ async function start() {
   );
 
   // ========================================
-  // REST endpoint for report downloads
-  // GET /reports/download?type=full-report&from=2025-01-01&to=2025-12-31
-  // Requires Authorization header (Bearer token)
-  // Only ADMIN, MIS_HEAD, ITS_HEAD, DIRECTOR, SECRETARY, DEVELOPER, TECHNICAL roles allowed
+  // REST endpoint for report downloads 
+  // GET /reports/download?type=full-report&from=2025-01-01&to=2025-12-31 
+  // Requires Authorization header (Bearer token) 
+  // Only ADMIN, MIS_HEAD, ITS_HEAD, DIRECTOR, SECRETARY, DEVELOPER, TECHNICAL roles allowed 
   // ========================================
   app.get("/reports/download", async (req, res) => {
     try {
@@ -361,9 +361,9 @@ async function start() {
   });
 
   // ========================================
-  // HTTP + WebSocket server for real-time subscriptions
-  // HTTP handles normal GraphQL queries/mutations
-  // WebSocket handles subscriptions (live updates)
+  // HTTP + WebSocket server for real-time subscriptions 
+  // HTTP handles normal GraphQL queries/mutations 
+  // WebSocket handles subscriptions (live updates) 
   // ========================================
   const httpServer = createServer(app);
 

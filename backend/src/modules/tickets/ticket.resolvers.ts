@@ -690,6 +690,45 @@ export const ticketResolvers = {
       );
     },
 
+    /**
+     * Update ticket priority (Admin/Secretary/Head only)
+     */
+    updateTicketPriority: async (
+      _: any,
+      { ticketId, priority }: { ticketId: number; priority: string },
+      context: any,
+    ) => {
+      if (!context.currentUser) {
+        throw new Error("Unauthorized");
+      }
+      // Only admin, secretary, and department heads can change priority
+      if (
+        !["ADMIN", "SECRETARY", "MIS_HEAD", "ITS_HEAD"].includes(
+          context.currentUser.role,
+        )
+      ) {
+        throw new Error(
+          "Forbidden: Only admins, secretaries, and department heads can change ticket priority",
+        );
+      }
+      // Verify the ticket exists and is accessible
+      await ticketService.getAccessibleTicket(
+        ticketId,
+        context.currentUser.id,
+        context.currentUser.role,
+      );
+      // Update priority
+      await prisma.ticket.update({
+        where: { id: ticketId },
+        data: { priority: priority as any },
+      });
+      return ticketService.getAccessibleTicket(
+        ticketId,
+        context.currentUser.id,
+        context.currentUser.role,
+      );
+    },
+
     // ========================================
     // HEAD WORKFLOW MUTATIONS (Simplified)
     // ========================================

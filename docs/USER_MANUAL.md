@@ -6,7 +6,7 @@
 > **Version**: 2.8.0 | **Last Updated**: July 22, 2026
 
 > **Current Release Highlights**: AI chat streaming with real-time responses, provider fallback
-> chain (Gemini → Perplexity → Hugging Face → Offline), AI Chat Health dashboard for admins,
+> chain (Gemini → Hugging Face → Offline), AI Chat Health dashboard for admins,
 > department-aware quick prompts, and prompt versioning infrastructure.
 
 ---
@@ -625,7 +625,7 @@ Notifications are delivered in **real-time** via WebSocket. If WebSocket is unav
 
 ## 15. AI-Powered Smart Suggestions
 
-The system uses **Google Gemini 2.0 Flash** (with Perplexity and Hugging Face fallbacks) to provide intelligent analysis of service requests.
+The system uses **Google Gemini 2.0 Flash** (with Hugging Face fallback) to provide intelligent analysis of service requests.
 
 ### 15.1 How to Use
 
@@ -676,7 +676,7 @@ The AI Chat Assistant is an intelligent widget available to all logged-in users.
 - When the chat opens, a new session is created automatically
 - Type your question or request in the message input at the bottom and press **Enter** or click **Send**
 - The AI responds in real time with formatted, context-aware answers that stream in as they are generated
-- The active AI provider is shown next to each assistant reply (Gemini / Perplexity / Hugging Face / Offline)
+- The active AI provider is shown next to each assistant reply (Gemini / Hugging Face / Offline)
 - If the primary provider is slow, a "Switching to backup AI model…" message appears after ~8 seconds
 - If stream is interrupted, a "Reconnecting…" indicator appears and the system falls back to a full-response mutation
 

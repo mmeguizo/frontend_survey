@@ -257,7 +257,7 @@ The system uses a resilient, cascading fallback strategy so users are not left w
 ### Provider Priority
 
 1. **Google Gemini** (primary) — `gemini-2.5-flash`
-2. **Perplexity** (fallback) — `sonar`
+2. **Hugging Face** (fallback) — `Qwen/Qwen2.5-72B-Instruct`
 3. **Hugging Face Inference API** (free-tier fallback) — configurable, default `Qwen/Qwen2.5-72B-Instruct`
 4. **Offline curated response** — uses local RAG context and templates
 
@@ -272,7 +272,6 @@ The system uses a resilient, cascading fallback strategy so users are not left w
 ```env
 GEMINI_API_KEY=your-gemini-api-key
 GEMINI_MODEL=gemini-2.5-flash
-PERPLEXITY_API_KEY=your-perplexity-key
 HF_TOKEN=your-huggingface-token
 HF_MODEL=Qwen/Qwen2.5-72B-Instruct
 AI_REQUEST_TIMEOUT_MS=45000
@@ -291,11 +290,10 @@ Small, scoped AI improvements are tracked in `docs/AI_TASKS.md`. Agents and cont
 ## Technical Requirements
 
 ### For AI Integration
-1. **API Keys:** Google Gemini, Perplexity, or Hugging Face token (at least one required)
+1. **API Keys:** Google Gemini or Hugging Face token (at least one required)
 2. **Environment Variables:**
    ```env
    GEMINI_API_KEY=your-gemini-api-key
-   PERPLEXITY_API_KEY=your-perplexity-key
    HF_TOKEN=your-huggingface-token
    AI_REQUEST_TIMEOUT_MS=45000
    ```

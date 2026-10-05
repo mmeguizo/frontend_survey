@@ -1,0 +1,16 @@
+.adm-nav-link {
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .adm-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .adm-nav {
+    margin-left: 0;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+}

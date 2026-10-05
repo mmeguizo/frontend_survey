@@ -1,0 +1,83 @@
+.adm-login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #004d40 0%, #00695c 40%, #00838f 100%);
+  box-sizing: border-box;
+}
+
+.adm-login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px 40px 24px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.adm-login-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.adm-login-logo {
+  height: 88px;
+  width: auto;
+}
+
+.adm-login-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: #004d40;
+}
+
+.adm-login-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #00796b;
+}
+
+.adm-login-org {
+  margin: 4px 0 20px;
+  font-size: 0.78rem;
+  color: #888;
+}
+
+.adm-full-width {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.adm-login-btn {
+  width: 100%;
+  height: 46px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.adm-login-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.adm-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #00695c;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.adm-back-link:hover {
+  color: #004d40;
+}

@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `user` ADD COLUMN `department` ENUM('MIS', 'ITS', 'GENERAL') NOT NULL DEFAULT 'GENERAL';

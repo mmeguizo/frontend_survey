@@ -23,6 +23,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { AdminApiService, UserData, ChatHealthMetrics } from '../../api/admin-api.service';
 
 const ALL_ROLES = [
@@ -77,6 +78,7 @@ const ROLE_COLORS: Record<string, string> = {
     NzSwitchModule,
     NzToolTipModule,
     NzBadgeModule,
+    NzEmptyModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin.page.html',
@@ -108,6 +110,11 @@ export class AdminPage implements OnInit {
   healthMetrics = signal<ChatHealthMetrics | null>(null);
   healthLoading = signal(false);
   showHealthAlert = signal(!sessionStorage.getItem('healthAlertDismissed'));
+  showHealthPanel = signal(false);
+
+  // Computed counts for stats row
+  activeUserCount = computed(() => this.filteredUsers().filter((u) => u.isActive).length);
+  inactiveUserCount = computed(() => this.filteredUsers().filter((u) => !u.isActive).length);
 
   // Create user modal
   isCreateModalVisible = signal(false);
@@ -402,6 +409,10 @@ export class AdminPage implements OnInit {
   dismissHealthAlert(): void {
     this.showHealthAlert.set(false);
     sessionStorage.setItem('healthAlertDismissed', 'true');
+  }
+
+  toggleHealthPanel(): void {
+    this.showHealthPanel.update((v) => !v);
   }
 
   scrollToHealthCard(): void {

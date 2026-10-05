@@ -25,14 +25,14 @@ This document is a living registry of small, scoped tasks for improving the AI f
 **Updated:** 2026-07-22  
 **Effort:** Medium  
 **Files:** `backend/src/lib/llm-client.ts`, `backend/src/modules/chat/chat.service.ts`, `backend/src/modules/chat/chat.types.ts`, `backend/src/modules/chat/chat.resolvers.ts`, `frontend/src/app/core/services/chat.service.ts`, `frontend/src/app/shared/components/chat-widget.component.ts`  
-**Description:** Add Hugging Face Inference API as a real LLM fallback after Perplexity. Wrap each provider call in a configurable timeout. Return the provider name to the frontend so the UI can show which model answered.  
+**Description:** Add Hugging Face Inference API as the LLM fallback after Gemini. Wrap each provider call in a configurable timeout. Return the provider name to the frontend so the UI can show which model answered.  
 **Acceptance criteria:**
-- Gemini timeout falls back to Perplexity, then Hugging Face, then offline curated response.
+- Gemini timeout falls back to Hugging Face, then offline curated response.
 - Frontend shows "Switching to backup AI model..." after ~8 seconds.
 - Assistant reply shows a subtle provider chip.
 - Backend and frontend TypeScript checks pass.
 
-**Notes:** Implemented 2026-07-22. `AI_REQUEST_TIMEOUT_MS` default is 45s. Provider chip shows Gemini / Perplexity / Hugging Face / Offline.
+**Notes:** Implemented 2026-07-22. `AI_REQUEST_TIMEOUT_MS` default is 45s. Provider chip shows Gemini / Hugging Face / Offline.
 
 ### T2a — Streaming spike and approach decision
 **Status:** Done  
@@ -65,7 +65,7 @@ This document is a living registry of small, scoped tasks for improving the AI f
 - `chat.service.ts` exposes a generator/async iterator that yields `{ chunk, done, provider? }`.
 - Non-streaming providers still produce chunks.
 - Fallback provider changes are emitted correctly.
-**Notes:** `llm-client.ts` now has `streamChatCompletion()` async generator using Gemini `generateContentStream` natively, Perplexity SSE streaming, and Hugging Face with simulated 20-word chunks. `chat.service.ts` has `streamChatMessage()` async generator replicating the full RAG+checks flow. The `chatReplyStream` subscription resolver now delegates to real streaming with auth.
+**Notes:** `llm-client.ts` now has `streamChatCompletion()` async generator using Gemini `generateContentStream` natively and Hugging Face with simulated 20-word chunks. `chat.service.ts` has `streamChatMessage()` async generator replicating the full RAG+checks flow. The `chatReplyStream` subscription resolver now delegates to real streaming with auth.
 
 ### T2d — Frontend streaming subscription and renderer
 **Status:** Done  

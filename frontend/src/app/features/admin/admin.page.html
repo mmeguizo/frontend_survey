@@ -1,4 +1,5 @@
 <div class="admin-page">
+
   @if (showHealthAlert() && healthMetrics(); as m) {
     <div class="health-alert-banner">
       <div class="health-alert-content">
@@ -15,152 +16,217 @@
     </div>
   }
 
+  <!-- Page Header -->
   <div class="page-header">
-    <h1><nz-icon nzType="team" nzTheme="outline"></nz-icon> User Management</h1>
-    <button nz-button nzType="primary" (click)="openCreateModal()">
+    <div class="page-header-left">
+      <div class="page-title">
+        <nz-icon nzType="team" nzTheme="outline"></nz-icon>
+        <h1>User Management</h1>
+      </div>
+      <p class="page-subtitle">Manage accounts, roles, and permissions for all system users</p>
+    </div>
+    <button nz-button nzType="primary" nzSize="large" (click)="openCreateModal()">
       <nz-icon nzType="user-add" nzTheme="outline"></nz-icon>
       Add User
     </button>
   </div>
 
-  <!-- Search -->
-  <nz-card class="search-card">
-    <nz-input-group nzSearch [nzAddOnBefore]="searchPrefix">
-      <ng-template #searchPrefix>
-        <nz-icon nzType="search"></nz-icon>
-      </ng-template>
-      <input
-        type="text"
-        nz-input
-        placeholder="Search by name, email, or role..."
-        [ngModel]="searchText()"
-        (ngModelChange)="onSearchChange($event)"
-      />
-    </nz-input-group>
-  </nz-card>
-
-  <!-- AI Chat Health -->
-  <nz-card
-    nzTitle="AI Chat Health (Last 7 Days)"
-    class="health-card"
-    [nzLoading]="healthLoading()"
-  >
-    @if (healthMetrics(); as m) {
-      <div class="health-grid">
-        <div class="health-stat">
-          <span class="health-value">{{ m.totalMessages }}</span>
-          <span class="health-label">Total Messages</span>
-        </div>
-        <div class="health-stat">
-          <span class="health-value" [class.warning]="m.totalFallbacks > 0">
-            {{ m.totalFallbacks }}
-          </span>
-          <span class="health-label">Fallbacks</span>
-        </div>
-        <div class="health-stat">
-          <span class="health-value" [class.danger]="m.totalFailures > 0">
-            {{ m.totalFailures }}
-          </span>
-          <span class="health-label">Failures</span>
-        </div>
-        <div class="health-stat">
-          <span class="health-value">{{ m.averageResponseTimeMs !== null ? (m.averageResponseTimeMs | number:'1.0-0') + 'ms' : '—' }}</span>
-          <span class="health-label">Avg Response Time</span>
-        </div>
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <nz-icon nzType="team" nzTheme="outline" class="stat-icon blue"></nz-icon>
+      <div class="stat-info">
+        <span class="stat-value">{{ filteredUsers().length }}</span>
+        <span class="stat-label">Total Users</span>
       </div>
-      @if (m.providerUsage.length > 0) {
-        <nz-table
-          #providerTable
-          [nzData]="m.providerUsage"
-          nzSize="small"
-          [nzShowPagination]="false"
-          nzFrontPagination
-          class="provider-table"
-        >
-          <thead>
-            <tr>
-              <th>Provider</th>
-              <th class="num-col">Messages</th>
-              <th class="num-col">Fallbacks</th>
-              <th class="num-col">Failures</th>
-              <th class="num-col">Avg Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (entry of providerTable.data; track entry.provider) {
+    </div>
+    <div class="stat-card">
+      <nz-icon nzType="check-circle" nzTheme="outline" class="stat-icon green"></nz-icon>
+      <div class="stat-info">
+        <span class="stat-value">{{ activeUserCount() }}</span>
+        <span class="stat-label">Active</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <nz-icon nzType="stop" nzTheme="outline" class="stat-icon red"></nz-icon>
+      <div class="stat-info">
+        <span class="stat-value">{{ inactiveUserCount() }}</span>
+        <span class="stat-label">Inactive</span>
+      </div>
+    </div>
+    <div class="stat-card ai-health-toggle" (click)="toggleHealthPanel()">
+      <nz-icon nzType="robot" nzTheme="outline" class="stat-icon purple"></nz-icon>
+      <div class="stat-info">
+        <span class="stat-value">
+          @if (healthMetrics(); as m) {
+            {{ m.totalMessages }}
+          } @else {
+            —
+          }
+        </span>
+        <span class="stat-label">AI Messages (7d)</span>
+      </div>
+      <nz-icon [nzType]="showHealthPanel() ? 'up' : 'down'" class="toggle-icon"></nz-icon>
+    </div>
+  </div>
+
+  <!-- AI Chat Health (collapsible) -->
+  @if (showHealthPanel()) {
+    <nz-card
+      nzTitle="AI Chat Health (Last 7 Days)"
+      class="health-card"
+      [nzLoading]="healthLoading()"
+    >
+      @if (healthMetrics(); as m) {
+        <div class="health-grid">
+          <div class="health-stat">
+            <span class="health-value">{{ m.totalMessages }}</span>
+            <span class="health-label">Total Messages</span>
+          </div>
+          <div class="health-stat">
+            <span class="health-value" [class.warning]="m.totalFallbacks > 0">
+              {{ m.totalFallbacks }}
+            </span>
+            <span class="health-label">Fallbacks</span>
+          </div>
+          <div class="health-stat">
+            <span class="health-value" [class.danger]="m.totalFailures > 0">
+              {{ m.totalFailures }}
+            </span>
+            <span class="health-label">Failures</span>
+          </div>
+          <div class="health-stat">
+            <span class="health-value">{{ m.averageResponseTimeMs !== null ? (m.averageResponseTimeMs | number:'1.0-0') + 'ms' : '—' }}</span>
+            <span class="health-label">Avg Response Time</span>
+          </div>
+        </div>
+        @if (m.providerUsage.length > 0) {
+          <nz-table
+            #providerTable
+            [nzData]="m.providerUsage"
+            nzSize="small"
+            [nzShowPagination]="false"
+            nzFrontPagination
+            class="provider-table"
+          >
+            <thead>
               <tr>
-                <td>
-                  <nz-tag
-                    [nzColor]="entry.provider === 'Offline' ? 'default' : entry.provider === 'Gemini' ? 'blue' : entry.provider === 'Perplexity' ? 'green' : 'orange'"
-                  >
-                    <nz-icon nzType="robot" nzTheme="outline"></nz-icon>
-                    {{ entry.provider }}
-                  </nz-tag>
-                </td>
-                <td class="num-col">{{ entry.messageCount }}</td>
-                <td class="num-col" [class.warning]="entry.fallbackCount > 0">{{ entry.fallbackCount }}</td>
-                <td class="num-col" [class.danger]="entry.failureCount > 0">{{ entry.failureCount }}</td>
-                <td class="num-col">{{ entry.averageResponseTimeMs !== null ? (entry.averageResponseTimeMs | number:'1.0-0') + 'ms' : '—' }}</td>
+                <th>Provider</th>
+                <th class="num-col">Messages</th>
+                <th class="num-col">Fallbacks</th>
+                <th class="num-col">Failures</th>
+                <th class="num-col">Avg Time</th>
               </tr>
-            }
-          </tbody>
-        </nz-table>
-      } @else {
-        <p class="empty-health">No AI chat data yet for the last 7 days.</p>
+            </thead>
+            <tbody>
+              @for (entry of providerTable.data; track entry.provider) {
+                <tr>
+                  <td>
+                    <nz-tag
+                      [nzColor]="entry.provider === 'Offline' ? 'default' : entry.provider === 'Gemini' ? 'blue' : 'orange'"
+                    >
+                      <nz-icon nzType="robot" nzTheme="outline"></nz-icon>
+                      {{ entry.provider }}
+                    </nz-tag>
+                  </td>
+                  <td class="num-col">{{ entry.messageCount }}</td>
+                  <td class="num-col" [class.warning]="entry.fallbackCount > 0">{{ entry.fallbackCount }}</td>
+                  <td class="num-col" [class.danger]="entry.failureCount > 0">{{ entry.failureCount }}</td>
+                  <td class="num-col">{{ entry.averageResponseTimeMs !== null ? (entry.averageResponseTimeMs | number:'1.0-0') + 'ms' : '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </nz-table>
+        } @else {
+          <p class="empty-health">No AI chat data yet for the last 7 days.</p>
+        }
       }
-    }
-  </nz-card>
+    </nz-card>
+  }
 
   <!-- Users Table -->
-  <nz-card nzTitle="All Users" class="users-table-card" [nzExtra]="userCountTpl">
-    <ng-template #userCountTpl>
-      <nz-tag nzColor="blue">{{ filteredUsers().length }} users</nz-tag>
-    </ng-template>
+  <nz-card class="users-table-card">
+    <!-- Toolbar -->
+    <div class="table-toolbar">
+      <nz-input-group nzSearch [nzPrefix]="searchPrefix" class="search-input">
+        <ng-template #searchPrefix>
+          <nz-icon nzType="search" style="color: #bfbfbf;"></nz-icon>
+        </ng-template>
+        <input
+          type="text"
+          nz-input
+          placeholder="Search by name, email, or role..."
+          [ngModel]="searchText()"
+          (ngModelChange)="onSearchChange($event)"
+        />
+      </nz-input-group>
+      <div class="toolbar-right">
+        <nz-tag nzColor="blue" class="user-count-tag">
+          <nz-icon nzType="user" nzTheme="outline"></nz-icon>
+          {{ filteredUsers().length }} users
+        </nz-tag>
+      </div>
+    </div>
 
     <nz-table
       #usersTable
       [nzData]="filteredUsers()"
       [nzLoading]="loading()"
       nzSize="middle"
-      [nzPageSize]="10"
+      [nzPageSize]="15"
       [nzShowSizeChanger]="true"
-      [nzPageSizeOptions]="[10, 25, 50, 100]"
-      [nzPaginationPosition]="'top'"
-      [nzScroll]="{ y: 'calc(100vh - 430px)' }"
+      [nzPageSizeOptions]="[10, 15, 25, 50, 100]"
+      [nzShowTotal]="totalTpl"
+      [nzScroll]="{ x: '1100px' }"
+      class="users-table"
     >
+      <ng-template #totalTpl let-total let-range="range">
+        Showing {{ range[0] }}–{{ range[1] }} of {{ total }} users
+      </ng-template>
       <thead>
         <tr>
-          <th nzWidth="60px">ID</th>
-          <th>User</th>
+          <th nzWidth="60px" class="col-id">ID</th>
+          <th nzWidth="240px">User</th>
           <th>Email</th>
-          <th nzWidth="160px">Role</th>
+          <th nzWidth="180px">Role</th>
           <th>Skills / Expertise</th>
-          <th nzWidth="90px">Status</th>
-          <th nzWidth="90px">Auth</th>
-          <th nzWidth="220px">Actions</th>
+          <th nzWidth="100px" class="col-center">Status</th>
+          <th nzWidth="80px" class="col-center">Auth</th>
+          <th nzWidth="160px" class="col-center">Actions</th>
         </tr>
       </thead>
       <tbody>
         @for (user of usersTable.data; track user.id) {
           <tr [class.inactive-row]="!user.isActive">
-            <td>{{ user.id }}</td>
+            <td class="col-id">
+              <span class="user-id">#{{ user.id }}</span>
+            </td>
             <td>
               <div class="user-cell">
                 <nz-avatar
                   nzIcon="user"
                   [nzSrc]="user.avatarUrl || user.picture || undefined"
-                  [nzSize]="32"
+                  [nzSize]="40"
+                  class="user-avatar"
                 ></nz-avatar>
-                <span class="user-name">{{ user.name || '—' }}</span>
+                <div class="user-info">
+                  <span class="user-name">{{ user.name || '—' }}</span>
+                  <span class="user-joined">ID {{ user.id }}</span>
+                </div>
               </div>
             </td>
-            <td>{{ user.email }}</td>
+            <td>
+              <div class="email-cell">
+                <nz-icon nzType="mail" nzTheme="outline" class="email-icon"></nz-icon>
+                <span>{{ user.email }}</span>
+              </div>
+            </td>
             <td>
               <nz-select
                 [ngModel]="user.role"
                 (ngModelChange)="onRoleChange(user, $event)"
-                nzSize="small"
-                style="width: 140px"
+                nzSize="default"
+                class="role-select"
               >
                 @for (role of allRoles; track role) {
                   <nz-option [nzValue]="role" [nzLabel]="roleLabels[role]"></nz-option>
@@ -168,31 +234,29 @@
               </nz-select>
             </td>
             <td>
-              <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 250px">
+              <div class="skills-cell">
                 @for (skill of user.skills; track skill) {
-                  <nz-tag
-                    nzColor="geekblue"
-                    style="font-size: 10px; margin: 0; text-transform: uppercase"
-                  >
+                  <nz-tag nzColor="geekblue" class="skill-tag">
                     {{ skill.replace('_', ' ') }}
                   </nz-tag>
                 } @empty {
-                  <span style="font-style: italic; color: #aaa; font-size: 11px"
-                    >No specific skills</span
-                  >
+                  <span class="no-skills">No skills set</span>
                 }
               </div>
             </td>
-            <td>
+            <td class="col-center">
               <nz-badge
                 [nzStatus]="user.isActive ? 'success' : 'error'"
                 [nzText]="user.isActive ? 'Active' : 'Inactive'"
               ></nz-badge>
             </td>
-            <td>
-              <nz-tag>{{ user.externalId ? 'SSO' : 'Local' }}</nz-tag>
+            <td class="col-center">
+              <nz-tag [nzColor]="user.externalId ? 'cyan' : 'default'" class="auth-tag">
+                <nz-icon [nzType]="user.externalId ? 'google' : 'lock'" nzTheme="outline"></nz-icon>
+                {{ user.externalId ? 'SSO' : 'Local' }}
+              </nz-tag>
             </td>
-            <td>
+            <td class="col-center">
               <div class="action-buttons">
                 <button
                   nz-button
@@ -201,6 +265,7 @@
                   nz-tooltip
                   nzTooltipTitle="Manage Skills"
                   (click)="openSkillsModal(user)"
+                  class="action-btn"
                 >
                   <nz-icon nzType="tags" nzTheme="outline"></nz-icon>
                 </button>
@@ -211,6 +276,7 @@
                   nz-tooltip
                   nzTooltipTitle="Set Password"
                   (click)="openPasswordModal(user)"
+                  class="action-btn"
                 >
                   <nz-icon nzType="key" nzTheme="outline"></nz-icon>
                 </button>
@@ -221,10 +287,9 @@
                   nz-tooltip
                   [nzTooltipTitle]="user.isActive ? 'Deactivate' : 'Activate'"
                   nz-popconfirm
-                  [nzPopconfirmTitle]="
-                    user.isActive ? 'Deactivate this user?' : 'Activate this user?'
-                  "
+                  [nzPopconfirmTitle]="user.isActive ? 'Deactivate this user?' : 'Activate this user?'"
                   (nzOnConfirm)="onToggleActive(user)"
+                  class="action-btn"
                 >
                   <nz-icon
                     [nzType]="user.isActive ? 'stop' : 'check-circle'"
@@ -239,6 +304,7 @@
                   nz-tooltip
                   nzTooltipTitle="Delete User"
                   (click)="openDeleteModal(user)"
+                  class="action-btn"
                 >
                   <nz-icon nzType="delete" nzTheme="outline"></nz-icon>
                 </button>
@@ -247,7 +313,15 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="7" class="empty-cell">No users found.</td>
+            <td colspan="8">
+              <nz-empty
+                nzNotFoundImage="simple"
+                [nzNotFoundContent]="emptyTpl"
+              ></nz-empty>
+              <ng-template #emptyTpl>
+                <span>No users found matching your search</span>
+              </ng-template>
+            </td>
           </tr>
         }
       </tbody>
@@ -262,20 +336,19 @@
   nzTitle="Remove User Account"
   [nzFooter]="deleteModalFooter"
   (nzOnCancel)="closeDeleteModal()"
-  nzWidth="460px"
+  nzWidth="480px"
 >
   <ng-container *nzModalContent>
-    <div style="display: flex; gap: 12px; align-items: flex-start">
+    <div style="display: flex; gap: 16px; align-items: flex-start">
       <nz-icon
         nzType="warning"
         nzTheme="fill"
-        style="color: #fa8c16; font-size: 24px; flex-shrink: 0; margin-top: 2px"
+        style="color: #fa8c16; font-size: 28px; flex-shrink: 0; margin-top: 2px"
       ></nz-icon>
       <div>
-        <p style="margin: 0 0 8px; font-weight: 600">
+        <p style="margin: 0 0 8px; font-weight: 600; font-size: 15px">
           What would you like to do with
-          <strong>{{ deleteTarget()?.name || deleteTarget()?.email }}</strong
-          >?
+          <strong>{{ deleteTarget()?.name || deleteTarget()?.email }}</strong>?
         </p>
         <p style="margin: 0 0 12px; color: #595959">
           <strong>Deactivating</strong> prevents login but keeps all their tickets, data, and

@@ -24,12 +24,12 @@
           <li>
             <strong>AI chat streaming (GraphQL Subscriptions)</strong> — Real-time response
             streaming via <code>chatReplyStream</code> subscription. Supports Gemini native
-            streaming, Perplexity SSE fallback, and Hugging Face simulated chunk streaming.
+            streaming, Hugging Face simulated chunk streaming, and offline fallback templates.
             Responses appear incrementally with 80ms debounced markdown rendering.
           </li>
           <li>
             <strong>Provider fallback resilience</strong> — Chat falls back through
-            Gemini &rarr; Perplexity &rarr; Hugging Face &rarr; offline curated templates with
+            Gemini &rarr; Hugging Face &rarr; offline curated templates with
             configurable per-provider timeout. Each reply shows which provider handled it.
           </li>
           <li>

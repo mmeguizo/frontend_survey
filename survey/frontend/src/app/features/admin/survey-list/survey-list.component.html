@@ -1,0 +1,176 @@
+<div class="csm-survey-list">
+  <!-- ARTA Header Bar -->
+  <div class="csm-arta-bar">
+    <span class="arta-approval">ARTA APPROVAL NO. 2024-001 | VALID UNTIL 2025-12-31</span>
+  </div>
+
+  <!-- Admin Toolbar -->
+  <app-admin-toolbar></app-admin-toolbar>
+
+  <div class="adm-page">
+    <!-- Dashboard: stat cards -->
+    <div class="adm-stat-grid">
+      <mat-card class="adm-stat-card">
+        <div class="adm-stat-icon" style="background-color: #1976d2;">
+          <mat-icon>description</mat-icon>
+        </div>
+        <div>
+          <div class="adm-stat-value">{{ analytics?.totalSurveys ?? 0 }}</div>
+          <div class="adm-stat-label">Total Surveys</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="adm-stat-card">
+        <div class="adm-stat-icon" style="background-color: #388e3c;">
+          <mat-icon>star</mat-icon>
+        </div>
+        <div>
+          <div class="adm-stat-value">{{ averageSqdDisplay }}</div>
+          <div class="adm-stat-label">Average SQD Rating</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="adm-stat-card">
+        <div class="adm-stat-icon" style="background-color: #f57c00;">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div>
+          <div class="adm-stat-value">{{ getTopClientType() }}</div>
+          <div class="adm-stat-label">Top Client Type</div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Dashboard: client type distribution donut -->
+    <mat-card class="adm-dashboard-card">
+      <mat-card-header>
+        <mat-card-title>Client Type Distribution</mat-card-title>
+        <mat-card-subtitle>Share of responses by type of client</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="adm-dashboard-grid">
+          <div class="adm-donut-wrap">
+            <div style="position: relative; width: 180px; height: 180px;">
+              <svg width="180" height="180" viewBox="0 0 180 180">
+                <circle cx="90" cy="90" r="80" fill="none" stroke="#eceff1" stroke-width="22"></circle>
+                @for (segment of donutData; track segment.label) {
+                  <circle
+                    cx="90" cy="90" r="80" fill="none"
+                    [attr.stroke]="segment.color"
+                    stroke-width="22"
+                    [attr.stroke-dasharray]="(segment.length) + ' ' + (donutCircumference - segment.length)"
+                    [attr.transform]="'rotate(' + segment.startDeg + ' 90 90)'"
+                  ></circle>
+                }
+              </svg>
+              <div class="adm-donut-center">
+                <div class="adm-stat-value">{{ analytics?.totalSurveys ?? 0 }}</div>
+                <div class="adm-stat-label">Responses</div>
+              </div>
+            </div>
+          </div>
+          <div class="adm-donut-legend">
+            @for (segment of donutData; track segment.label) {
+              <div class="adm-legend-item">
+                <span class="adm-legend-dot" [style.background-color]="segment.color"></span>
+                <span>{{ segment.label }}</span>
+                <span class="adm-legend-pct">{{ pct(segment.frac) }}%</span>
+                <span class="adm-legend-count">{{ segment.count }}</span>
+              </div>
+            }
+            @if (donutData.length === 0) {
+              <p style="color: #9e9e9e; margin: 0;">No survey responses yet.</p>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Survey responses table -->
+    <mat-card class="csm-card">
+      <mat-card-header>
+        <mat-card-title>Survey Responses</mat-card-title>
+        <mat-card-subtitle>Search and view all submitted surveys</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-actions align="end" class="csm-export-actions">
+        <button mat-stroked-button [disabled]="exporting" (click)="exportCsv()">
+          <mat-icon>table_view</mat-icon> Export Excel
+        </button>
+        <button mat-stroked-button [disabled]="exporting" (click)="exportPdf()">
+          <mat-icon>picture_as_pdf</mat-icon> Export PDF
+        </button>
+      </mat-card-actions>
+
+      <mat-card-content>
+        <div class="csm-search-row">
+          <mat-form-field appearance="outline" class="csm-search-field">
+            <mat-label>Search by Ticket ID or Email</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Search...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="csm-table-container">
+          <table mat-table [dataSource]="dataSource" matSort class="csm-table">
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+              <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+            </ng-container>
+
+            <!-- Ticket ID Column -->
+            <ng-container matColumnDef="ticketId">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Ticket ID</th>
+              <td mat-cell *matCellDef="let element">{{ cutString(element.ticketId, 20) }}</td>
+            </ng-container>
+
+            <!-- Client Type Column -->
+            <ng-container matColumnDef="clientType">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Client Type</th>
+              <td mat-cell *matCellDef="let element">{{ element.clientType }}</td>
+            </ng-container>
+
+            <!-- Date Column -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+              <td mat-cell *matCellDef="let element">{{ element.date }}</td>
+            </ng-container>
+
+            <!-- SQD Average Column -->
+            <ng-container matColumnDef="sqdAvg">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>SQD Avg</th>
+              <td mat-cell *matCellDef="let element">
+                <span *ngIf="element.sqdAvg !== null && element.sqdAvg !== undefined" [ngClass]="getSqdAvgClass(element.sqdAvg)" class="csm-sqd-badge">
+                  <mat-icon>star</mat-icon> {{ element.sqdAvg.toFixed(2) }}
+                </span>
+                <span *ngIf="element.sqdAvg === null || element.sqdAvg === undefined" class="sqd-na">N/A</span>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-icon-button (click)="navigateToDetail(element.id)" matTooltip="View Details">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons aria-label="Select page">
+          </mat-paginator>
+        </div>
+
+        <div *ngIf="dataSource.filteredData.length === 0 && searchQuery" class="csm-empty-state">
+          <mat-icon>search_off</mat-icon>
+          <p>No surveys found matching "{{ searchQuery }}"</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

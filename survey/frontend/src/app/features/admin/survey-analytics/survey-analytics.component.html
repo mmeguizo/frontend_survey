@@ -1,0 +1,99 @@
+<div class="csm-analytics">
+  <!-- ARTA Header Bar -->
+  <div class="csm-arta-bar">
+    <span class="arta-approval">ARTA APPROVAL NO. 2024-001 | VALID UNTIL 2025-12-31</span>
+  </div>
+
+  <!-- Admin Toolbar -->
+  <app-admin-toolbar></app-admin-toolbar>
+
+  <div class="adm-page">
+    <mat-card class="csm-card">
+      <mat-card-header>
+        <mat-card-title>Summary Statistics</mat-card-title>
+        <mat-card-subtitle>Overview of all survey responses</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Summary Cards -->
+        <div class="adm-stat-grid">
+          <mat-card class="adm-stat-card">
+            <div class="adm-stat-icon" style="background-color: #1976d2;">
+              <mat-icon>description</mat-icon>
+            </div>
+            <div>
+              <div class="adm-stat-value">{{ analytics?.totalSurveys ?? 0 }}</div>
+              <div class="adm-stat-label">Total Surveys</div>
+            </div>
+          </mat-card>
+
+          <mat-card class="adm-stat-card">
+            <div class="adm-stat-icon" style="background-color: #388e3c;">
+              <mat-icon>star</mat-icon>
+            </div>
+            <div>
+              <div class="adm-stat-value">
+                {{ averageSqdDisplay }}
+              </div>
+              <div class="adm-stat-label">Average SQD</div>
+            </div>
+          </mat-card>
+
+          <mat-card class="adm-stat-card">
+            <div class="adm-stat-icon" style="background-color: #f57c00;">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div>
+              <div class="adm-stat-value">{{ getTopClientType() }}</div>
+              <div class="adm-stat-label">Top Client Type</div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- Client Type Distribution -->
+        <div class="csm-section">
+          <h3>Client Type Distribution</h3>
+          <div class="csm-client-distribution">
+            @for (item of analytics?.clientTypeDistribution || []; track item.clientType) {
+              <div class="distribution-item">
+                <span class="client-type">{{ item.clientType }}</span>
+                <div class="distribution-bar">
+                  <div class="distribution-fill" [style.width.%]="(item.count / (analytics?.totalSurveys || 1)) * 100"></div>
+                </div>
+                <span class="count">{{ item.count }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- SQD Averages Table -->
+        <div class="csm-section">
+          <h3>Service Quality Dimensions (SQD) Averages</h3>
+          <table class="csm-sqd-table">
+            <thead>
+              <tr>
+                <th>SQD</th>
+                <th>Average</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of sqdEntries; track item.key) {
+                <tr>
+                  <td>{{ item.key.toUpperCase() }}</td>
+                  <td>{{ item.value.toFixed(2) }}</td>
+                  <td>
+                    <span class="sqd-badge" [ngClass]="getSqdColor(item.value)">
+                      <mat-icon>{{ getSqdIcon(item.value) }}</mat-icon>
+                      {{ getSqdLabel(item.value) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

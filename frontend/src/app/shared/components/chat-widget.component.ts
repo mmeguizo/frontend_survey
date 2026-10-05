@@ -455,6 +455,14 @@ marked.use({
                   </div>
                 }
 
+                <!-- Web search badge -->
+                @if (msg.role === 'ASSISTANT' && hasWebSearchAnswer(msg)) {
+                  <div class="web-search-banner">
+                    <span nz-icon nzType="global" nzTheme="outline"></span>
+                    Answer sourced from internet — may not match CHMSU-specific processes
+                  </div>
+                }
+
                 @if (msg.role === 'ASSISTANT' && hasQuickOptions(msg.content)) {
                   <div class="message-quick-options">
                     <p class="quick-inline-label">Try one of these:</p>
@@ -501,9 +509,11 @@ marked.use({
               }
 
               @if (replyState() === 'done' && lastProvider()) {
-                <div class="provider-chip" [class.offline]="lastProvider() === 'Offline'">
-                  <span nz-icon [nzType]="lastProvider() === 'Offline' ? 'disconnect' : 'robot'"></span>
-                  {{ lastProvider() === 'Offline' ? 'Offline mode' : 'Answered by ' + lastProvider() }}
+                <div class="provider-chip"
+                     [class.offline]="lastProvider() === 'Offline'"
+                     [class.web-search]="lastProvider() === 'Gemini (Web)'">
+                  <span nz-icon [nzType]="lastProvider() === 'Offline' ? 'disconnect' : lastProvider() === 'Gemini (Web)' ? 'global' : 'robot'"></span>
+                  {{ lastProvider() === 'Offline' ? 'Offline mode' : lastProvider() === 'Gemini (Web)' ? 'Answered via Web Search' : 'Answered by ' + lastProvider() }}
                 </div>
               }
             }
@@ -1212,6 +1222,20 @@ marked.use({
         margin: 4px 0;
       }
 
+      .web-search-banner {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: -4px 0 6px 40px;
+        padding: 5px 10px;
+        background: #e6f7ff;
+        border: 1px solid #91d5ff;
+        border-radius: 8px;
+        font-size: 11px;
+        color: #0050b3;
+        line-height: 1.4;
+      }
+
       .message-quick-options {
         margin: -4px 0 8px 40px;
       }
@@ -1459,6 +1483,7 @@ export class ChatWidgetComponent implements AfterViewChecked, OnInit, OnDestroy 
     const provider = this.lastProvider();
     if (state === 'fallback') return 'Switching to backup AI model…';
     if (state === 'thinking') return 'AI is thinking…';
+    if (provider === 'Gemini (Web)') return 'Powered by Gemini + Web Search';
     if (provider && provider !== 'Offline') return `Powered by ${provider}`;
     return 'Powered by Gemini';
   });
@@ -1722,6 +1747,20 @@ export class ChatWidgetComponent implements AfterViewChecked, OnInit, OnDestroy 
 
   hasQuickOptions(content: string): boolean {
     return content.includes('```show-quick-options');
+  }
+
+  /**
+   * Check if a message was answered using internet web search.
+   * Looks for webSearchUsed flag in the metadata JSON or 'Gemini (Web)' provider.
+   */
+  hasWebSearchAnswer(msg: ChatMessage): boolean {
+    if (!msg.metadata) return false;
+    try {
+      const meta = JSON.parse(msg.metadata);
+      return meta?.webSearchUsed === true || meta?.provider === 'Gemini (Web)';
+    } catch {
+      return false;
+    }
   }
 
   onCurrentUserAvatarError(): boolean {

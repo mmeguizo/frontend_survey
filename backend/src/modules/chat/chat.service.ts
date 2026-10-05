@@ -140,7 +140,15 @@ OUT-OF-SCOPE BEHAVIOR:
 {}
 \`\`\`
 - If a request mixes ICT and non-ICT topics, answer only the ICT portion and ignore the rest.
-- Do not invent features, actions, reports, or permissions that are not explicitly supported by this system.`;
+- Do not invent features, actions, reports, or permissions that are not explicitly supported by this system.
+
+WEB SEARCH MODE (activated when no internal knowledge base or solution data is found):
+- When the context indicates WEB SEARCH MODE is active, your answer comes from the internet rather than verified internal ICT documentation.
+- Provide a clear, helpful answer. Cite sources naturally if available from the search results.
+- You MUST end every web-search answer with this confirmation question (keep it warm and conversational):
+  "Did that help resolve your issue? Since this answer comes from general internet sources and our ICT team may have specific processes, just let me know — if it didn't work or you're still stuck, I can create a support ticket so our team can assist you directly."
+- If the user responds positively (yes, thanks, it worked, resolved, etc.) → respond warmly and close (do NOT emit ticket-data).
+- If the user responds negatively (no, still broken, didn't work, not sure, etc.) → immediately emit the ticket-data JSON block with the issue details.`;
 
 const STAFF_ROLES = [
   "ADMIN",
@@ -195,9 +203,46 @@ const OUT_OF_SCOPE_PATTERNS = [
   /\b(capital\s+of|who\s+invented|history\s+of|explain\s+quantum|general\s+knowledge|trivia)\b/i,
 ];
 
+/**
+ * University-specific systems and processes require CHMSU ICT support when
+ * there is no matching internal documentation or resolved ticket.
+ */
+const UNIVERSITY_SPECIFIC_PATTERNS = [
+  /\b(portal|student\s*portal|faculty\s*portal|enrollment\s*system|sis|student\s*information)\b/i,
+  /\b(lms|learning\s*management|moodle|e-?learning|online\s*class\s*platform)\b/i,
+  /\b(grading\s*system|grade\s*submission|grade\s*encoding|cor|certificate\s*of\s*registration)\b/i,
+  /\b(library\s*system|opac|online\s*catalog)\b/i,
+  /\b(biometrics|dtr|daily\s*time\s*record|attendance\s*system)\b/i,
+  /\b(payroll\s*system|hris|human\s*resource)\b/i,
+  /\b(chmsu|university\s*(system|portal|website|server|network))\b/i,
+  /\b(id\s*validation|school\s*id\s*system|rfid)\b/i,
+  /\b(document\s*tracking|dts|records\s*management)\b/i,
+  /\b(admission\s*system|online\s*admission|entrance\s*exam\s*system)\b/i,
+  /\b(clearance\s*system|online\s*clearance)\b/i,
+  /\b(e-?services|cashier\s*system|assessment\s*system)\b/i,
+  /\b(campus\s*network|server\s*room|data\s*center|campus\s*wi-?fi)\b/i,
+  /\b(mis\s*office|its\s*office|ict\s*office)\b/i,
+];
+
+const GENERAL_ICT_PATTERNS = [
+  /\b(wi-?fi|wifi|internet|no\s*connection|can'?t\s*connect|network|ethernet)\b/i,
+  /\b(password|forgot\s*password|reset\s*password|can'?t\s*log\s*in|locked\s*out)\b/i,
+  /\b(printer|print|paper\s*jam|toner|ink|scanner)\b/i,
+  /\b(slow\s*(computer|pc|laptop)|freeze|crash|blue\s*screen|bsod|restart)\b/i,
+  /\b(email|outlook|gmail|mail\s*setup|smtp|imap)\b/i,
+  /\b(browser|chrome|firefox|edge|can'?t\s*open\s*website)\b/i,
+  /\b(usb|flash\s*drive|external\s*drive|storage)\b/i,
+  /\b(monitor|display|screen|resolution|hdmi|vga)\b/i,
+  /\b(keyboard|mouse|trackpad|touchpad)\b/i,
+  /\b(antivirus|malware|virus|security\s*scan)\b/i,
+  /\b(update|windows\s*update|software\s*update|driver)\b/i,
+  /\b(backup|restore|data\s*recovery)\b/i,
+  /\b(vpn|remote\s*access|remote\s*desktop)\b/i,
+];
+
 export class ChatService {
   isAvailable(): boolean {
-    return llmClient.isPerplexityAvailable() || llmClient.isGeminiAvailable();
+    return llmClient.isGeminiAvailable() || llmClient.isHuggingFaceAvailable();
   }
 
   private lastAiAlertTime = 0;
@@ -432,6 +477,27 @@ export class ChatService {
     // 4. Search for relevant context (RAG — fulltext + vector)
     const ragContext = await this.retrieveContext(userMessage);
 
+    // 4b. Determine if web search is needed (all internal sources empty)
+    let useWebSearch = false;
+    let forceTicketCreation = false;
+
+    if (
+      this.webSearchNeeded(ragContext) &&
+      !ticketContext &&
+      !analyticsContext &&
+      !reportContext
+    ) {
+      const issueType = this.classifyIssueType(userMessage);
+      if (issueType === "general") {
+        useWebSearch = true;
+      } else {
+        forceTicketCreation = true;
+        logger.info(
+          `[ChatService] No internal RAG results for university-specific or unknown query — forcing ticket creation for: "${userMessage.substring(0, 80)}"`,
+        );
+      }
+    }
+
     // 5. Build context string
     let contextStr = "";
 
@@ -491,13 +557,58 @@ export class ChatService {
       }
     }
 
-    // 6. Call LLM with context + conversation history
+    // 5b. If web search mode, add the web search notice to context
+    if (useWebSearch) {
+      contextStr +=
+        "\n--- WEB SEARCH MODE ---\n" +
+        "No internal knowledge base articles, resolved tickets, or troubleshooting solutions matched this query.\n" +
+        "You are now using Google Search to find a general ICT solution from the internet.\n" +
+        "IMPORTANT: After providing the answer, you MUST ask the user if the solution resolved their issue, " +
+        "since internet answers may not match our specific ICT processes.\n";
+      logger.info(`[ChatService] No internal RAG results — activating web search mode for: "${userMessage.substring(0, 80)}"`);
+    }
+
+    if (forceTicketCreation) {
+      contextStr +=
+        "\n--- TICKET CREATION MODE ---\n" +
+        "No internal knowledge base articles, resolved tickets, or troubleshooting solutions matched this query.\n" +
+        "This appears to be a university-specific issue that requires CHMSU ICT support.\n" +
+        "DO NOT search the internet for a solution. Instead:\n" +
+        "1. Acknowledge the user's issue with empathy.\n" +
+        "2. Explain that this requires hands-on support from the ICT team because it involves a CHMSU-specific system or process.\n" +
+        "3. Immediately output a ```ticket-data``` JSON block so a support ticket can be created.\n" +
+        "4. Set priority based on the user's urgency. Default to MEDIUM if unclear.\n";
+      logger.info(
+        `[ChatService] Ticket creation mode enabled for: "${userMessage.substring(0, 80)}"`,
+      );
+    }
+
+    // 6. Call LLM with context + conversation history (web search or standard)
     const startTime = Date.now();
-    const { reply, provider } = await this.callGemini(
-      session.messages,
-      userMessage,
-      contextStr,
-    );
+    let reply: string;
+    let provider: string;
+    let webSearchUsed = false;
+
+    if (useWebSearch) {
+      // Use Gemini with Google Search Grounding
+      const result = await this.callGeminiWithWebSearch(
+        session.messages,
+        userMessage,
+        contextStr,
+      );
+      reply = result.reply;
+      provider = result.provider;
+      webSearchUsed = result.webSearchUsed;
+    } else {
+      // Standard LLM call with internal context
+      const result = await this.callGemini(
+        session.messages,
+        userMessage,
+        contextStr,
+      );
+      reply = result.reply;
+      provider = result.provider;
+    }
     const durationMs = Date.now() - startTime;
 
     if (provider === "Offline") {
@@ -516,6 +627,7 @@ export class ChatService {
     metadata.durationMs = durationMs;
     metadata.fallback = provider === "Offline";
     metadata.promptVersion = CHAT_PROMPT_VERSION;
+    if (webSearchUsed) metadata.webSearchUsed = true;
 
     const metadataStr =
       Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null;
@@ -609,6 +721,27 @@ export class ChatService {
     // 5. RAG context retrieval (same as sendMessage)
     const ragContext = await this.retrieveContext(userMessage);
 
+    // 5b. Determine if web search is needed
+    let useWebSearch = false;
+    let forceTicketCreation = false;
+
+    if (
+      this.webSearchNeeded(ragContext) &&
+      !ticketContext &&
+      !analyticsContext &&
+      !reportContext
+    ) {
+      const issueType = this.classifyIssueType(userMessage);
+      if (issueType === "general") {
+        useWebSearch = true;
+      } else {
+        forceTicketCreation = true;
+        logger.info(
+          `[ChatService] Stream: no internal RAG results for university-specific or unknown query — forcing ticket creation for: "${userMessage.substring(0, 80)}"`,
+        );
+      }
+    }
+
     // 6. Build context string
     let contextStr = "";
 
@@ -649,6 +782,32 @@ export class ChatService {
       }
     }
 
+    // 6b. If web search mode, add the web search notice
+    if (useWebSearch) {
+      contextStr +=
+        "\n--- WEB SEARCH MODE ---\n" +
+        "No internal knowledge base articles, resolved tickets, or troubleshooting solutions matched this query.\n" +
+        "You are now using Google Search to find a general ICT solution from the internet.\n" +
+        "IMPORTANT: After providing the answer, you MUST ask the user if the solution resolved their issue, " +
+        "since internet answers may not match our specific ICT processes.\n";
+      logger.info(`[ChatService] Stream: No internal RAG results — activating web search mode for: "${userMessage.substring(0, 80)}"`);
+    }
+
+    if (forceTicketCreation) {
+      contextStr +=
+        "\n--- TICKET CREATION MODE ---\n" +
+        "No internal knowledge base articles, resolved tickets, or troubleshooting solutions matched this query.\n" +
+        "This appears to be a university-specific issue that requires CHMSU ICT support.\n" +
+        "DO NOT search the internet for a solution. Instead:\n" +
+        "1. Acknowledge the user's issue with empathy.\n" +
+        "2. Explain that this requires hands-on support from the ICT team because it involves a CHMSU-specific system or process.\n" +
+        "3. Immediately output a ```ticket-data``` JSON block so a support ticket can be created.\n" +
+        "4. Set priority based on the user's urgency. Default to MEDIUM if unclear.\n";
+      logger.info(
+        `[ChatService] Stream: ticket creation mode enabled for: "${userMessage.substring(0, 80)}"`,
+      );
+    }
+
     // 7. Stream LLM response
     const messages: LlmMessage[] = [
       { role: "system", content: CHAT_SYSTEM_PROMPT },
@@ -665,7 +824,9 @@ export class ChatService {
 
     let prompt = userMessage;
     if (contextStr.trim()) {
-      prompt = `CONTEXT DATA (from our internal knowledge base and resolved tickets):\n${contextStr}\n\nUSER QUESTION: ${userMessage}`;
+      prompt = useWebSearch
+        ? `CONTEXT DATA:\n${contextStr}\n\nUSER QUESTION: ${userMessage}`
+        : `CONTEXT DATA (from our internal knowledge base and resolved tickets):\n${contextStr}\n\nUSER QUESTION: ${userMessage}`;
     }
     messages.push({ role: "user", content: prompt });
 
@@ -674,11 +835,18 @@ export class ChatService {
     const startTime = Date.now();
 
     try {
-      const stream = llmClient.streamChatCompletion(messages, {
-        temperature: 0.4,
-        maxTokens: 4096,
-        topP: 0.9,
-      });
+      // Use search-grounded streaming if web search is needed, otherwise standard
+      const stream = useWebSearch
+        ? llmClient.streamSearchGroundedCompletion(messages, {
+            temperature: 0.4,
+            maxTokens: 4096,
+            topP: 0.9,
+          })
+        : llmClient.streamChatCompletion(messages, {
+            temperature: 0.4,
+            maxTokens: 4096,
+            topP: 0.9,
+          });
 
       for await (const chunk of stream) {
         // Skip empty finalization chunks
@@ -710,6 +878,7 @@ export class ChatService {
     metadata.durationMs = durationMs;
     metadata.fallback = finalProvider === "Offline";
     metadata.promptVersion = CHAT_PROMPT_VERSION;
+    if (useWebSearch && finalProvider?.includes("Web")) metadata.webSearchUsed = true;
 
     const metadataStr = Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null;
     if (fullReply.trim()) {
@@ -2406,6 +2575,99 @@ Tell the user which report type you detected based on their request, and offer t
   // ========================================
   // LLM CALL WITH FALLBACK
   // ========================================
+
+  private classifyIssueType(
+    message: string,
+  ): "general" | "university-specific" | "unknown" {
+    const isUniversitySpecific = UNIVERSITY_SPECIFIC_PATTERNS.some((pattern) =>
+      pattern.test(message),
+    );
+    const isGeneral = GENERAL_ICT_PATTERNS.some((pattern) => pattern.test(message));
+
+    if (isUniversitySpecific) return "university-specific";
+    if (isGeneral) return "general";
+    return "unknown";
+  }
+
+  /**
+   * Determine if web search is needed — returns true when ALL internal RAG sources are empty.
+   */
+  private webSearchNeeded(ragContext: {
+    kbArticles: any[];
+    resolvedTickets: any[];
+    solutions: any[];
+  }): boolean {
+    return (
+      ragContext.kbArticles.length === 0 &&
+      ragContext.resolvedTickets.length === 0 &&
+      ragContext.solutions.length === 0
+    );
+  }
+
+  /**
+   * Call Gemini with Google Search Grounding enabled for web-sourced answers.
+   * Falls back to standard callGemini if grounding fails.
+   */
+  private async callGeminiWithWebSearch(
+    history: Array<{ role: string; content: string }>,
+    currentMessage: string,
+    contextData: string,
+  ): Promise<{ reply: string; provider: string; webSearchUsed: boolean }> {
+    if (!this.isAvailable()) {
+      return {
+        reply: this.fallbackResponse(currentMessage, contextData),
+        provider: "Offline",
+        webSearchUsed: false,
+      };
+    }
+
+    try {
+      const messages: LlmMessage[] = [
+        { role: "system", content: CHAT_SYSTEM_PROMPT },
+        {
+          role: "assistant",
+          content:
+            "Understood. I'm ready to help users with ICT support issues. I'll use the provided context data to give accurate answers and guide ticket creation when needed.",
+        },
+      ];
+
+      const recentHistory = history.slice(-10);
+      for (const msg of recentHistory) {
+        messages.push({
+          role: msg.role === "USER" ? "user" : "assistant",
+          content: msg.content,
+        });
+      }
+
+      let prompt = currentMessage;
+      if (contextData.trim()) {
+        prompt = `CONTEXT DATA:\n${contextData}\n\nUSER QUESTION: ${currentMessage}`;
+      }
+
+      messages.push({ role: "user", content: prompt });
+
+      const result = await llmClient.searchGroundedCompletion(messages, {
+        temperature: 0.4,
+        maxTokens: 4096,
+        topP: 0.9,
+      });
+
+      return {
+        reply: result.text,
+        provider: result.provider,
+        webSearchUsed: result.webSearchUsed,
+      };
+    } catch (err: any) {
+      logger.error(
+        `[ChatService] Web search LLM call failed (${err.message}). Using local curated fallback.`,
+      );
+      return {
+        reply: this.fallbackResponse(currentMessage, contextData),
+        provider: "Offline",
+        webSearchUsed: false,
+      };
+    }
+  }
 
   private async callGemini(
     history: Array<{ role: string; content: string }>,
