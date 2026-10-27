@@ -3,9 +3,8 @@
 This directory contains standalone, reproducible Python evaluation and verification scripts enabling independent researchers, conference reviewers, and doctoral committee members to verify and reproduce all empirical findings reported in the paper:
 
 > **"AI-Augmented IT Service Management in Philippine Higher Education: A Governed DSR Framework for Administrative Alignment, Epistemic Provenance, and Turnaround Velocity"**
-> *Authors: Russel M. Dela Torre, Mark Oliver Meguizo, Rodney Ormeo, and Ernie L. Aguirre*  
-> *Carlos Hilado Memorial State University (CHMSU) & Colegio de La Castellana*  
-> *Institutional Project Registration Code: F.01-RDS-CHMSU*
+> *Authors: Russel M. Dela Torre, Mark Oliver Meguizo, Rodney Camporaso Ormeo, and Ernie L. Aguirre*  
+> *Carlos Hilado Memorial State University (CHMSU), I-Tech College Bago City Inc., & Colegio de La Castellana*  
 
 ---
 

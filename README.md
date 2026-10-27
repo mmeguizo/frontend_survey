@@ -2,7 +2,7 @@
 
 An enterprise-grade, design science research platform engineered for public higher education institutions under Philippine statutory mandates (**Republic Act No. 11032** / Anti-Red Tape Authority and **Republic Act No. 10173** / Data Privacy Act). Built with **Angular 20 (v20.3.0)** standalone architecture, **Node.js / Express**, **Apollo GraphQL**, **Prisma ORM**, **MySQL 8.0**, and a **closed-loop RAG knowledge engine** with a four-tier graceful AI inference fallback cascade.
 
-Deployed and empirically evaluated at **Carlos Hilado Memorial State University (CHMSU)** under **Institutional Research Project Registration Code F.01-RDS-CHMSU**.
+Deployed and empirically evaluated at **Carlos Hilado Memorial State University (CHMSU)**.
 
 ---
 
@@ -127,11 +127,10 @@ In compliance with IEEE Authorship Policies and institutional ethics standards, 
 
 ```bibtex
 @article{delatorre2026itsm,
-  author    = {Russel M. Dela Torre and Mark Oliver Meguizo and Rodney Ormeo and Ernie L. Aguirre},
+  author    = {Russel M. Dela Torre and Mark Oliver Meguizo and Rodney Camporaso Ormeo and Ernie L. Aguirre},
   title     = {Design, Development, and Empirical Evaluation of a Governed Closed-Domain RAG and Intelligent Triage Platform for Higher Education IT Service Management},
-  institution = {Carlos Hilado Memorial State University},
-  year      = {2026},
-  note      = {Institutional Research Project Code: F.01-RDS-CHMSU}
+  institution = {Carlos Hilado Memorial State University, I-Tech College Bago City Inc., and Colegio de La Castellana},
+  year      = {2026}
 }
 ```
 

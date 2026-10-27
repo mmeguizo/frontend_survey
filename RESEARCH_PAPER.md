@@ -8,9 +8,8 @@ ORCID: 0009-0001-2318-2228
 *College of Computer Studies & ICT Department, Carlos Hilado Memorial State University, Talisay City, Negros Occidental, Philippines*  
 ORCID: 0009-0004-5412-7178
 
-**Rodney Ormeo**  
-*College of Computer Studies, Carlos Hilado Memorial State University, Talisay City, Negros Occidental, Philippines*  
-ORCID: 0009-0002-3904-5858  
+**Rodney Camporaso Ormeo, MIT**  
+*College of Information Systems, I-Tech College Bago City Inc., Bago City, Negros Occidental, Philippines*  
 ORCID: 0009-0002-3904-5858
 
 **Ernie L. Aguirre**  
@@ -342,7 +341,7 @@ Coupled with multimodal vision-language models for automated hardware defect ima
 The complete replication package—including the platform software artifacts (Angular 20 presentation layer, Node.js GraphQL service layer, and Prisma ORM schemas), the 64 UAT scenario validation suites, the labeled 100-query information retrieval ablation corpus, de-identified baseline archival records ($N = 320$), digital pilot operational logs ($N = 339$), production conversational AI telemetry turns ($N = 1,485$), and standalone statistical analysis scripts—is curated and archived under the MIT License within the institutional research data repository of Carlos Hilado Memorial State University. In compliance with statutory data privacy standards under Republic Act No. 10173 [28] and institutional operational security policies, access to the source code, anonymized datasets, and replication harnesses is openly provided to academic researchers and peer reviewers upon reasonable request directed to the corresponding author .
 
 ### Conflict of Interest and Author Positionality
-The authors disclose that Russel M. Dela Torre, Mark Oliver Meguizo, and Rodney Ormeo are faculty members and technical administrators affiliated with Carlos Hilado Memorial State University, the deployment site of the artifact. To mitigate potential investigator bias, the evaluation protocol incorporated external domain experts (n = 2 external faculty), double-blinded experimental scoring for RAG ablation outputs, independent dual annotation with reported inter-rater reliability (Cohen's kappa = 0.89), and standardized psychometric instruments with published industry benchmarks. Ernie L. Aguirre declares no institutional conflict of interest.
+The authors disclose that Russel M. Dela Torre and Mark Oliver Meguizo are faculty members and technical administrators affiliated with Carlos Hilado Memorial State University, the institutional deployment site of the artifact. To mitigate potential investigator bias, the evaluation protocol incorporated external faculty collaborators, independent external domain experts (n = 2), double-blinded experimental scoring for RAG ablation outputs, independent dual annotation with high inter-rater reliability (Cohen's kappa = 0.89 for baseline classification, kappa = 0.91-0.94 for RAG evaluation), and standardized psychometric instruments with established industry benchmarks. Rodney Camporaso Ormeo (I-Tech College Bago City Inc.) and Ernie L. Aguirre (Colegio de La Castellana) are external academic collaborators and declare no institutional conflict of interest regarding the deployment institution.
 
 ### Institutional Clearances and Statutory Compliance
 This study was conducted in coordination with the Information and Communications Technology (ICT) Department and the Research and Development Services (RDS) of Carlos Hilado Memorial State University. All evaluation protocols adhered strictly to Republic Act No. 10173 (Data Privacy Act of 2012) [28] and Republic Act No. 11032 (Ease of Doing Business and Efficient Government Service Delivery Act). Written informed consent was secured from all participating technical staff, supervisors, and user evaluators.
