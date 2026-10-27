@@ -1,0 +1,13 @@
+UserID,UserRole,Campus,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15,Q16,SYSUSE_Mean,INFOQUAL_Mean,INTQUAL_Mean,Overall_Mean
+USR-01,Academic Faculty,Talisay (Main),1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1.0,1.0,1.0,1.0
+USR-02,College Secretary,Talisay (Main),1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1.33,1.17,1.33,1.25
+USR-03,Administrative Officer,Fortune Towne,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1.5,1.5,1.33,1.5
+USR-04,Department Chairperson,Alijis,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1.5,1.5,1.33,1.5
+USR-05,Campus Registrar Staff,Binalbagan,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1.5,1.5,1.33,1.5
+USR-06,Accounting Clerk,Talisay (Main),1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1.5,1.5,1.33,1.5
+USR-07,Supply Office Staff,Fortune Towne,1,2,2,2,1,2,2,2,1,2,2,2,1,2,2,2,1.67,1.83,1.67,1.75
+USR-08,Guidance Counselor,Alijis,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2.0,2.0,2.0,2.0
+USR-09,Laboratory Technician,Binalbagan,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2.0,2.0,2.0,2.0
+USR-10,Student Council Officer,Talisay (Main),2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2.0,2.0,2.0,2.0
+USR-11,Senior Faculty Researcher,Talisay (Main),2,3,2,2,2,3,2,2,2,3,2,2,2,3,2,2,2.33,2.17,2.33,2.25
+USR-12,Library Staff,Fortune Towne,2,3,2,3,2,3,2,3,2,3,2,3,2,3,2,3,2.5,2.5,2.33,2.5

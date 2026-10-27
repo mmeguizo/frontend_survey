@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 900" width="1300" height="900" style="background:#ffffff; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <filter id="shadow2" x="-2%" y="-2%" width="104%" height="106%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="1" dy="2" stdDeviation="2.5" flood-opacity="0.1" />
+    </filter>
+    <marker id="flow-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb" />
+    </marker>
+    <marker id="reject-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626" />
+    </marker>
+    <marker id="escalate-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b" />
+    </marker>
+    <marker id="loop-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981" />
+    </marker>
+  </defs>
+
+  <!-- Title Banner -->
+  <rect x="20" y="15" width="1260" height="50" rx="8" fill="#1e293b" />
+  <text x="650" y="38" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="bold">Fig. 2. Cross-Functional Swimlane Workflow of the Governed 6-Stage, 10-State ITSM Ticket Lifecycle</text>
+  <text x="650" y="55" text-anchor="middle" fill="#94a3b8" font-size="11">Formalizing Public-Sector Multi-Signatory Approvals, Automated Routing, SLA Escalation, and ARTA CSM Gating</text>
+
+  <!-- SWIMLANE BACKGROUNDS AND HEADERS -->
+  <!-- 1. Right-Side Canvas Containers Drawn First (Painter's Algorithm) -->
+  <rect x="180" y="75" width="1100" height="125" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+  <rect x="180" y="200" width="1100" height="115" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" />
+  <rect x="180" y="315" width="1100" height="115" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+  <rect x="180" y="430" width="1100" height="125" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" />
+  <rect x="180" y="555" width="1100" height="115" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+  <rect x="180" y="670" width="1100" height="135" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" />
+
+  <!-- 2. Left-Side Header Box Backgrounds -->
+  <rect x="20" y="75" width="160" height="125" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5" />
+  <rect x="20" y="200" width="160" height="115" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.5" />
+  <rect x="20" y="315" width="160" height="115" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5" />
+  <rect x="20" y="430" width="160" height="125" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5" />
+  <rect x="20" y="555" width="160" height="115" fill="#fefce8" stroke="#fef08a" stroke-width="1.5" />
+  <rect x="20" y="670" width="160" height="135" fill="#fdf2f8" stroke="#fbcfe8" stroke-width="1.5" />
+
+  <!-- 3. Header Text with strict SVG tspan positioning (wrapped and contained inside x=20 to x=180) -->
+  <text text-anchor="middle" fill="#1e40af" font-size="12.5" font-weight="bold">
+    <tspan x="100" y="130">1. End-User /</tspan>
+    <tspan x="100" y="148">Requestor</tspan>
+  </text>
+
+  <text x="100" y="262" text-anchor="middle" fill="#5b21b6" font-size="12.5" font-weight="bold">2. ICT Secretary</text>
+  <text x="100" y="377" text-anchor="middle" fill="#9a3412" font-size="12.5" font-weight="bold">3. ICT Director</text>
+
+  <text text-anchor="middle" fill="#166534" font-size="12.5" font-weight="bold">
+    <tspan x="100" y="485">4. System Engine</tspan>
+    <tspan x="100" y="503">(AI &amp; Daemon)</tspan>
+  </text>
+
+  <text text-anchor="middle" fill="#854d0e" font-size="12.5" font-weight="bold">
+    <tspan x="100" y="605">5. Dept Head</tspan>
+    <tspan x="100" y="623">(MIS / ITS)</tspan>
+  </text>
+
+  <text text-anchor="middle" fill="#9d174d" font-size="12.5" font-weight="bold">
+    <tspan x="100" y="730">6. Technical Staff</tspan>
+    <tspan x="100" y="748">/ Developer</tspan>
+  </text>
+
+  <!-- STAGE 1: SUBMISSION -->
+  <circle cx="215" cy="135" r="14" fill="#2563eb" />
+  <text x="215" y="139" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="bold">Start</text>
+
+  <rect x="245" y="105" width="115" height="60" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow2)" />
+  <text x="302" y="125" text-anchor="middle" fill="#1e3a8a" font-size="11" font-weight="bold">Stage 1: Submit</text>
+  <text x="302" y="140" text-anchor="middle" fill="#3b82f6" font-size="9.5">Form / NLP / Chat</text>
+  <rect x="255" y="147" width="95" height="14" rx="3" fill="#dbeafe" />
+  <text x="302" y="157" text-anchor="middle" fill="#1e40af" font-size="8.5" font-weight="bold">State: FOR_REVIEW</text>
+
+  <!-- STAGE 2: SECRETARY REVIEW -->
+  <path d="M 302 165 L 302 225" stroke="#2563eb" stroke-width="1.5" marker-end="url(#flow-arrow)" fill="none" />
+
+  <polygon points="302,225 352,255 302,285 252,255" fill="#ffffff" stroke="#7c3aed" stroke-width="1.5" filter="url(#shadow2)" />
+  <text x="302" y="252" text-anchor="middle" fill="#5b21b6" font-size="9.5" font-weight="bold">Stage 2: Sec</text>
+  <text x="302" y="264" text-anchor="middle" fill="#5b21b6" font-size="9.5" font-weight="bold">Complete?</text>
+
+  <path d="M 252 255 L 205 255 L 205 165" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#reject-arrow)" fill="none" />
+  <rect x="185" y="195" width="60" height="20" rx="3" fill="#fee2e2" />
+  <text x="215" y="209" text-anchor="middle" fill="#991b1b" font-size="8" font-weight="bold">CANCELLED</text>
+
+  <path d="M 352 255 L 400 255" stroke="#2563eb" stroke-width="1.5" marker-end="url(#flow-arrow)" fill="none" />
+  <text x="375" y="248" text-anchor="middle" fill="#059669" font-size="9" font-weight="bold">Valid</text>
+
+  <rect x="400" y="230" width="105" height="50" rx="6" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1" />
+  <text x="452" y="250" text-anchor="middle" fill="#4c1d95" font-size="10.5" font-weight="bold">Endorse Ticket</text>
+  <rect x="410" y="258" width="85" height="15" rx="3" fill="#ede9fe" />
+  <text x="452" y="269" text-anchor="middle" fill="#6d28d9" font-size="8.5" font-weight="bold">State: REVIEWED</text>
+
+  <!-- STAGE 3: DIRECTOR APPROVAL -->
+  <path d="M 452 280 L 452 340" stroke="#2563eb" stroke-width="1.5" marker-end="url(#flow-arrow)" fill="none" />
+
+  <polygon points="452,340 502,370 452,400 402,370" fill="#ffffff" stroke="#ea580c" stroke-width="1.5" filter="url(#shadow2)" />
+  <text x="452" y="367" text-anchor="middle" fill="#9a3412" font-size="9.5" font-weight="bold">Stage 3: Dir</text>
+  <text x="452" y="379" text-anchor="middle" fill="#9a3412" font-size="9.5" font-weight="bold">Approved?</text>
+
+  <path d="M 402 370 L 370 370 L 370 165" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#reject-arrow)" fill="none" />
+  <text x="350" y="362" text-anchor="middle" fill="#dc2626" font-size="8.5" font-weight="bold">Disapproved</text>
+
+  <path d="M 502 370 L 545 370" stroke="#2563eb" stroke-width="1.5" marker-end="url(#flow-arrow)" fill="none" />
+  <text x="522" y="362" text-anchor="middle" fill="#059669" font-size="9" font-weight="bold">Yes</text>
+
+  <rect x="545" y="345" width="125" height="50" rx="6" fill="#fff7ed" stroke="#f97316" stroke-width="1" />
+  <text x="607" y="365" text-anchor="middle" fill="#7c2d12" font-size="10.5" font-weight="bold">Approve Request</text>
+  <rect x="552" y="373" width="112" height="15" rx="3" fill="#ffedd5" />
+  <text x="607" y="384" text-anchor="middle" fill="#c2410c" font-size="8" font-weight="bold">DIR_APPROVED</text>
+
+  <!-- STAGE 4: AUTOMATED ROUTING & SLA INIT -->
+  <path d="M 607 395 L 607 455" stroke="#2563eb" stroke-width="1.5" marker-end="url(#flow-arrow)" fill="none" />
+
+  <rect x="535" y="455" width="145" height="75" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5" filter="url(#shadow2)" />
+  <text x="607" y="475" text-anchor="middle" fill="#14532d" font-size="11" font-weight="bold">Stage 4: Auto-Routing</text>
+  <text x="607" y="490" text-anchor="middle" fill="#15803d" font-size="9">• Lexicographical Tag Match</text>
+  <text x="607" y="503" text-anchor="middle" fill="#15803d" font-size="9">• Lowest Workload Balance</text>
+  <rect x="545" y="509" width="125" height="14" rx="3" fill="#dcfce7" />
+  <text x="607" y="519" text-anchor="middle" fill="#166534" font-size="8" font-weight="bold">Init SLA Clock &amp; ASSIGNED</text>
+
+  <path d="M 607 530 L 607 580" stroke="#2563eb" stroke-width="1.5" marker-end="url(#flow-arrow)" fill="none" />
+
+  <rect x="545" y="580" width="125" height="60" rx="6" fill="#fefce8" stroke="#ca8a04" stroke-width="1.2" />
+  <text x="607" y="600" text-anchor="middle" fill="#713f12" font-size="10.5" font-weight="bold">Dept Head Acknowledge</text>
+  <text x="607" y="615" text-anchor="middle" fill="#854d0e" font-size="8.5">Re-assign or Confirm Task</text>
+  <rect x="555" y="622" width="105" height="14" rx="3" fill="#fef9c3" />
+  <text x="607" y="632" text-anchor="middle" fill="#a16207" font-size="8" font-weight="bold">State: PENDING</text>
+
+  <!-- STAGE 5: TECHNICAL EXECUTION & RESOLUTION -->
+  <path d="M 670 610 L 730 610 L 730 695" stroke="#2563eb" stroke-width="1.5" marker-end="url(#flow-arrow)" fill="none" />
+
+  <rect x="685" y="695" width="130" height="65" rx="6" fill="#fdf2f8" stroke="#db2777" stroke-width="1.5" filter="url(#shadow2)" />
+  <text x="750" y="715" text-anchor="middle" fill="#831843" font-size="11" font-weight="bold">Stage 5: Tech Execution</text>
+  <text x="750" y="730" text-anchor="middle" fill="#be185d" font-size="9">Diagnose • Log Notes</text>
+  <rect x="695" y="740" width="110" height="14" rx="3" fill="#fce7f3" />
+  <text x="750" y="750" text-anchor="middle" fill="#9d174d" font-size="8" font-weight="bold">State: IN_PROGRESS</text>
+
+  <rect x="840" y="695" width="105" height="65" rx="6" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.2" />
+  <text x="892" y="715" text-anchor="middle" fill="#92400e" font-size="10" font-weight="bold">Awaiting Parts?</text>
+  <text x="892" y="730" text-anchor="middle" fill="#d97706" font-size="8.5">PAUSES SLA CLOCK</text>
+  <rect x="847" y="740" width="90" height="14" rx="3" fill="#fef3c7" />
+  <text x="892" y="750" text-anchor="middle" fill="#b45309" font-size="8" font-weight="bold">State: ON_HOLD</text>
+
+  <path d="M 815 720 L 840 720" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#escalate-arrow)" fill="none" />
+  <path d="M 840 735 L 815 735" stroke="#10b981" stroke-width="1.2" marker-end="url(#loop-arrow)" fill="none" />
+
+  <path d="M 750 760 L 750 780 L 980 780 L 980 755" stroke="#2563eb" stroke-width="1.5" marker-end="url(#flow-arrow)" fill="none" />
+
+  <rect x="945" y="695" width="125" height="60" rx="6" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" filter="url(#shadow2)" />
+  <text x="1007" y="715" text-anchor="middle" fill="#064e3b" font-size="10.5" font-weight="bold">Submit Fix &amp; Notes</text>
+  <text x="1007" y="729" text-anchor="middle" fill="#047857" font-size="8.5">Final Resolution Synthesis</text>
+  <rect x="955" y="736" width="105" height="14" rx="3" fill="#d1fae5" />
+  <text x="1007" y="746" text-anchor="middle" fill="#065f46" font-size="8" font-weight="bold">State: RESOLVED</text>
+
+  <path d="M 1007 695 L 1007 540" stroke="#059669" stroke-width="1.8" stroke-dasharray="4,4" marker-end="url(#loop-arrow)" fill="none" />
+  <rect x="930" y="460" width="155" height="75" rx="6" fill="#f0fdf4" stroke="#059669" stroke-width="1.2" />
+  <text x="1007" y="478" text-anchor="middle" fill="#065f46" font-size="10" font-weight="bold">Closed-Loop SECI Hook</text>
+  <text x="1007" y="493" text-anchor="middle" fill="#047857" font-size="8.5">• Auto-extract Problem-Fix Pair</text>
+  <text x="1007" y="506" text-anchor="middle" fill="#047857" font-size="8.5">• 768-dim Vector Indexing</text>
+  <text x="1007" y="521" text-anchor="middle" fill="#dc2626" font-size="8.5" font-weight="bold">Head Audit → Public RAG KB</text>
+
+  <path d="M 1040 695 L 1040 185" stroke="#ea580c" stroke-width="2" marker-end="url(#flow-arrow)" fill="none" />
+
+  <rect x="975" y="105" width="135" height="75" rx="6" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5" filter="url(#shadow2)" />
+  <text x="1042" y="125" text-anchor="middle" fill="#7c2d12" font-size="10.5" font-weight="bold">Stage 6: ARTA CSM</text>
+  <text x="1042" y="139" text-anchor="middle" fill="#9a3412" font-size="8.5">Mandatory 2-Page Survey</text>
+  <text x="1042" y="152" text-anchor="middle" fill="#c2410c" font-size="8">CC1-CC3 &amp; SQD0-SQD8</text>
+  <rect x="985" y="159" width="115" height="15" rx="3" fill="#ffedd5" />
+  <text x="1042" y="170" text-anchor="middle" fill="#7c2d12" font-size="8" font-weight="bold">GATES TICKET CLOSURE</text>
+
+  <path d="M 1110 142 L 1150 142" stroke="#16a34a" stroke-width="2" marker-end="url(#flow-arrow)" fill="none" />
+  <rect x="1150" y="117" width="105" height="50" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="2" />
+  <text x="1202" y="138" text-anchor="middle" fill="#14532d" font-size="11" font-weight="bold">State: CLOSED</text>
+  <text x="1202" y="153" text-anchor="middle" fill="#166534" font-size="8.5">Archived &amp; Monitored</text>
+  <circle cx="1202" cy="177" r="8" fill="#16a34a" />
+
+  <rect x="710" y="445" width="180" height="95" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1" />
+  <text x="800" y="465" text-anchor="middle" fill="#991b1b" font-size="10.5" font-weight="bold">SLA Breach Daemon</text>
+  <text x="800" y="480" text-anchor="middle" fill="#b91c1c" font-size="8.5">5-min Cron against Priority SLA</text>
+  <text x="800" y="495" text-anchor="middle" fill="#dc2626" font-size="8.5" font-weight="bold">• Tier 1: Notify Staff &amp; Head</text>
+  <text x="800" y="510" text-anchor="middle" fill="#dc2626" font-size="8.5" font-weight="bold">• Tier 2 (+30m): Escalate Dir/Admin</text>
+  <rect x="720" y="518" width="160" height="15" rx="3" fill="#fee2e2" />
+  <text x="800" y="529" text-anchor="middle" fill="#7f1d1d" font-size="8" font-weight="bold">Working Hours Only (8am-5pm)</text>
+
+  <!-- Legend -->
+  <rect x="20" y="825" width="1260" height="55" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+  <text x="35" y="845" fill="#334155" font-size="11" font-weight="bold">Workflow Legend &amp; State Key:</text>
+
+  <rect x="35" y="855" width="12" height="12" fill="#dbeafe" stroke="#2563eb" />
+  <text x="52" y="865" fill="#1e3a8a" font-size="9.5">Sequential Forward Progress</text>
+
+  <rect x="220" y="855" width="12" height="12" fill="#fee2e2" stroke="#dc2626" />
+  <text x="237" y="865" fill="#991b1b" font-size="9.5">Cancellation / Rejection Path</text>
+
+  <rect x="420" y="855" width="12" height="12" fill="#fef3c7" stroke="#f59e0b" />
+  <text x="437" y="865" fill="#92400e" font-size="9.5">SLA Paused (ON_HOLD)</text>
+
+  <rect x="600" y="855" width="12" height="12" fill="#dcfce7" stroke="#059669" />
+  <text x="617" y="865" fill="#065f46" font-size="9.5">Closed-Loop SECI Knowledge Capture</text>
+
+  <rect x="850" y="855" width="12" height="12" fill="#ffedd5" stroke="#ea580c" />
+  <text x="867" y="865" fill="#7c2d12" font-size="9.5">Statutory ARTA CSM Closure Gating</text>
+</svg>

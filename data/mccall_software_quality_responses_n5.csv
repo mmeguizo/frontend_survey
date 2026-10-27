@@ -1,0 +1,6 @@
+EvaluatorID,ExpertRole,InstitutionalAffiliation,Correctness,Reliability,Efficiency,Integrity,Usability,Maintainability,Flexibility,Testability,Portability,Reusability,Interoperability,OperationMean,RevisionMean,TransitionMean,CompositeMean
+EXP-01,Systems Architect & Professor,Carlos Hilado Memorial State University,5.0,5.0,5.0,5.0,4.8,4.8,4.8,5.0,4.8,4.8,5.0,4.96,4.87,4.87,4.91
+EXP-02,Senior Information Systems Analyst,Carlos Hilado Memorial State University,4.8,4.8,4.8,4.8,4.8,4.8,4.8,4.8,4.6,4.6,4.8,4.8,4.8,4.67,4.76
+EXP-03,Database Administrator & Lecturer,Carlos Hilado Memorial State University,4.8,4.6,4.6,4.8,4.6,4.6,4.6,4.6,4.6,4.6,4.6,4.68,4.6,4.6,4.64
+EXP-04,External Associate Professor of IT,Technological University of the Philippines Visayas,4.6,4.6,4.6,4.6,4.6,4.4,4.6,4.4,4.6,4.4,4.6,4.6,4.47,4.53,4.55
+EXP-05,External Software Engineering Auditor,Colegio de La Castellana,4.2,4.4,4.4,4.6,4.4,4.4,4.2,4.4,4.4,4.4,4.4,4.4,4.33,4.4,4.38

@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 660" width="1150" height="660" style="background:#ffffff; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <filter id="shadow4" x="-2%" y="-2%" width="104%" height="106%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-opacity="0.1" />
+    </filter>
+  </defs>
+
+  <!-- Title Banner -->
+  <rect x="30" y="20" width="1090" height="55" rx="8" fill="#1e293b" />
+  <text x="575" y="45" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="bold">Fig. 4. Empirical Performance Benchmarking Across RAG Experimental Ablation Configurations (N = 100)</text>
+  <text x="575" y="64" text-anchor="middle" fill="#94a3b8" font-size="11.5">Evaluating Precision@5, Recall@5, Mean Reciprocal Rank (MRR), Answer Faithfulness, and Hallucination Rates (Strictly Matching Table V)</text>
+
+  <!-- PANEL 1: RETRIEVAL QUALITY (P@5, R@5, MRR) -->
+  <rect x="30" y="95" width="530" height="535" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow4)" />
+  <rect x="30" y="95" width="530" height="36" rx="8" fill="#e0e7ff" />
+  <text x="295" y="119" text-anchor="middle" fill="#3730a3" font-size="13" font-weight="bold">A. Information Retrieval Quality Metrics (P@5, R@5, MRR)</text>
+
+  <!-- Y-Axis -->
+  <line x1="85" y1="160" x2="85" y2="480" stroke="#94a3b8" stroke-width="1.5" />
+  <line x1="85" y1="480" x2="520" y2="480" stroke="#94a3b8" stroke-width="1.5" />
+
+  <text x="75" y="485" text-anchor="end" fill="#64748b" font-size="10">0.0</text>
+  <line x1="80" y1="480" x2="520" y2="480" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="75" y="415" text-anchor="end" fill="#64748b" font-size="10">0.25</text>
+  <line x1="80" y1="415" x2="520" y2="415" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="75" y="350" text-anchor="end" fill="#64748b" font-size="10">0.50</text>
+  <line x1="80" y1="350" x2="520" y2="350" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="75" y="285" text-anchor="end" fill="#64748b" font-size="10">0.75</text>
+  <line x1="80" y1="285" x2="520" y2="285" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="75" y="220" text-anchor="end" fill="#64748b" font-size="10">1.00</text>
+  <line x1="80" y1="220" x2="520" y2="220" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <!-- Scale: 1.0 = 260 px height (from Y=480 up to Y=220) -> Height = val * 260 -->
+
+  <!-- Arm 2: Open Web RAG (P=0.58, R=0.64, MRR=0.65) -->
+  <rect x="95" y="329" width="16" height="151" rx="2" fill="#93c5fd" />
+  <rect x="113" y="314" width="16" height="166" rx="2" fill="#3b82f6" />
+  <rect x="131" y="311" width="16" height="169" rx="2" fill="#1d4ed8" />
+  <text x="121" y="498" text-anchor="middle" fill="#1e293b" font-size="9" font-weight="bold">Arm 2</text>
+  <text x="121" y="510" text-anchor="middle" fill="#64748b" font-size="7.5">Open Web</text>
+
+  <!-- Arm 3a: Lexical KB (P=0.42, R=0.46, MRR=0.51) -->
+  <rect x="165" y="371" width="16" height="109" rx="2" fill="#93c5fd" />
+  <rect x="183" y="360" width="16" height="120" rx="2" fill="#3b82f6" />
+  <rect x="201" y="347" width="16" height="133" rx="2" fill="#1d4ed8" />
+  <text x="191" y="498" text-anchor="middle" fill="#1e293b" font-size="9" font-weight="bold">Arm 3a</text>
+  <text x="191" y="510" text-anchor="middle" fill="#64748b" font-size="7.5">Lex KB</text>
+
+  <!-- Arm 3b: Lexical Tickets (P=0.46, R=0.50, MRR=0.54) -->
+  <rect x="235" y="360" width="16" height="120" rx="2" fill="#93c5fd" />
+  <rect x="253" y="350" width="16" height="130" rx="2" fill="#3b82f6" />
+  <rect x="271" y="340" width="16" height="140" rx="2" fill="#1d4ed8" />
+  <text x="261" y="498" text-anchor="middle" fill="#1e293b" font-size="9" font-weight="bold">Arm 3b</text>
+  <text x="261" y="510" text-anchor="middle" fill="#64748b" font-size="7.5">Lex Tickets</text>
+
+  <!-- Arm 3c: Unified Lexical (P=0.51, R=0.56, MRR=0.60) -->
+  <rect x="305" y="347" width="16" height="133" rx="2" fill="#93c5fd" />
+  <rect x="323" y="334" width="16" height="146" rx="2" fill="#3b82f6" />
+  <rect x="341" y="324" width="16" height="156" rx="2" fill="#1d4ed8" />
+  <text x="331" y="498" text-anchor="middle" fill="#1e293b" font-size="9" font-weight="bold">Arm 3c</text>
+  <text x="331" y="510" text-anchor="middle" fill="#64748b" font-size="7.5">Unified Lex</text>
+
+  <!-- Arm 4: Dense Vector Only (P=0.74, R=0.81, MRR=0.79) -->
+  <rect x="375" y="288" width="16" height="192" rx="2" fill="#93c5fd" />
+  <rect x="393" y="269" width="16" height="211" rx="2" fill="#3b82f6" />
+  <rect x="411" y="275" width="16" height="205" rx="2" fill="#1d4ed8" />
+  <text x="401" y="498" text-anchor="middle" fill="#1e293b" font-size="9" font-weight="bold">Arm 4</text>
+  <text x="401" y="510" text-anchor="middle" fill="#64748b" font-size="7.5">Dense Vec</text>
+
+  <!-- Arm 5: Proposed Hybrid (P=0.86, R=0.92, MRR=0.89) -->
+  <rect x="445" y="256" width="16" height="224" rx="2" fill="#86efac" stroke="#16a34a" stroke-width="1" />
+  <rect x="463" y="241" width="16" height="239" rx="2" fill="#22c55e" stroke="#16a34a" stroke-width="1" />
+  <rect x="481" y="249" width="16" height="231" rx="2" fill="#15803d" stroke="#16a34a" stroke-width="1" />
+  <text x="471" y="498" text-anchor="middle" fill="#14532d" font-size="9" font-weight="bold">Arm 5</text>
+  <text x="471" y="510" text-anchor="middle" fill="#166534" font-size="7.5">Proposed</text>
+
+  <!-- Legend 1 -->
+  <rect x="90" y="545" width="410" height="65" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+  <rect x="105" y="558" width="12" height="12" fill="#93c5fd" />
+  <text x="122" y="568" fill="#1e3a8a" font-size="9.5">Precision@5 (P@5)</text>
+
+  <rect x="235" y="558" width="12" height="12" fill="#3b82f6" />
+  <text x="252" y="568" fill="#1e3a8a" font-size="9.5">Recall@5 (R@5)</text>
+
+  <rect x="355" y="558" width="12" height="12" fill="#1d4ed8" />
+  <text x="372" y="568" fill="#1e3a8a" font-size="9.5">MRR</text>
+
+  <text x="295" y="595" text-anchor="middle" fill="#047857" font-size="10" font-weight="bold">Arm 5 (Table V): P@5 = 0.86, R@5 = 0.92, MRR = 0.89</text>
+
+  <!-- PANEL 2: FAITHFULNESS & HALLUCINATION (All 7 Arms) -->
+  <rect x="580" y="95" width="540" height="535" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow4)" />
+  <rect x="580" y="95" width="540" height="36" rx="8" fill="#fee2e2" />
+  <text x="850" y="119" text-anchor="middle" fill="#991b1b" font-size="13" font-weight="bold">B. Answer Faithfulness (%) vs. Hallucination Rate (%)</text>
+
+  <!-- Y-Axis -->
+  <line x1="640" y1="160" x2="640" y2="480" stroke="#94a3b8" stroke-width="1.5" />
+  <line x1="640" y1="480" x2="1080" y2="480" stroke="#94a3b8" stroke-width="1.5" />
+
+  <text x="630" y="485" text-anchor="end" fill="#64748b" font-size="10">0%</text>
+  <line x1="635" y1="480" x2="1080" y2="480" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="630" y="400" text-anchor="end" fill="#64748b" font-size="10">25%</text>
+  <line x1="635" y1="400" x2="1080" y2="400" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="630" y="320" text-anchor="end" fill="#64748b" font-size="10">50%</text>
+  <line x1="635" y1="320" x2="1080" y2="320" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="630" y="240" text-anchor="end" fill="#64748b" font-size="10">75%</text>
+  <line x1="635" y1="240" x2="1080" y2="240" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="630" y="160" text-anchor="end" fill="#64748b" font-size="10">100%</text>
+  <line x1="635" y1="160" x2="1080" y2="160" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <!-- Scale: 100% = 320 px -> 1% = 3.2 px. Y = 480 - (val * 3.2) -->
+
+  <!-- Arm 1: Zero-Shot (Faith 38% -> H=122 Y=358, Halluc 54% -> H=173 Y=307) -->
+  <rect x="655" y="358" width="22" height="122" rx="2" fill="#10b981" />
+  <rect x="680" y="307" width="22" height="173" rx="2" fill="#ef4444" />
+  <text x="678" y="498" text-anchor="middle" fill="#1e293b" font-size="8.5" font-weight="bold">Arm 1</text>
+  <text x="678" y="510" text-anchor="middle" fill="#64748b" font-size="7">Zero-Shot</text>
+
+  <!-- Arm 2: Open Web (Faith 66% -> H=211 Y=269, Halluc 26% -> H=83 Y=397) -->
+  <rect x="715" y="269" width="22" height="211" rx="2" fill="#10b981" />
+  <rect x="740" y="397" width="22" height="83" rx="2" fill="#ef4444" />
+  <text x="738" y="498" text-anchor="middle" fill="#1e293b" font-size="8.5" font-weight="bold">Arm 2</text>
+  <text x="738" y="510" text-anchor="middle" fill="#64748b" font-size="7">Open Web</text>
+
+  <!-- Arm 3a: Lex KB (Faith 72% -> H=230 Y=250, Halluc 16% -> H=51 Y=429) -->
+  <rect x="775" y="250" width="22" height="230" rx="2" fill="#10b981" />
+  <rect x="800" y="429" width="22" height="51" rx="2" fill="#ef4444" />
+  <text x="798" y="498" text-anchor="middle" fill="#1e293b" font-size="8.5" font-weight="bold">Arm 3a</text>
+  <text x="798" y="510" text-anchor="middle" fill="#64748b" font-size="7">Lex KB</text>
+
+  <!-- Arm 3b: Lex Tickets (Faith 75% -> H=240 Y=240, Halluc 14% -> H=45 Y=435) -->
+  <rect x="835" y="240" width="22" height="240" rx="2" fill="#10b981" />
+  <rect x="860" y="435" width="22" height="45" rx="2" fill="#ef4444" />
+  <text x="858" y="498" text-anchor="middle" fill="#1e293b" font-size="8.5" font-weight="bold">Arm 3b</text>
+  <text x="858" y="510" text-anchor="middle" fill="#64748b" font-size="7">Lex Tix</text>
+
+  <!-- Arm 3c: Unified Lex (Faith 80% -> H=256 Y=224, Halluc 10% -> H=32 Y=448) -->
+  <rect x="895" y="224" width="22" height="256" rx="2" fill="#10b981" />
+  <rect x="920" y="448" width="22" height="32" rx="2" fill="#ef4444" />
+  <text x="918" y="498" text-anchor="middle" fill="#1e293b" font-size="8.5" font-weight="bold">Arm 3c</text>
+  <text x="918" y="510" text-anchor="middle" fill="#64748b" font-size="7">Unified Lex</text>
+
+  <!-- Arm 4: Dense Vector (Faith 87% -> H=278 Y=202, Halluc 6% -> H=19 Y=461) -->
+  <rect x="955" y="202" width="22" height="278" rx="2" fill="#10b981" />
+  <rect x="980" y="461" width="22" height="19" rx="2" fill="#ef4444" />
+  <text x="978" y="498" text-anchor="middle" fill="#1e293b" font-size="8.5" font-weight="bold">Arm 4</text>
+  <text x="978" y="510" text-anchor="middle" fill="#64748b" font-size="7">Dense Vec</text>
+
+  <!-- Arm 5: Proposed Hybrid (Faith 95% -> H=304 Y=176, Halluc 2% -> H=6 Y=474) -->
+  <rect x="1015" y="176" width="22" height="304" rx="2" fill="#059669" stroke="#047857" stroke-width="1.5" />
+  <rect x="1040" y="474" width="22" height="6" rx="2" fill="#b91c1c" stroke="#7f1d1d" stroke-width="1.5" />
+  <text x="1038" y="498" text-anchor="middle" fill="#14532d" font-size="8.5" font-weight="bold">Arm 5</text>
+  <text x="1038" y="510" text-anchor="middle" fill="#166534" font-size="7">Proposed</text>
+
+  <!-- Legend 2 -->
+  <rect x="660" y="545" width="410" height="65" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+  <rect x="680" y="558" width="12" height="12" fill="#10b981" />
+  <text x="698" y="568" fill="#065f46" font-size="9.5">Answer Faithfulness (%)</text>
+
+  <rect x="850" y="558" width="12" height="12" fill="#ef4444" />
+  <text x="868" y="568" fill="#991b1b" font-size="9.5">Hallucination Rate (%)</text>
+
+  <text x="865" y="595" text-anchor="middle" fill="#b91c1c" font-size="10" font-weight="bold">Arm 5 (Table V): 95.0% Faithfulness, 2.0% Hallucination Rate</text>
+</svg>

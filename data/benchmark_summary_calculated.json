@@ -1,0 +1,205 @@
+{
+  "baseline": {
+    "N": 320,
+    "mis_count": 128,
+    "mis_mean": 48.83,
+    "mis_sd": 20.54,
+    "mis_median": 46.3,
+    "its_count": 192,
+    "its_mean": 33.04,
+    "its_sd": 14.37,
+    "its_median": 32.7,
+    "overall_mean": 39.36,
+    "overall_sd": 18.75,
+    "overall_median": 36.65,
+    "sla_compliant_count": 235,
+    "sla_compliance_pct": 73.44,
+    "sla_ci": [
+      68.34,
+      77.98
+    ],
+    "arta_count": 76,
+    "arta_pct": 23.75,
+    "arta_ci": [
+      19.42,
+      28.71
+    ],
+    "priorities": {
+      "critical": {
+        "n": 25,
+        "mean": 43.8,
+        "ontime": 0,
+        "ontime_pct": 0.0
+      },
+      "high": {
+        "n": 80,
+        "mean": 41.9,
+        "ontime": 28,
+        "ontime_pct": 35.0
+      },
+      "medium": {
+        "n": 155,
+        "mean": 39.1,
+        "ontime": 148,
+        "ontime_pct": 95.48
+      },
+      "low": {
+        "n": 60,
+        "mean": 35.4,
+        "ontime": 59,
+        "ontime_pct": 98.33
+      }
+    }
+  },
+  "pilot": {
+    "N_total": 339,
+    "N_resolved": 335,
+    "mis_count": 135,
+    "mis_mean": 19.32,
+    "mis_sd": 19.48,
+    "mis_median": 16.3,
+    "its_count": 200,
+    "its_mean": 20.11,
+    "its_sd": 23.7,
+    "its_median": 14.85,
+    "overall_mean": 19.79,
+    "overall_sd": 22.07,
+    "overall_median": 15.1,
+    "gross_mean": 22.84,
+    "gross_sd": 22.47,
+    "sla_compliant_count": 311,
+    "sla_compliance_pct": 92.84,
+    "sla_ci": [
+      89.56,
+      95.14
+    ],
+    "arta_closed_count": 325,
+    "arta_gated_pct": 97.01,
+    "arta_total_pct": 95.87,
+    "arta_ci": [
+      93.19,
+      97.52
+    ],
+    "unresolved_in_progress": 4,
+    "cohens_d": {
+      "mis": 1.47,
+      "its": 0.66,
+      "overall": 0.95,
+      "gross": 0.8
+    },
+    "priorities": {
+      "critical": {
+        "n": 28,
+        "mean": 2.36,
+        "sd": 0.63,
+        "ontime": 28,
+        "ontime_pct": 100.0
+      },
+      "high": {
+        "n": 86,
+        "mean": 11.59,
+        "sd": 6.12,
+        "ontime": 79,
+        "ontime_pct": 91.86
+      },
+      "medium": {
+        "n": 163,
+        "mean": 22.63,
+        "sd": 16.84,
+        "ontime": 150,
+        "ontime_pct": 92.02
+      },
+      "low": {
+        "n": 58,
+        "mean": 32.4,
+        "sd": 39.39,
+        "ontime": 54,
+        "ontime_pct": 93.1
+      }
+    },
+    "escalations": {
+      "tier1_count": 24,
+      "tier1_pct": 7.16,
+      "tier2_count": 12,
+      "tier2_pct": 3.58
+    }
+  },
+  "knowledge_audit": {
+    "total_audited": 280,
+    "approved_usable": 247,
+    "approval_pct": 88.21
+  },
+  "software_quality_mccall": {
+    "n_evaluators": 5,
+    "overall_composite": 4.65,
+    "overall_sd": 0.21,
+    "operation_mean": 4.68,
+    "revision_mean": 4.6,
+    "transition_mean": 4.6
+  },
+  "usability_pssuq": {
+    "n_evaluators": 12,
+    "overall_composite": 1.71,
+    "overall_sd": 0.41,
+    "sysuse_mean": 1.68,
+    "infoqual_mean": 1.82,
+    "intqual_mean": 1.58,
+    "industry_norm": 2.82
+  },
+  "telemetry": {
+    "total_turns": 1485,
+    "tier1a_internal_gemini": {
+      "count": 1142,
+      "pct": 76.9,
+      "latency_mean": 980
+    },
+    "tier1b_web_gemini": {
+      "count": 215,
+      "pct": 14.48,
+      "latency_mean": 1820
+    },
+    "tier2_perplexity": {
+      "count": 78,
+      "pct": 5.25,
+      "latency_mean": 2450
+    },
+    "tier3_qwen": {
+      "count": 32,
+      "pct": 2.15,
+      "latency_mean": 2340
+    },
+    "tier4_offline": {
+      "count": 18,
+      "pct": 1.21,
+      "latency_mean": 11
+    },
+    "weighted_latency_ms": 1196.4,
+    "primary_cloud_availability_pct": 98.79,
+    "platform_continuity_pct": 100.0
+  },
+  "chat_telemetry": {
+    "N": 1485,
+    "tier1a": {
+      "n": 1142,
+      "lat": 980
+    },
+    "tier1b": {
+      "n": 215,
+      "lat": 1820
+    },
+    "tier2": {
+      "n": 78,
+      "lat": 2450
+    },
+    "tier3": {
+      "n": 32,
+      "lat": 2340
+    },
+    "tier4": {
+      "n": 18,
+      "lat": 11
+    },
+    "weighted_latency": 1196.4,
+    "cloud_availability": 98.79
+  }
+}

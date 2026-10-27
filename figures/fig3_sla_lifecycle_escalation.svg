@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 680" width="1100" height="680" style="background:#ffffff; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <filter id="shadow3" x="-2%" y="-2%" width="104%" height="106%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-opacity="0.1" />
+    </filter>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb" />
+    </marker>
+    <marker id="arr-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626" />
+    </marker>
+  </defs>
+
+  <!-- Title Banner -->
+  <rect x="30" y="20" width="1040" height="55" rx="8" fill="#1e293b" />
+  <text x="550" y="45" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="bold">Fig. 3. Priority-Based SLA Target Windows, Lifecycle State Thresholds, and Two-Tier Escalation Protocol</text>
+  <text x="550" y="64" text-anchor="middle" fill="#94a3b8" font-size="11.5">Governed by Institutional Business Hours (8:00 AM – 5:00 PM M–F), ON_HOLD Pause Semantics, and Real-Time WebSocket Alerts</text>
+
+  <!-- LEFT PANEL: SLA TARGET WINDOWS -->
+  <rect x="30" y="95" width="460" height="550" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow3)" />
+  <rect x="30" y="95" width="460" height="36" rx="8" fill="#e2e8f0" />
+  <text x="260" y="119" text-anchor="middle" fill="#1e293b" font-size="13" font-weight="bold">A. Priority-Specific SLA Windows &amp; Division Workload</text>
+
+  <!-- Critical -->
+  <rect x="45" y="145" width="430" height="85" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1" />
+  <rect x="55" y="155" width="90" height="24" rx="4" fill="#dc2626" />
+  <text x="100" y="171" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">CRITICAL</text>
+  <text x="160" y="172" fill="#991b1b" font-size="13" font-weight="bold">SLA Target: 4 Working Hours</text>
+  <text x="55" y="198" fill="#7f1d1d" font-size="10">Applies to: Campus Network Outage, Central Server / ERP Down, Portal Security Event</text>
+  <text x="55" y="215" fill="#4b5563" font-size="9.5">Observed in Pilot: N = 28 tickets • MTTR: 2.36 h • Compliance: 100.00% (28/28 on-time)</text>
+
+  <!-- High -->
+  <rect x="45" y="240" width="430" height="85" rx="6" fill="#fff7ed" stroke="#fed7aa" stroke-width="1" />
+  <rect x="55" y="250" width="90" height="24" rx="4" fill="#ea580c" />
+  <text x="100" y="266" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">HIGH</text>
+  <text x="160" y="267" fill="#9a3412" font-size="13" font-weight="bold">SLA Target: 24 Working Hours (3 Days)</text>
+  <text x="55" y="293" fill="#7c2d12" font-size="10">Applies to: College Lab Switch Failure, Staff Workstation Boot Error, Payroll Module Bug</text>
+  <text x="55" y="310" fill="#4b5563" font-size="9.5">Observed in Pilot: N = 86 tickets • MTTR: 11.45 h • Compliance: 91.86% (79/86 on-time)</text>
+
+  <!-- Medium -->
+  <rect x="45" y="335" width="430" height="85" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1" />
+  <rect x="55" y="345" width="90" height="24" rx="4" fill="#2563eb" />
+  <text x="100" y="361" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">MEDIUM</text>
+  <text x="160" y="362" fill="#1e40af" font-size="13" font-weight="bold">SLA Target: 72 Working Hours (9 Days)</text>
+  <text x="55" y="388" fill="#1e3a8a" font-size="10">Applies to: Department Website Update, Office Printer Servicing, Software Installation</text>
+  <text x="55" y="405" fill="#4b5563" font-size="9.5">Observed in Pilot: N = 163 tickets • MTTR: 22.70 h • Compliance: 92.02% (150/163 on-time)</text>
+
+  <!-- Low -->
+  <rect x="45" y="430" width="430" height="85" rx="6" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1" />
+  <rect x="55" y="440" width="90" height="24" rx="4" fill="#16a34a" />
+  <text x="100" y="456" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">LOW</text>
+  <text x="160" y="457" fill="#166534" font-size="13" font-weight="bold">SLA Target: 168 Working Hours (21 Days)</text>
+  <text x="55" y="483" fill="#14532d" font-size="10">Applies to: Routine AV Lending Request, New Feature Inquiry, Account Archival Request</text>
+  <text x="55" y="500" fill="#4b5563" font-size="9.5">Observed in Pilot: N = 58 tickets • MTTR: 32.40 h • Compliance: 93.10% (54/58 on-time)</text>
+
+  <!-- Working Hours Rules Box -->
+  <rect x="45" y="525" width="430" height="105" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+  <text x="55" y="546" fill="#0f172a" font-size="11.5" font-weight="bold">Statutory SLA Calculation Rules (RA 11032):</text>
+  <text x="55" y="565" fill="#334155" font-size="10">1. Clock Active Window: 8:00 AM – 5:00 PM, Monday to Friday.</text>
+  <text x="55" y="581" fill="#334155" font-size="10">2. Excluded: Weekends, Legal Holidays, Official University Suspensions.</text>
+  <text x="55" y="597" fill="#dc2626" font-size="10" font-weight="bold">3. ON_HOLD State Rule: SLA countdown formally PAUSED when awaiting</text>
+  <text x="70" y="612" fill="#dc2626" font-size="9.5">hardware replacement parts or requestor diagnostic clarification.</text>
+
+  <!-- RIGHT PANEL: ESCALATION TIMELINE -->
+  <rect x="510" y="95" width="560" height="550" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow3)" />
+  <rect x="510" y="95" width="560" height="36" rx="8" fill="#fee2e2" />
+  <text x="790" y="119" text-anchor="middle" fill="#991b1b" font-size="13" font-weight="bold">B. 5-Minute Daemon Polling &amp; Two-Tier Escalation Protocol</text>
+
+  <!-- Timeline Status Progression -->
+  <rect x="530" y="145" width="520" height="110" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1" />
+  <text x="545" y="168" fill="#0f172a" font-size="12" font-weight="bold">Ticket Status Progression along SLA Timeline:</text>
+
+  <rect x="545" y="185" width="220" height="26" rx="4" fill="#22c55e" />
+  <text x="655" y="202" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">ON-TRACK (Time Remaining &gt; 4 h)</text>
+
+  <rect x="770" y="185" width="140" height="26" rx="4" fill="#f59e0b" />
+  <text x="840" y="202" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">AT-RISK (≤ 4 h)</text>
+
+  <rect x="915" y="185" width="135" height="26" rx="4" fill="#ef4444" />
+  <text x="982" y="202" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">OVERDUE (≤ 0 h)</text>
+
+  <text x="545" y="235" fill="#64748b" font-size="9.5">Evaluated continuously every 5 minutes by background scheduling daemon</text>
+  <text x="545" y="247" fill="#64748b" font-size="9.5">Yellow warning badge rendered on Assigned Staff and Dept Head dashboards</text>
+
+  <!-- Two-Tier Escalation Boxes -->
+  <!-- Tier 1 -->
+  <rect x="530" y="270" width="520" height="150" rx="6" fill="#fef2f2" stroke="#f87171" stroke-width="1.5" />
+  <rect x="545" y="282" width="160" height="25" rx="4" fill="#dc2626" />
+  <text x="625" y="299" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">TIER 1 ESCALATION</text>
+  <text x="715" y="300" fill="#991b1b" font-size="12" font-weight="bold">Triggered at Exact Deadline Breach (t = 0)</text>
+
+  <rect x="545" y="318" width="240" height="88" rx="4" fill="#ffffff" stroke="#fca5a5" stroke-width="1" />
+  <text x="555" y="336" fill="#b91c1c" font-size="11" font-weight="bold">1. Assigned Technical Staff</text>
+  <text x="555" y="352" fill="#4b5563" font-size="9.5">• Real-Time WebSocket alert banner</text>
+  <text x="555" y="367" fill="#4b5563" font-size="9.5">• High-priority push notification</text>
+  <text x="555" y="382" fill="#4b5563" font-size="9.5">• Action required: immediate update/note</text>
+
+  <rect x="795" y="318" width="240" height="88" rx="4" fill="#ffffff" stroke="#fca5a5" stroke-width="1" />
+  <text x="805" y="336" fill="#b91c1c" font-size="11" font-weight="bold">2. MIS / ITS Department Head</text>
+  <text x="805" y="352" fill="#4b5563" font-size="9.5">• Notification on Head Supervisory Queue</text>
+  <text x="805" y="367" fill="#4b5563" font-size="9.5">• Workload re-evaluation option</text>
+  <text x="805" y="382" fill="#4b5563" font-size="9.5">• Authority to re-assign or attach second staff</text>
+
+  <!-- Connecting Arrow Down from Tier 1 to Tier 2 -->
+  <path d="M 790 420 L 790 440" stroke="#dc2626" stroke-width="2" marker-end="url(#arr-red)" fill="none" />
+  <text x="860" y="433" text-anchor="middle" fill="#dc2626" font-size="9.5" font-weight="bold">Unresolved +30 min</text>
+
+  <!-- Tier 2 -->
+  <rect x="530" y="445" width="520" height="185" rx="6" fill="#450a0a" stroke="#991b1b" stroke-width="1.5" />
+  <rect x="545" y="457" width="160" height="25" rx="4" fill="#b91c1c" />
+  <text x="625" y="474" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">TIER 2 ESCALATION</text>
+  <text x="715" y="475" fill="#fca5a5" font-size="12" font-weight="bold">Supervisory Alert (+30 min Past Tier 1)</text>
+
+  <rect x="545" y="493" width="240" height="120" rx="4" fill="#ffffff" stroke="#fca5a5" stroke-width="1" />
+  <text x="555" y="513" fill="#7f1d1d" font-size="11" font-weight="bold">3. University ICT Director</text>
+  <text x="555" y="531" fill="#334155" font-size="9.5">• Formal SLA breach record logged</text>
+  <text x="555" y="547" fill="#334155" font-size="9.5">• Executive dashboard notification</text>
+  <text x="555" y="563" fill="#334155" font-size="9.5">• Direct administrative intervention</text>
+  <text x="555" y="582" fill="#991b1b" font-size="9" font-weight="bold">Observed in Pilot: 12 of 24 breaches escalated to Tier 2 (50.0%)</text>
+
+  <rect x="795" y="493" width="240" height="120" rx="4" fill="#ffffff" stroke="#fca5a5" stroke-width="1" />
+  <text x="805" y="513" fill="#7f1d1d" font-size="11" font-weight="bold">4. System Administrators</text>
+  <text x="805" y="531" fill="#334155" font-size="9.5">• Audit trail timestamp recorded</text>
+  <text x="805" y="547" fill="#334155" font-size="9.5">• System telemetry event logged</text>
+  <text x="805" y="563" fill="#334155" font-size="9.5">• ARTA compliance penalty flag</text>
+  <text x="805" y="582" fill="#15803d" font-size="9" font-weight="bold">All 12 resolved within 1.0 h after Tier 2</text>
+</svg>

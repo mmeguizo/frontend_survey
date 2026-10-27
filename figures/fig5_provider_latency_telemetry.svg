@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 610" width="1100" height="610" style="background:#ffffff; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <filter id="shadow5" x="-2%" y="-2%" width="104%" height="106%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-opacity="0.1" />
+    </filter>
+  </defs>
+
+  <!-- Title Banner -->
+  <rect x="30" y="20" width="1040" height="55" rx="8" fill="#1e293b" />
+  <text x="550" y="45" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="bold">Fig. 5. Multi-Provider Fallback Telemetry and Latency Distributions During 6-Month Pilot (N = 1,485 Turns)</text>
+  <text x="550" y="64" text-anchor="middle" fill="#94a3b8" font-size="11.5">Benchmarking Execution Share, Fallback Trigger Frequency, and Latency Profiles across 4 Inference Tiers (Strictly Matching Table VI)</text>
+
+  <!-- PANEL 1: EXECUTION SHARE BREAKDOWN -->
+  <rect x="30" y="95" width="460" height="480" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow5)" />
+  <rect x="30" y="95" width="460" height="36" rx="8" fill="#dcfce7" />
+  <text x="260" y="119" text-anchor="middle" fill="#166534" font-size="13" font-weight="bold">A. Conversational AI Execution Share (N = 1,485 Turns)</text>
+
+  <!-- Tier 1a -->
+  <rect x="45" y="145" width="430" height="65" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1.2" />
+  <text x="60" y="167" fill="#14532d" font-size="12" font-weight="bold">Tier 1a: Google Gemini (Internal RAG)</text>
+  <text x="60" y="185" fill="#4b5563" font-size="10.5">1,142 Invocations • 76.90% Share • 980 ms Latency (p50: 940, p95: 1,320)</text>
+  <rect x="60" y="195" width="400" height="8" rx="4" fill="#e2e8f0" />
+  <rect x="60" y="195" width="308" height="8" rx="4" fill="#22c55e" />
+
+  <!-- Tier 1b -->
+  <rect x="45" y="220" width="430" height="65" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.2" />
+  <text x="60" y="242" fill="#1e40af" font-size="12" font-weight="bold">Tier 1b: Google Gemini (Web Grounding)</text>
+  <text x="60" y="260" fill="#4b5563" font-size="10.5">215 Invocations • 14.48% Share • 128 Tier 1 Failures Escalated (74 quota, 36 timeouts, 18 drops)</text>
+  <rect x="60" y="270" width="400" height="8" rx="4" fill="#e2e8f0" />
+  <rect x="60" y="270" width="58" height="8" rx="4" fill="#3b82f6" />
+
+  <!-- Tier 2 -->
+  <rect x="45" y="295" width="430" height="65" rx="6" fill="#faf5ff" stroke="#d8b4fe" stroke-width="1.2" />
+  <text x="60" y="317" fill="#6b21a8" font-size="12" font-weight="bold">Tier 2: Perplexity SSE API (Secondary Fallback)</text>
+  <text x="60" y="335" fill="#4b5563" font-size="10.5">128 Invocations • 78 Resolved (5.25%) • 50 Failures Escalated (32 rate limits, 18 timeouts)</text>
+  <rect x="60" y="345" width="400" height="8" rx="4" fill="#e2e8f0" />
+  <rect x="60" y="345" width="21" height="8" rx="4" fill="#a855f7" />
+
+  <!-- Tier 3 -->
+  <rect x="45" y="370" width="430" height="65" rx="6" fill="#fdf2f8" stroke="#fbcfe8" stroke-width="1.2" />
+  <text x="60" y="392" fill="#9d174d" font-size="12" font-weight="bold">Tier 3: Hugging Face Qwen2.5-72B (Tertiary Fallback)</text>
+  <text x="60" y="410" fill="#4b5563" font-size="10.5">50 Invocations • 32 Resolved (2.15%) • 18 Failures Escalated (18 WAN gateway drops)</text>
+  <rect x="60" y="420" width="400" height="8" rx="4" fill="#e2e8f0" />
+  <rect x="60" y="420" width="9" height="8" rx="4" fill="#ec4899" />
+
+  <!-- Tier 4 -->
+  <rect x="45" y="445" width="430" height="65" rx="6" fill="#fffbeb" stroke="#fde68a" stroke-width="1.2" />
+  <text x="60" y="467" fill="#92400e" font-size="12" font-weight="bold">Tier 4: Offline Deterministic Templates</text>
+  <text x="60" y="485" fill="#4b5563" font-size="10.5">18 Invocations • 18 Resolved (1.21% Share) • 0 Failures (100% Localhost Templates, 11 ms)</text>
+  <rect x="60" y="495" width="400" height="8" rx="4" fill="#e2e8f0" />
+  <rect x="60" y="495" width="5" height="8" rx="4" fill="#eab308" />
+
+  <!-- Summary Note -->
+  <rect x="45" y="520" width="430" height="42" rx="6" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1" />
+  <text x="260" y="538" text-anchor="middle" fill="#065f46" font-size="10" font-weight="bold">Weighted Mean Latency: 1,196 ms • Cloud Availability: 98.79% (1,467/1,485)</text>
+  <text x="260" y="552" text-anchor="middle" fill="#047857" font-size="9">Platform-Level Service Continuity: 100.00% (0 unhandled request failures)</text>
+
+  <!-- PANEL 2: LATENCY DISTRIBUTION PROFILE -->
+  <rect x="510" y="95" width="560" height="480" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow5)" />
+  <rect x="510" y="95" width="560" height="36" rx="8" fill="#e0f2fe" />
+  <text x="790" y="119" text-anchor="middle" fill="#0369a1" font-size="13" font-weight="bold">B. Response Latency Distribution (ms): p50, Mean, and p95</text>
+
+  <!-- Latency Chart Axes -->
+  <line x1="600" y1="160" x2="600" y2="470" stroke="#94a3b8" stroke-width="1.5" />
+  <line x1="600" y1="470" x2="1040" y2="470" stroke="#94a3b8" stroke-width="1.5" />
+
+  <text x="590" y="475" text-anchor="end" fill="#64748b" font-size="10">0 ms</text>
+  <line x1="595" y1="470" x2="1040" y2="470" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="590" y="395" text-anchor="end" fill="#64748b" font-size="10">1,000 ms</text>
+  <line x1="595" y1="395" x2="1040" y2="395" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="590" y="320" text-anchor="end" fill="#64748b" font-size="10">2,000 ms</text>
+  <line x1="595" y1="320" x2="1040" y2="320" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="590" y="245" text-anchor="end" fill="#64748b" font-size="10">3,000 ms</text>
+  <line x1="595" y1="245" x2="1040" y2="245" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <text x="590" y="170" text-anchor="end" fill="#64748b" font-size="10">4,000 ms</text>
+  <line x1="595" y1="170" x2="1040" y2="170" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" />
+
+  <!-- Scale: 4,000 ms = 300 px -> 1 ms = 0.075 px. Height = val * 0.075. Y = 470 - Height -->
+
+  <!-- Tier 1a: p50=940 -> H=71 Y=399, Mean=980 -> H=74 Y=396, p95=1320 -> H=99 Y=371 -->
+  <rect x="625" y="399" width="22" height="71" rx="3" fill="#93c5fd" />
+  <rect x="650" y="396" width="22" height="74" rx="3" fill="#3b82f6" />
+  <rect x="675" y="371" width="22" height="99" rx="3" fill="#1e40af" />
+  <text x="661" y="490" text-anchor="middle" fill="#1e293b" font-size="9.5" font-weight="bold">Tier 1a</text>
+  <text x="661" y="502" text-anchor="middle" fill="#64748b" font-size="8">Gemini RAG</text>
+
+  <!-- Tier 1b: p50=1750 -> H=131 Y=339, Mean=1820 -> H=137 Y=333, p95=2450 -> H=184 Y=286 -->
+  <rect x="710" y="339" width="22" height="131" rx="3" fill="#93c5fd" />
+  <rect x="735" y="333" width="22" height="137" rx="3" fill="#3b82f6" />
+  <rect x="760" y="286" width="22" height="184" rx="3" fill="#1e40af" />
+  <text x="746" y="490" text-anchor="middle" fill="#1e293b" font-size="9.5" font-weight="bold">Tier 1b</text>
+  <text x="746" y="502" text-anchor="middle" fill="#64748b" font-size="8">Gemini Web</text>
+
+  <!-- Tier 2: p50=2380 -> H=179 Y=291, Mean=2450 -> H=184 Y=286, p95=3180 -> H=239 Y=231 -->
+  <rect x="795" y="291" width="22" height="179" rx="3" fill="#93c5fd" />
+  <rect x="820" y="286" width="22" height="184" rx="3" fill="#3b82f6" />
+  <rect x="845" y="231" width="22" height="239" rx="3" fill="#1e40af" />
+  <text x="831" y="490" text-anchor="middle" fill="#1e293b" font-size="9.5" font-weight="bold">Tier 2</text>
+  <text x="831" y="502" text-anchor="middle" fill="#64748b" font-size="8">Perplexity</text>
+
+  <!-- Tier 3: p50=2280 -> H=171 Y=299, Mean=2340 -> H=176 Y=294, p95=3250 -> H=244 Y=226 -->
+  <rect x="880" y="299" width="22" height="171" rx="3" fill="#93c5fd" />
+  <rect x="905" y="294" width="22" height="176" rx="3" fill="#3b82f6" />
+  <rect x="930" y="226" width="22" height="244" rx="3" fill="#1e40af" />
+  <text x="916" y="490" text-anchor="middle" fill="#1e293b" font-size="9.5" font-weight="bold">Tier 3</text>
+  <text x="916" y="502" text-anchor="middle" fill="#64748b" font-size="8">HF Qwen</text>
+
+  <!-- Tier 4: p50=10, Mean=11, p95=13 (< 1px) -->
+  <rect x="965" y="468" width="22" height="2" rx="1" fill="#22c55e" />
+  <rect x="990" y="468" width="22" height="2" rx="1" fill="#16a34a" />
+  <rect x="1015" y="467" width="22" height="3" rx="1" fill="#15803d" />
+  <text x="1001" y="490" text-anchor="middle" fill="#1e293b" font-size="9.5" font-weight="bold">Tier 4</text>
+  <text x="1001" y="502" text-anchor="middle" fill="#166534" font-size="8">Offline (11ms)</text>
+
+  <!-- Legend 2 -->
+  <rect x="630" y="525" width="370" height="40" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+  <rect x="650" y="538" width="14" height="14" fill="#93c5fd" />
+  <text x="670" y="550" fill="#1e3a8a" font-size="10">Median (p50)</text>
+
+  <rect x="760" y="538" width="14" height="14" fill="#3b82f6" />
+  <text x="780" y="550" fill="#1e3a8a" font-size="10">Mean Latency</text>
+
+  <rect x="880" y="538" width="14" height="14" fill="#1e40af" />
+  <text x="900" y="550" fill="#1e3a8a" font-size="10">Tail 95th (p95)</text>
+</svg>

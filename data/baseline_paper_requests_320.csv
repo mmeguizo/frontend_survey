@@ -1,0 +1,321 @@
+logbookNumber,dateIn,dateOut,department,division,serviceType,retroactivePriority,slaTargetHours,turnaroundWorkingHours,slaCompliant,artaSurveySubmitted,signOffTechnician
+PLB-202511-001,2025-11-04T11:04:39+08:00,2025-11-05T09:24:00+08:00,College of Education,MIS,Software/Website Support,LOW,168.0,6.34,True,True,Dev Staff / MIS Analyst
+PLB-202511-002,2025-11-06T13:41:23+08:00,2025-11-07T11:11:00+08:00,Supply and Property Management,MIS,Software/Website Support,LOW,168.0,6.5,True,False,Dev Staff / MIS Analyst
+PLB-202511-003,2025-11-07T12:12:53+08:00,2025-11-10T10:43:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,HIGH,24.0,6.71,True,False,Dev Staff / MIS Analyst
+PLB-202511-004,2025-11-05T10:08:09+08:00,2025-11-06T08:57:00+08:00,Supply and Property Management,MIS,Software/Website Support,CRITICAL,4.0,6.81,False,True,Dev Staff / MIS Analyst
+PLB-202511-005,2025-11-05T09:58:31+08:00,2025-11-06T08:48:00+08:00,Cashier Office,MIS,Software/Website Support,LOW,168.0,6.83,True,False,Dev Staff / MIS Analyst
+PLB-202511-006,2025-11-03T15:52:17+08:00,2025-11-04T14:45:00+08:00,Graduate School,MIS,Software/Website Support,LOW,168.0,6.89,True,True,Dev Staff / MIS Analyst
+PLB-202511-007,2025-11-03T11:59:40+08:00,2025-11-04T11:14:00+08:00,Graduate School,MIS,Software/Website Support,LOW,168.0,7.25,True,False,Dev Staff / MIS Analyst
+PLB-202511-008,2025-11-03T10:11:20+08:00,2025-11-04T09:41:00+08:00,College of Industrial Technology,MIS,Software/Website Support,CRITICAL,4.0,7.5,False,False,Dev Staff / MIS Analyst
+PLB-202511-009,2025-11-07T15:29:17+08:00,2025-11-10T15:41:00+08:00,Supply and Property Management,MIS,Software/Website Support,CRITICAL,4.0,8.2,False,False,Dev Staff / MIS Analyst
+PLB-202511-010,2025-11-03T11:47:57+08:00,2025-11-04T12:00:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,HIGH,24.0,8.21,True,False,Dev Staff / MIS Analyst
+PLB-202511-011,2025-11-05T15:45:36+08:00,2025-11-06T16:29:00+08:00,Registrar Office,MIS,Software/Website Support,HIGH,24.0,8.73,True,False,Dev Staff / MIS Analyst
+PLB-202511-012,2025-11-03T10:27:49+08:00,2025-11-04T11:31:00+08:00,College of Industrial Technology,MIS,Software/Website Support,LOW,168.0,9.07,True,False,Dev Staff / MIS Analyst
+PLB-202511-013,2025-11-03T11:23:24+08:00,2025-11-04T14:37:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,LOW,168.0,10.24,True,False,Dev Staff / MIS Analyst
+PLB-202511-014,2025-11-13T15:12:39+08:00,2025-11-17T08:35:00+08:00,Registrar Office,MIS,Software/Website Support,LOW,168.0,10.39,True,False,Dev Staff / MIS Analyst
+PLB-202511-015,2025-11-12T09:21:06+08:00,2025-11-13T13:07:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,LOW,168.0,10.76,True,False,Dev Staff / MIS Analyst
+PLB-202511-016,2025-11-10T11:51:42+08:00,2025-11-11T15:56:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,HIGH,24.0,11.08,True,False,Dev Staff / MIS Analyst
+PLB-202511-017,2025-11-11T11:39:43+08:00,2025-11-12T16:04:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,11.41,True,False,Hardware Technician / ITS Staff
+PLB-202511-018,2025-11-10T11:33:12+08:00,2025-11-11T15:59:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,HIGH,24.0,11.44,True,True,Hardware Technician / ITS Staff
+PLB-202511-019,2025-11-10T13:55:10+08:00,2025-11-12T08:23:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,HIGH,24.0,11.46,True,False,Hardware Technician / ITS Staff
+PLB-202511-020,2025-11-11T12:50:23+08:00,2025-11-13T08:12:00+08:00,Supply and Property Management,ITS,Hardware/Network Maintenance,LOW,168.0,12.2,True,False,Hardware Technician / ITS Staff
+PLB-202511-021,2025-11-12T14:30:03+08:00,2025-11-14T09:43:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,12.22,True,True,Hardware Technician / ITS Staff
+PLB-202511-022,2025-11-11T10:42:04+08:00,2025-11-12T16:10:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,12.46,True,False,Hardware Technician / ITS Staff
+PLB-202511-023,2025-11-10T14:24:17+08:00,2025-11-12T10:00:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,12.6,True,False,Hardware Technician / ITS Staff
+PLB-202511-024,2025-11-10T10:33:39+08:00,2025-11-11T16:20:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,12.79,True,False,Hardware Technician / ITS Staff
+PLB-202511-025,2025-11-13T08:18:59+08:00,2025-11-14T14:11:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,12.88,True,False,Hardware Technician / ITS Staff
+PLB-202511-026,2025-11-10T09:06:36+08:00,2025-11-11T15:11:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,MEDIUM,72.0,13.09,True,False,Hardware Technician / ITS Staff
+PLB-202511-027,2025-11-17T08:16:18+08:00,2025-11-18T14:24:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,HIGH,24.0,13.13,True,False,Hardware Technician / ITS Staff
+PLB-202511-028,2025-11-17T14:31:44+08:00,2025-11-19T10:56:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,13.42,True,False,Hardware Technician / ITS Staff
+PLB-202511-029,2025-11-20T15:13:58+08:00,2025-11-24T13:03:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,13.83,True,False,Hardware Technician / ITS Staff
+PLB-202511-030,2025-11-20T13:20:49+08:00,2025-11-24T10:40:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,HIGH,24.0,14.34,True,False,Hardware Technician / ITS Staff
+PLB-202511-031,2025-11-17T10:41:57+08:00,2025-11-19T09:01:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,LOW,168.0,14.34,True,False,Hardware Technician / ITS Staff
+PLB-202511-032,2025-11-17T13:32:42+08:00,2025-11-19T10:53:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,LOW,168.0,14.35,True,False,Hardware Technician / ITS Staff
+PLB-202511-033,2025-11-17T08:31:17+08:00,2025-11-18T16:00:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,HIGH,24.0,14.48,True,True,Hardware Technician / ITS Staff
+PLB-202511-034,2025-11-19T09:26:16+08:00,2025-11-21T08:11:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,MEDIUM,72.0,14.75,True,False,Hardware Technician / ITS Staff
+PLB-202511-035,2025-11-17T13:14:27+08:00,2025-11-19T11:08:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,14.9,True,False,Hardware Technician / ITS Staff
+PLB-202511-036,2025-11-17T13:05:00+08:00,2025-11-19T11:08:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,15.05,True,False,Hardware Technician / ITS Staff
+PLB-202511-037,2025-11-19T09:54:10+08:00,2025-11-21T09:12:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,HIGH,24.0,15.3,True,False,Hardware Technician / ITS Staff
+PLB-202511-038,2025-11-17T09:59:25+08:00,2025-11-19T09:34:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,15.58,True,False,Hardware Technician / ITS Staff
+PLB-202511-039,2025-11-18T09:38:22+08:00,2025-11-20T09:24:00+08:00,College of Education,ITS,Hardware/Network Maintenance,MEDIUM,72.0,15.77,True,False,Hardware Technician / ITS Staff
+PLB-202511-040,2025-11-27T09:08:12+08:00,2025-12-01T09:03:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,CRITICAL,4.0,15.91,False,True,Hardware Technician / ITS Staff
+PLB-202511-041,2025-11-24T15:40:53+08:00,2025-11-26T15:51:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,MEDIUM,72.0,16.19,True,False,Hardware Technician / ITS Staff
+PLB-202511-042,2025-11-27T11:38:44+08:00,2025-12-01T11:58:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,LOW,168.0,16.34,True,False,Hardware Technician / ITS Staff
+PLB-202511-043,2025-11-25T09:56:02+08:00,2025-11-27T10:30:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,LOW,168.0,16.56,True,False,Hardware Technician / ITS Staff
+PLB-202511-044,2025-11-26T10:12:40+08:00,2025-11-28T10:57:00+08:00,Supply and Property Management,ITS,Hardware/Network Maintenance,MEDIUM,72.0,16.75,True,False,Hardware Technician / ITS Staff
+PLB-202511-045,2025-11-24T14:07:45+08:00,2025-11-26T15:06:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,16.99,True,False,Hardware Technician / ITS Staff
+PLB-202511-046,2025-11-24T15:50:49+08:00,2025-11-26T16:51:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,CRITICAL,4.0,17.02,False,True,Hardware Technician / ITS Staff
+PLB-202511-047,2025-11-24T13:27:50+08:00,2025-11-26T14:34:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,17.11,True,False,Hardware Technician / ITS Staff
+PLB-202511-048,2025-11-27T13:37:36+08:00,2025-12-01T14:44:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,17.12,True,False,Hardware Technician / ITS Staff
+PLB-202511-049,2025-11-24T15:14:11+08:00,2025-11-26T16:31:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,LOW,168.0,17.28,True,True,Hardware Technician / ITS Staff
+PLB-202511-050,2025-11-25T11:09:54+08:00,2025-11-27T13:28:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,17.31,True,False,Hardware Technician / ITS Staff
+PLB-202511-051,2025-11-27T11:57:07+08:00,2025-12-01T14:33:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,LOW,168.0,17.6,True,False,Hardware Technician / ITS Staff
+PLB-202511-052,2025-11-28T12:06:38+08:00,2025-12-02T15:12:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,18.2,True,False,Hardware Technician / ITS Staff
+PLB-202512-053,2025-12-02T10:11:20+08:00,2025-12-04T13:36:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,HIGH,24.0,18.42,True,False,Hardware Technician / ITS Staff
+PLB-202512-054,2025-12-04T13:22:40+08:00,2025-12-09T15:48:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,CRITICAL,4.0,18.43,False,True,Hardware Technician / ITS Staff
+PLB-202512-055,2025-12-01T08:24:32+08:00,2025-12-03T11:01:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,LOW,168.0,18.61,True,True,Hardware Technician / ITS Staff
+PLB-202512-056,2025-12-01T09:03:48+08:00,2025-12-03T11:41:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,18.64,True,False,Hardware Technician / ITS Staff
+PLB-202512-057,2025-12-03T12:04:31+08:00,2025-12-05T15:58:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,HIGH,24.0,18.97,True,False,Hardware Technician / ITS Staff
+PLB-202512-058,2025-12-05T10:10:15+08:00,2025-12-10T14:19:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,19.15,True,False,Hardware Technician / ITS Staff
+PLB-202512-059,2025-12-03T14:09:36+08:00,2025-12-09T08:19:00+08:00,Supply and Property Management,ITS,Hardware/Network Maintenance,LOW,168.0,19.16,True,True,Hardware Technician / ITS Staff
+PLB-202512-060,2025-12-02T15:47:42+08:00,2025-12-05T10:12:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,CRITICAL,4.0,19.41,False,False,Hardware Technician / ITS Staff
+PLB-202512-061,2025-12-04T12:18:37+08:00,2025-12-09T16:32:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,19.54,True,False,Hardware Technician / ITS Staff
+PLB-202512-062,2025-12-01T12:18:46+08:00,2025-12-03T16:35:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,19.59,True,True,Hardware Technician / ITS Staff
+PLB-202512-063,2025-12-03T11:52:43+08:00,2025-12-05T16:30:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,19.63,True,False,Hardware Technician / ITS Staff
+PLB-202512-064,2025-12-01T10:16:42+08:00,2025-12-03T14:58:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,19.7,True,True,Hardware Technician / ITS Staff
+PLB-202512-065,2025-12-12T11:32:01+08:00,2025-12-16T16:18:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,MEDIUM,72.0,19.76,True,True,Hardware Technician / ITS Staff
+PLB-202512-066,2025-12-09T15:29:26+08:00,2025-12-12T11:27:00+08:00,College of Education,ITS,Hardware/Network Maintenance,LOW,168.0,20.97,True,False,Hardware Technician / ITS Staff
+PLB-202512-067,2025-12-11T10:44:55+08:00,2025-12-15T16:52:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,MEDIUM,72.0,21.14,True,False,Hardware Technician / ITS Staff
+PLB-202512-068,2025-12-12T10:49:07+08:00,2025-12-17T08:03:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,HIGH,24.0,21.24,True,False,Hardware Technician / ITS Staff
+PLB-202512-069,2025-12-09T09:50:24+08:00,2025-12-11T16:06:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,21.26,True,False,Hardware Technician / ITS Staff
+PLB-202512-070,2025-12-09T14:12:02+08:00,2025-12-12T10:29:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,LOW,168.0,21.29,True,False,Hardware Technician / ITS Staff
+PLB-202512-071,2025-12-12T11:38:42+08:00,2025-12-17T09:30:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,MEDIUM,72.0,21.86,True,False,Hardware Technician / ITS Staff
+PLB-202512-072,2025-12-09T15:30:50+08:00,2025-12-12T13:38:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,22.13,True,False,Hardware Technician / ITS Staff
+PLB-202512-073,2025-12-11T13:41:09+08:00,2025-12-16T10:53:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,22.2,True,False,Hardware Technician / ITS Staff
+PLB-202512-074,2025-12-09T14:43:00+08:00,2025-12-12T11:57:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,LOW,168.0,22.24,True,False,Hardware Technician / ITS Staff
+PLB-202512-075,2025-12-11T10:57:54+08:00,2025-12-16T09:38:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,22.69,True,False,Hardware Technician / ITS Staff
+PLB-202512-076,2025-12-11T09:57:05+08:00,2025-12-16T08:45:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,22.8,True,True,Hardware Technician / ITS Staff
+PLB-202512-077,2025-12-09T12:01:11+08:00,2025-12-12T10:50:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,22.83,True,False,Hardware Technician / ITS Staff
+PLB-202512-078,2025-12-19T08:20:40+08:00,2025-12-23T16:16:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,22.94,True,False,Hardware Technician / ITS Staff
+PLB-202512-079,2025-12-15T12:02:50+08:00,2025-12-18T10:57:00+08:00,College of Education,ITS,Hardware/Network Maintenance,MEDIUM,72.0,22.95,True,False,Hardware Technician / ITS Staff
+PLB-202512-080,2025-12-19T12:41:54+08:00,2025-12-26T10:59:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,LOW,168.0,22.98,True,False,Hardware Technician / ITS Staff
+PLB-202512-081,2025-12-15T14:38:44+08:00,2025-12-18T13:52:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,23.23,True,False,Hardware Technician / ITS Staff
+PLB-202512-082,2025-12-17T09:55:34+08:00,2025-12-22T09:36:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,LOW,168.0,23.69,True,False,Hardware Technician / ITS Staff
+PLB-202512-083,2025-12-19T08:40:21+08:00,2025-12-26T08:23:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,23.72,True,False,Hardware Technician / ITS Staff
+PLB-202512-084,2025-12-15T15:05:58+08:00,2025-12-18T14:53:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,23.8,True,False,Hardware Technician / ITS Staff
+PLB-202512-085,2025-12-18T13:35:04+08:00,2025-12-23T13:25:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,LOW,168.0,23.84,True,False,Hardware Technician / ITS Staff
+PLB-202512-086,2025-12-19T15:00:50+08:00,2025-12-26T14:52:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,LOW,168.0,23.86,True,False,Hardware Technician / ITS Staff
+PLB-202512-087,2025-12-17T08:18:50+08:00,2025-12-22T08:19:00+08:00,Supply and Property Management,ITS,Hardware/Network Maintenance,LOW,168.0,24.02,True,True,Hardware Technician / ITS Staff
+PLB-202512-088,2025-12-19T13:57:13+08:00,2025-12-26T14:05:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,24.13,True,False,Hardware Technician / ITS Staff
+PLB-202512-089,2025-12-16T08:48:53+08:00,2025-12-19T09:13:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,HIGH,24.0,24.41,False,True,Hardware Technician / ITS Staff
+PLB-202512-090,2025-12-15T12:29:49+08:00,2025-12-18T13:27:00+08:00,College of Education,ITS,Hardware/Network Maintenance,MEDIUM,72.0,24.45,True,False,Hardware Technician / ITS Staff
+PLB-202512-091,2025-12-23T12:49:26+08:00,2026-01-02T13:28:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,24.46,True,False,Hardware Technician / ITS Staff
+PLB-202512-092,2025-12-22T12:22:33+08:00,2025-12-29T13:30:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,24.5,True,True,Hardware Technician / ITS Staff
+PLB-202512-093,2025-12-22T14:27:01+08:00,2025-12-29T15:06:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,24.65,True,False,Hardware Technician / ITS Staff
+PLB-202512-094,2025-12-26T13:30:49+08:00,2026-01-05T14:52:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,25.37,True,False,Hardware Technician / ITS Staff
+PLB-202512-095,2025-12-22T08:28:28+08:00,2025-12-29T09:51:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,25.38,True,False,Hardware Technician / ITS Staff
+PLB-202512-096,2025-12-23T14:52:54+08:00,2026-01-02T16:16:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,25.4,True,False,Hardware Technician / ITS Staff
+PLB-202512-097,2025-12-26T10:43:18+08:00,2026-01-05T13:12:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,25.49,True,True,Hardware Technician / ITS Staff
+PLB-202512-098,2025-12-22T08:19:35+08:00,2025-12-29T09:57:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,HIGH,24.0,25.63,False,False,Hardware Technician / ITS Staff
+PLB-202512-099,2025-12-26T11:19:45+08:00,2026-01-05T14:15:00+08:00,Supply and Property Management,ITS,Hardware/Network Maintenance,MEDIUM,72.0,25.93,True,False,Hardware Technician / ITS Staff
+PLB-202512-100,2025-12-26T10:28:37+08:00,2026-01-05T13:34:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,HIGH,24.0,26.1,False,False,Hardware Technician / ITS Staff
+PLB-202512-101,2025-12-26T10:55:09+08:00,2026-01-05T14:01:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,LOW,168.0,26.1,True,False,Hardware Technician / ITS Staff
+PLB-202512-102,2025-12-22T09:55:17+08:00,2025-12-29T13:11:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,LOW,168.0,26.26,True,False,Hardware Technician / ITS Staff
+PLB-202512-103,2025-12-26T12:21:36+08:00,2026-01-05T15:18:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,26.3,True,False,Hardware Technician / ITS Staff
+PLB-202601-104,2026-01-02T13:17:23+08:00,2026-01-07T16:18:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,27.02,True,False,Hardware Technician / ITS Staff
+PLB-202601-105,2026-01-02T12:08:39+08:00,2026-01-07T16:45:00+08:00,College of Education,ITS,Hardware/Network Maintenance,LOW,168.0,27.75,True,False,Hardware Technician / ITS Staff
+PLB-202512-106,2025-12-29T08:44:01+08:00,2026-01-06T13:39:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,27.92,True,False,Hardware Technician / ITS Staff
+PLB-202601-107,2026-01-02T13:27:26+08:00,2026-01-08T08:38:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,HIGH,24.0,28.19,False,False,Hardware Technician / ITS Staff
+PLB-202601-108,2026-01-02T10:08:56+08:00,2026-01-07T15:46:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,HIGH,24.0,28.64,False,True,Hardware Technician / ITS Staff
+PLB-202512-109,2025-12-29T11:43:58+08:00,2026-01-07T08:28:00+08:00,College of Education,ITS,Hardware/Network Maintenance,MEDIUM,72.0,28.75,True,False,Hardware Technician / ITS Staff
+PLB-202512-110,2025-12-29T14:43:42+08:00,2026-01-07T10:30:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,28.78,True,False,Hardware Technician / ITS Staff
+PLB-202512-111,2025-12-29T09:14:12+08:00,2026-01-06T15:09:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,28.92,True,False,Hardware Technician / ITS Staff
+PLB-202601-112,2026-01-02T11:08:04+08:00,2026-01-08T08:16:00+08:00,Human Resource Development Office,MIS,Software/Website Support,MEDIUM,72.0,29.13,True,True,Dev Staff / MIS Analyst
+PLB-202601-113,2026-01-02T10:15:38+08:00,2026-01-07T16:41:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,MEDIUM,72.0,29.44,True,False,Dev Staff / MIS Analyst
+PLB-202512-114,2025-12-29T10:05:46+08:00,2026-01-06T16:48:00+08:00,College of Education,MIS,Software/Website Support,LOW,168.0,29.72,True,False,Dev Staff / MIS Analyst
+PLB-202601-115,2026-01-02T13:45:14+08:00,2026-01-08T10:38:00+08:00,Registrar Office,MIS,Software/Website Support,MEDIUM,72.0,29.89,True,False,Dev Staff / MIS Analyst
+PLB-202512-116,2025-12-29T14:57:12+08:00,2026-01-07T11:59:00+08:00,Graduate School,MIS,Software/Website Support,HIGH,24.0,30.04,False,False,Dev Staff / MIS Analyst
+PLB-202601-117,2026-01-09T12:35:39+08:00,2026-01-15T10:06:00+08:00,Supply and Property Management,MIS,Software/Website Support,LOW,168.0,30.1,True,False,Dev Staff / MIS Analyst
+PLB-202601-118,2026-01-08T15:26:24+08:00,2026-01-14T13:35:00+08:00,Supply and Property Management,MIS,Software/Website Support,MEDIUM,72.0,30.15,True,True,Dev Staff / MIS Analyst
+PLB-202601-119,2026-01-05T13:35:53+08:00,2026-01-09T10:48:00+08:00,College of Industrial Technology,MIS,Software/Website Support,HIGH,24.0,30.22,False,False,Dev Staff / MIS Analyst
+PLB-202601-120,2026-01-05T12:02:22+08:00,2026-01-09T10:25:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,MEDIUM,72.0,30.41,True,False,Dev Staff / MIS Analyst
+PLB-202601-121,2026-01-05T10:42:37+08:00,2026-01-09T10:17:00+08:00,Accounting Division,MIS,Software/Website Support,MEDIUM,72.0,31.58,True,False,Dev Staff / MIS Analyst
+PLB-202601-122,2026-01-09T10:26:10+08:00,2026-01-15T10:01:00+08:00,Accounting Division,MIS,Software/Website Support,MEDIUM,72.0,31.59,True,False,Dev Staff / MIS Analyst
+PLB-202601-123,2026-01-05T15:02:24+08:00,2026-01-09T14:40:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,HIGH,24.0,31.64,False,False,Dev Staff / MIS Analyst
+PLB-202601-124,2026-01-05T11:08:21+08:00,2026-01-09T11:06:00+08:00,Supply and Property Management,MIS,Software/Website Support,MEDIUM,72.0,31.97,True,False,Dev Staff / MIS Analyst
+PLB-202601-125,2026-01-09T15:52:51+08:00,2026-01-15T15:51:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,HIGH,24.0,31.99,False,False,Dev Staff / MIS Analyst
+PLB-202601-126,2026-01-06T11:25:14+08:00,2026-01-12T11:29:00+08:00,Supply and Property Management,MIS,Software/Website Support,MEDIUM,72.0,32.07,True,False,Dev Staff / MIS Analyst
+PLB-202601-127,2026-01-05T12:13:01+08:00,2026-01-09T13:13:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,MEDIUM,72.0,32.21,True,False,Dev Staff / MIS Analyst
+PLB-202601-128,2026-01-05T10:29:02+08:00,2026-01-09T10:51:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,LOW,168.0,32.36,True,False,Dev Staff / MIS Analyst
+PLB-202601-129,2026-01-12T15:21:11+08:00,2026-01-16T15:58:00+08:00,Cashier Office,MIS,Software/Website Support,MEDIUM,72.0,32.61,True,False,Dev Staff / MIS Analyst
+PLB-202601-130,2026-01-13T09:19:24+08:00,2026-01-19T10:19:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,33.0,True,False,Hardware Technician / ITS Staff
+PLB-202601-131,2026-01-13T11:40:52+08:00,2026-01-19T13:40:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,33.0,True,False,Hardware Technician / ITS Staff
+PLB-202601-132,2026-01-13T14:42:03+08:00,2026-01-19T15:48:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,33.1,True,True,Hardware Technician / ITS Staff
+PLB-202601-133,2026-01-15T13:52:04+08:00,2026-01-21T15:27:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,33.59,True,False,Hardware Technician / ITS Staff
+PLB-202601-134,2026-01-14T10:00:25+08:00,2026-01-20T11:48:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,HIGH,24.0,33.8,False,False,Hardware Technician / ITS Staff
+PLB-202601-135,2026-01-12T08:15:42+08:00,2026-01-16T10:25:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,34.17,True,False,Hardware Technician / ITS Staff
+PLB-202601-136,2026-01-13T09:34:22+08:00,2026-01-19T13:08:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,34.56,True,True,Hardware Technician / ITS Staff
+PLB-202601-137,2026-01-12T13:00:05+08:00,2026-01-16T15:40:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,LOW,168.0,34.67,True,True,Hardware Technician / ITS Staff
+PLB-202601-138,2026-01-12T08:26:02+08:00,2026-01-16T11:20:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,34.9,True,False,Hardware Technician / ITS Staff
+PLB-202601-139,2026-01-14T14:38:44+08:00,2026-01-21T08:39:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,35.02,True,True,Hardware Technician / ITS Staff
+PLB-202601-140,2026-01-14T11:31:15+08:00,2026-01-20T15:33:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,35.03,True,False,Hardware Technician / ITS Staff
+PLB-202601-141,2026-01-13T12:35:23+08:00,2026-01-19T16:07:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,LOW,168.0,35.12,True,True,Hardware Technician / ITS Staff
+PLB-202601-142,2026-01-20T13:17:37+08:00,2026-01-26T16:42:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,HIGH,24.0,35.42,False,False,Hardware Technician / ITS Staff
+PLB-202601-143,2026-01-23T11:12:27+08:00,2026-01-29T15:46:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,35.56,True,False,Hardware Technician / ITS Staff
+PLB-202601-144,2026-01-22T13:22:06+08:00,2026-01-29T08:21:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,35.99,True,False,Hardware Technician / ITS Staff
+PLB-202601-145,2026-01-22T15:00:31+08:00,2026-01-29T10:10:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,CRITICAL,4.0,36.17,False,False,Hardware Technician / ITS Staff
+PLB-202601-146,2026-01-23T09:55:12+08:00,2026-01-29T15:43:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,36.8,True,False,Hardware Technician / ITS Staff
+PLB-202601-147,2026-01-20T11:08:30+08:00,2026-01-27T08:10:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,37.04,True,False,Hardware Technician / ITS Staff
+PLB-202601-148,2026-01-21T10:14:45+08:00,2026-01-27T16:25:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,37.18,True,True,Hardware Technician / ITS Staff
+PLB-202601-149,2026-01-19T14:02:15+08:00,2026-01-26T10:16:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,37.24,True,False,Hardware Technician / ITS Staff
+PLB-202601-150,2026-01-19T14:39:05+08:00,2026-01-26T10:59:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,37.33,True,False,Hardware Technician / ITS Staff
+PLB-202601-151,2026-01-19T11:50:19+08:00,2026-01-26T09:14:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,LOW,168.0,37.4,True,False,Hardware Technician / ITS Staff
+PLB-202601-152,2026-01-19T08:01:19+08:00,2026-01-23T14:31:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,LOW,168.0,37.5,True,False,Hardware Technician / ITS Staff
+PLB-202601-153,2026-01-22T14:20:30+08:00,2026-01-29T10:50:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,HIGH,24.0,37.5,False,False,Hardware Technician / ITS Staff
+PLB-202601-154,2026-01-21T14:46:16+08:00,2026-01-28T11:17:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,HIGH,24.0,37.51,False,False,Hardware Technician / ITS Staff
+PLB-202601-155,2026-01-26T13:12:52+08:00,2026-02-02T10:23:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,38.18,True,False,Hardware Technician / ITS Staff
+PLB-202601-156,2026-01-29T09:20:53+08:00,2026-02-04T16:54:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,HIGH,24.0,38.57,False,False,Hardware Technician / ITS Staff
+PLB-202601-157,2026-01-26T12:42:42+08:00,2026-02-02T11:06:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,HIGH,24.0,39.1,False,True,Hardware Technician / ITS Staff
+PLB-202601-158,2026-01-26T12:10:26+08:00,2026-02-02T11:13:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,39.21,True,False,Hardware Technician / ITS Staff
+PLB-202601-159,2026-01-27T09:31:35+08:00,2026-02-03T08:47:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,LOW,168.0,39.26,True,False,Hardware Technician / ITS Staff
+PLB-202601-160,2026-01-26T14:27:57+08:00,2026-02-02T10:57:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,37.5,True,True,Hardware Technician / ITS Staff
+PLB-202601-161,2026-01-30T14:42:31+08:00,2026-02-06T11:12:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,HIGH,24.0,37.5,False,False,Hardware Technician / ITS Staff
+PLB-202601-162,2026-01-29T09:52:50+08:00,2026-02-05T09:54:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,40.03,True,False,Hardware Technician / ITS Staff
+PLB-202601-163,2026-01-26T15:10:07+08:00,2026-02-02T15:17:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,40.12,True,False,Hardware Technician / ITS Staff
+PLB-202601-164,2026-01-26T11:24:22+08:00,2026-02-02T13:02:00+08:00,Supply and Property Management,ITS,Hardware/Network Maintenance,CRITICAL,4.0,40.64,False,True,Hardware Technician / ITS Staff
+PLB-202601-165,2026-01-26T13:28:58+08:00,2026-02-02T14:11:00+08:00,Supply and Property Management,ITS,Hardware/Network Maintenance,MEDIUM,72.0,40.71,True,False,Hardware Technician / ITS Staff
+PLB-202601-166,2026-01-29T14:29:30+08:00,2026-02-05T15:17:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,40.8,True,False,Hardware Technician / ITS Staff
+PLB-202601-167,2026-01-28T14:26:21+08:00,2026-02-04T15:22:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,40.93,True,False,Hardware Technician / ITS Staff
+PLB-202602-168,2026-02-02T10:47:42+08:00,2026-02-09T13:01:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,LOW,168.0,41.23,True,False,Hardware Technician / ITS Staff
+PLB-202602-169,2026-02-05T15:55:16+08:00,2026-02-13T08:21:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,CRITICAL,4.0,41.43,False,False,Hardware Technician / ITS Staff
+PLB-202602-170,2026-02-04T13:49:13+08:00,2026-02-11T15:37:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,HIGH,24.0,41.8,False,False,Hardware Technician / ITS Staff
+PLB-202602-171,2026-02-05T14:51:34+08:00,2026-02-12T16:42:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,41.85,True,True,Hardware Technician / ITS Staff
+PLB-202602-172,2026-02-03T09:44:02+08:00,2026-02-10T11:45:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,42.01,True,False,Hardware Technician / ITS Staff
+PLB-202602-173,2026-02-02T09:26:48+08:00,2026-02-09T11:41:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,MEDIUM,72.0,42.25,True,True,Dev Staff / MIS Analyst
+PLB-202602-174,2026-02-05T12:44:26+08:00,2026-02-12T15:16:00+08:00,Human Resource Development Office,MIS,Software/Website Support,HIGH,24.0,42.27,False,True,Dev Staff / MIS Analyst
+PLB-202602-175,2026-02-03T13:47:48+08:00,2026-02-10T16:19:00+08:00,Human Resource Development Office,MIS,Software/Website Support,LOW,168.0,42.53,True,False,Dev Staff / MIS Analyst
+PLB-202602-176,2026-02-05T14:20:59+08:00,2026-02-13T08:03:00+08:00,Supply and Property Management,MIS,Software/Website Support,HIGH,24.0,42.71,False,True,Dev Staff / MIS Analyst
+PLB-202602-177,2026-02-02T10:08:02+08:00,2026-02-09T14:06:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,LOW,168.0,42.96,True,False,Dev Staff / MIS Analyst
+PLB-202602-178,2026-02-02T11:32:25+08:00,2026-02-09T15:33:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,HIGH,24.0,43.02,False,False,Dev Staff / MIS Analyst
+PLB-202602-179,2026-02-04T13:18:38+08:00,2026-02-11T16:23:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,MEDIUM,72.0,43.09,True,True,Dev Staff / MIS Analyst
+PLB-202602-180,2026-02-02T15:26:39+08:00,2026-02-10T09:32:00+08:00,Graduate School,MIS,Software/Website Support,HIGH,24.0,43.1,False,False,Dev Staff / MIS Analyst
+PLB-202602-181,2026-02-12T13:04:05+08:00,2026-02-19T16:10:00+08:00,Registrar Office,MIS,Software/Website Support,MEDIUM,72.0,43.1,True,False,Dev Staff / MIS Analyst
+PLB-202602-182,2026-02-09T14:39:53+08:00,2026-02-17T08:48:00+08:00,Cashier Office,MIS,Software/Website Support,MEDIUM,72.0,43.15,True,False,Dev Staff / MIS Analyst
+PLB-202602-183,2026-02-09T10:42:11+08:00,2026-02-16T14:58:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,MEDIUM,72.0,43.26,True,True,Dev Staff / MIS Analyst
+PLB-202602-184,2026-02-11T15:47:13+08:00,2026-02-19T10:05:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,MEDIUM,72.0,43.3,True,False,Dev Staff / MIS Analyst
+PLB-202602-185,2026-02-10T11:34:47+08:00,2026-02-17T16:09:00+08:00,Graduate School,MIS,Software/Website Support,HIGH,24.0,43.59,False,False,Dev Staff / MIS Analyst
+PLB-202602-186,2026-02-09T15:50:54+08:00,2026-02-17T11:18:00+08:00,Registrar Office,MIS,Software/Website Support,CRITICAL,4.0,44.47,False,False,Dev Staff / MIS Analyst
+PLB-202602-187,2026-02-11T08:02:32+08:00,2026-02-18T13:37:00+08:00,Cashier Office,MIS,Software/Website Support,LOW,168.0,44.58,True,False,Dev Staff / MIS Analyst
+PLB-202602-188,2026-02-13T10:49:34+08:00,2026-02-20T16:44:00+08:00,Accounting Division,MIS,Software/Website Support,HIGH,24.0,44.92,False,False,Dev Staff / MIS Analyst
+PLB-202602-189,2026-02-12T13:36:04+08:00,2026-02-20T09:33:00+08:00,Accounting Division,MIS,Software/Website Support,MEDIUM,72.0,44.95,True,True,Dev Staff / MIS Analyst
+PLB-202602-190,2026-02-11T09:21:58+08:00,2026-02-18T15:34:00+08:00,College of Industrial Technology,MIS,Software/Website Support,CRITICAL,4.0,45.21,False,False,Dev Staff / MIS Analyst
+PLB-202602-191,2026-02-11T12:30:15+08:00,2026-02-19T09:18:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,MEDIUM,72.0,45.3,True,False,Dev Staff / MIS Analyst
+PLB-202602-192,2026-02-09T08:40:33+08:00,2026-02-16T15:12:00+08:00,Accounting Division,MIS,Software/Website Support,MEDIUM,72.0,45.53,True,False,Dev Staff / MIS Analyst
+PLB-202602-193,2026-02-16T11:24:05+08:00,2026-02-24T08:57:00+08:00,Cashier Office,MIS,Software/Website Support,MEDIUM,72.0,45.55,True,True,Dev Staff / MIS Analyst
+PLB-202602-194,2026-02-19T14:36:05+08:00,2026-03-02T11:16:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,MEDIUM,72.0,45.67,True,False,Dev Staff / MIS Analyst
+PLB-202602-195,2026-02-16T11:57:34+08:00,2026-02-24T09:41:00+08:00,Graduate School,MIS,Software/Website Support,HIGH,24.0,45.73,False,False,Dev Staff / MIS Analyst
+PLB-202602-196,2026-02-20T15:17:35+08:00,2026-03-03T13:19:00+08:00,College of Industrial Technology,MIS,Software/Website Support,MEDIUM,72.0,46.04,True,False,Dev Staff / MIS Analyst
+PLB-202602-197,2026-02-16T13:00:53+08:00,2026-02-24T10:08:00+08:00,Cashier Office,MIS,Software/Website Support,MEDIUM,72.0,46.14,True,True,Dev Staff / MIS Analyst
+PLB-202602-198,2026-02-16T08:38:57+08:00,2026-02-23T15:56:00+08:00,Cashier Office,MIS,Software/Website Support,MEDIUM,72.0,46.3,True,True,Dev Staff / MIS Analyst
+PLB-202602-199,2026-02-17T09:18:03+08:00,2026-02-24T16:36:00+08:00,Graduate School,MIS,Software/Website Support,MEDIUM,72.0,46.3,True,False,Dev Staff / MIS Analyst
+PLB-202602-200,2026-02-16T15:38:36+08:00,2026-02-24T14:05:00+08:00,Supply and Property Management,MIS,Software/Website Support,HIGH,24.0,46.45,False,True,Dev Staff / MIS Analyst
+PLB-202602-201,2026-02-16T15:28:07+08:00,2026-02-24T13:58:00+08:00,Human Resource Development Office,MIS,Software/Website Support,MEDIUM,72.0,46.5,True,False,Dev Staff / MIS Analyst
+PLB-202602-202,2026-02-16T13:30:24+08:00,2026-02-24T11:03:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,MEDIUM,72.0,46.55,True,True,Dev Staff / MIS Analyst
+PLB-202602-203,2026-02-17T14:09:43+08:00,2026-02-26T13:02:00+08:00,Cashier Office,MIS,Software/Website Support,MEDIUM,72.0,46.88,True,False,Dev Staff / MIS Analyst
+PLB-202602-204,2026-02-16T09:44:15+08:00,2026-02-24T08:42:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,46.97,True,False,Hardware Technician / ITS Staff
+PLB-202602-205,2026-02-18T11:22:49+08:00,2026-02-27T10:24:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,47.04,True,True,Hardware Technician / ITS Staff
+PLB-202602-206,2026-02-24T09:35:58+08:00,2026-03-05T08:39:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,LOW,168.0,47.06,True,False,Hardware Technician / ITS Staff
+PLB-202602-207,2026-02-23T15:45:15+08:00,2026-03-04T14:52:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,47.11,True,False,Hardware Technician / ITS Staff
+PLB-202602-208,2026-02-26T10:57:38+08:00,2026-03-06T10:11:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,HIGH,24.0,47.23,False,True,Hardware Technician / ITS Staff
+PLB-202602-209,2026-02-27T13:30:16+08:00,2026-03-09T11:44:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,LOW,168.0,47.23,True,False,Hardware Technician / ITS Staff
+PLB-202602-210,2026-02-23T14:05:09+08:00,2026-03-04T13:30:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,LOW,168.0,47.42,True,False,Hardware Technician / ITS Staff
+PLB-202602-211,2026-02-23T14:05:05+08:00,2026-03-04T13:50:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,CRITICAL,4.0,47.75,False,False,Hardware Technician / ITS Staff
+PLB-202602-212,2026-02-27T14:51:40+08:00,2026-03-09T14:43:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,47.86,True,False,Hardware Technician / ITS Staff
+PLB-202602-213,2026-02-26T11:39:05+08:00,2026-03-06T11:52:00+08:00,College of Education,ITS,Hardware/Network Maintenance,HIGH,24.0,48.21,False,True,Hardware Technician / ITS Staff
+PLB-202602-214,2026-02-23T13:48:08+08:00,2026-03-04T14:22:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,48.56,True,False,Hardware Technician / ITS Staff
+PLB-202602-215,2026-02-23T11:18:19+08:00,2026-03-04T11:52:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,MEDIUM,72.0,48.57,True,False,Hardware Technician / ITS Staff
+PLB-202602-216,2026-02-26T15:07:25+08:00,2026-03-06T15:59:00+08:00,College of Education,ITS,Hardware/Network Maintenance,HIGH,24.0,48.87,False,False,Hardware Technician / ITS Staff
+PLB-202602-217,2026-02-23T15:57:39+08:00,2026-03-04T16:55:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,CRITICAL,4.0,48.97,False,True,Hardware Technician / ITS Staff
+PLB-202602-218,2026-02-23T15:00:27+08:00,2026-03-04T16:15:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,49.25,True,False,Hardware Technician / ITS Staff
+PLB-202603-219,2026-03-03T13:36:27+08:00,2026-03-11T14:52:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,49.27,True,False,Hardware Technician / ITS Staff
+PLB-202603-220,2026-03-03T11:31:49+08:00,2026-03-11T14:08:00+08:00,Supply and Property Management,ITS,Hardware/Network Maintenance,HIGH,24.0,49.61,False,False,Hardware Technician / ITS Staff
+PLB-202603-221,2026-03-02T14:34:41+08:00,2026-03-10T16:18:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,49.74,True,False,Hardware Technician / ITS Staff
+PLB-202603-222,2026-03-05T12:32:20+08:00,2026-03-13T15:05:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,CRITICAL,4.0,50.09,False,False,Hardware Technician / ITS Staff
+PLB-202603-223,2026-03-03T09:08:59+08:00,2026-03-11T11:16:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,50.14,True,False,Hardware Technician / ITS Staff
+PLB-202603-224,2026-03-02T08:41:49+08:00,2026-03-10T11:10:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,HIGH,24.0,50.48,False,False,Hardware Technician / ITS Staff
+PLB-202603-225,2026-03-05T12:35:34+08:00,2026-03-13T15:46:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,50.76,True,True,Hardware Technician / ITS Staff
+PLB-202603-226,2026-03-02T12:39:21+08:00,2026-03-10T16:01:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,HIGH,24.0,51.01,False,False,Hardware Technician / ITS Staff
+PLB-202603-227,2026-03-06T11:29:03+08:00,2026-03-16T15:59:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,51.5,True,False,Hardware Technician / ITS Staff
+PLB-202603-228,2026-03-02T10:02:08+08:00,2026-03-10T14:58:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,LOW,168.0,51.94,True,True,Hardware Technician / ITS Staff
+PLB-202603-229,2026-03-05T10:02:30+08:00,2026-03-13T15:21:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,HIGH,24.0,52.31,False,True,Hardware Technician / ITS Staff
+PLB-202603-230,2026-03-05T10:09:07+08:00,2026-03-13T15:29:00+08:00,Supply and Property Management,ITS,Hardware/Network Maintenance,MEDIUM,72.0,52.33,True,False,Hardware Technician / ITS Staff
+PLB-202603-231,2026-03-02T13:17:51+08:00,2026-03-11T09:11:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,52.9,True,True,Hardware Technician / ITS Staff
+PLB-202603-232,2026-03-09T09:30:04+08:00,2026-03-17T16:10:00+08:00,College of Education,ITS,Hardware/Network Maintenance,LOW,168.0,53.67,True,False,Hardware Technician / ITS Staff
+PLB-202603-233,2026-03-09T09:50:26+08:00,2026-03-17T16:45:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,53.92,True,False,Hardware Technician / ITS Staff
+PLB-202603-234,2026-03-09T08:18:51+08:00,2026-03-17T15:19:00+08:00,College of Industrial Technology,ITS,Hardware/Network Maintenance,MEDIUM,72.0,54.01,True,False,Hardware Technician / ITS Staff
+PLB-202603-235,2026-03-09T09:34:46+08:00,2026-03-17T16:48:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,54.23,True,False,Hardware Technician / ITS Staff
+PLB-202603-236,2026-03-09T08:05:50+08:00,2026-03-17T15:25:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,54.33,True,False,Hardware Technician / ITS Staff
+PLB-202603-237,2026-03-12T13:30:47+08:00,2026-03-23T10:53:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,54.38,True,False,Hardware Technician / ITS Staff
+PLB-202603-238,2026-03-10T08:04:25+08:00,2026-03-18T15:30:00+08:00,College of Education,ITS,Hardware/Network Maintenance,MEDIUM,72.0,54.43,True,False,Hardware Technician / ITS Staff
+PLB-202603-239,2026-03-10T12:07:30+08:00,2026-03-19T10:41:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,54.68,True,False,Hardware Technician / ITS Staff
+PLB-202603-240,2026-03-13T13:50:12+08:00,2026-03-24T11:33:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,HIGH,24.0,54.71,False,False,Hardware Technician / ITS Staff
+PLB-202603-241,2026-03-09T10:59:52+08:00,2026-03-18T09:43:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,54.73,True,False,Hardware Technician / ITS Staff
+PLB-202603-242,2026-03-12T11:45:09+08:00,2026-03-23T11:10:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,LOW,168.0,55.41,True,True,Hardware Technician / ITS Staff
+PLB-202603-243,2026-03-09T15:25:37+08:00,2026-03-18T14:51:00+08:00,Graduate School,ITS,Hardware/Network Maintenance,MEDIUM,72.0,55.44,True,False,Hardware Technician / ITS Staff
+PLB-202603-244,2026-03-11T14:40:38+08:00,2026-03-20T14:16:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,CRITICAL,4.0,55.6,False,False,Hardware Technician / ITS Staff
+PLB-202603-245,2026-03-17T14:47:40+08:00,2026-03-26T14:35:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,55.8,True,False,Hardware Technician / ITS Staff
+PLB-202603-246,2026-03-17T13:56:12+08:00,2026-03-26T13:53:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,HIGH,24.0,55.95,False,True,Hardware Technician / ITS Staff
+PLB-202603-247,2026-03-17T11:58:12+08:00,2026-03-26T13:00:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,LOW,168.0,56.04,True,False,Hardware Technician / ITS Staff
+PLB-202603-248,2026-03-16T11:26:34+08:00,2026-03-25T11:30:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,56.07,True,False,Hardware Technician / ITS Staff
+PLB-202603-249,2026-03-16T12:55:51+08:00,2026-03-25T13:05:00+08:00,Human Resource Development Office,ITS,Hardware/Network Maintenance,CRITICAL,4.0,56.09,False,False,Hardware Technician / ITS Staff
+PLB-202603-250,2026-03-17T14:12:41+08:00,2026-03-26T14:32:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,56.34,True,False,Hardware Technician / ITS Staff
+PLB-202603-251,2026-03-18T15:48:38+08:00,2026-03-27T16:10:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,HIGH,24.0,56.36,False,False,Hardware Technician / ITS Staff
+PLB-202603-252,2026-03-18T11:25:13+08:00,2026-03-27T11:52:00+08:00,Registrar Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,56.45,True,False,Hardware Technician / ITS Staff
+PLB-202603-253,2026-03-18T08:04:55+08:00,2026-03-27T08:45:00+08:00,Accounting Division,ITS,Hardware/Network Maintenance,MEDIUM,72.0,56.69,True,False,Hardware Technician / ITS Staff
+PLB-202603-254,2026-03-16T14:42:17+08:00,2026-03-25T16:35:00+08:00,Supply and Property Management,ITS,Hardware/Network Maintenance,MEDIUM,72.0,57.89,True,False,Hardware Technician / ITS Staff
+PLB-202603-255,2026-03-16T10:41:16+08:00,2026-03-25T13:41:00+08:00,College of Arts and Sciences,ITS,Hardware/Network Maintenance,HIGH,24.0,58.0,False,True,Hardware Technician / ITS Staff
+PLB-202603-256,2026-03-16T11:10:28+08:00,2026-03-25T14:23:00+08:00,Guidance and Testing Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,58.21,True,False,Hardware Technician / ITS Staff
+PLB-202603-257,2026-03-24T15:48:48+08:00,2026-04-07T09:14:00+08:00,Cashier Office,ITS,Hardware/Network Maintenance,MEDIUM,72.0,58.43,True,True,Hardware Technician / ITS Staff
+PLB-202603-258,2026-03-23T14:40:01+08:00,2026-04-06T08:18:00+08:00,Human Resource Development Office,MIS,Software/Website Support,MEDIUM,72.0,58.64,True,False,Dev Staff / MIS Analyst
+PLB-202603-259,2026-03-26T14:37:05+08:00,2026-04-10T08:41:00+08:00,Accounting Division,MIS,Software/Website Support,MEDIUM,72.0,59.07,True,False,Dev Staff / MIS Analyst
+PLB-202603-260,2026-03-27T08:03:47+08:00,2026-04-10T11:12:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,MEDIUM,72.0,59.15,True,False,Dev Staff / MIS Analyst
+PLB-202603-261,2026-03-23T10:43:33+08:00,2026-04-01T15:07:00+08:00,Supply and Property Management,MIS,Software/Website Support,LOW,168.0,59.4,True,False,Dev Staff / MIS Analyst
+PLB-202603-262,2026-03-24T12:39:32+08:00,2026-04-06T16:34:00+08:00,Cashier Office,MIS,Software/Website Support,LOW,168.0,59.56,True,False,Dev Staff / MIS Analyst
+PLB-202603-263,2026-03-25T14:58:15+08:00,2026-04-08T09:54:00+08:00,Supply and Property Management,MIS,Software/Website Support,CRITICAL,4.0,59.93,False,False,Dev Staff / MIS Analyst
+PLB-202603-264,2026-03-23T15:52:47+08:00,2026-04-06T11:05:00+08:00,Accounting Division,MIS,Software/Website Support,HIGH,24.0,60.21,False,False,Dev Staff / MIS Analyst
+PLB-202603-265,2026-03-25T13:04:42+08:00,2026-04-08T08:51:00+08:00,Supply and Property Management,MIS,Software/Website Support,MEDIUM,72.0,60.78,True,False,Dev Staff / MIS Analyst
+PLB-202603-266,2026-03-26T15:10:51+08:00,2026-04-10T11:24:00+08:00,Registrar Office,MIS,Software/Website Support,MEDIUM,72.0,61.23,True,False,Dev Staff / MIS Analyst
+PLB-202603-267,2026-03-24T11:15:44+08:00,2026-04-07T08:38:00+08:00,Accounting Division,MIS,Software/Website Support,MEDIUM,72.0,61.38,True,False,Dev Staff / MIS Analyst
+PLB-202603-268,2026-03-27T11:10:33+08:00,2026-04-13T08:40:00+08:00,Registrar Office,MIS,Software/Website Support,HIGH,24.0,61.5,False,False,Dev Staff / MIS Analyst
+PLB-202603-269,2026-03-25T13:18:03+08:00,2026-04-08T09:52:00+08:00,Registrar Office,MIS,Software/Website Support,MEDIUM,72.0,61.56,True,False,Dev Staff / MIS Analyst
+PLB-202603-270,2026-03-31T12:50:28+08:00,2026-04-15T09:39:00+08:00,College of Industrial Technology,MIS,Software/Website Support,HIGH,24.0,61.65,False,True,Dev Staff / MIS Analyst
+PLB-202603-271,2026-03-30T15:20:11+08:00,2026-04-14T12:00:00+08:00,College of Industrial Technology,MIS,Software/Website Support,CRITICAL,4.0,61.66,False,False,Dev Staff / MIS Analyst
+PLB-202603-272,2026-03-30T15:54:07+08:00,2026-04-14T13:40:00+08:00,Graduate School,MIS,Software/Website Support,HIGH,24.0,61.76,False,False,Dev Staff / MIS Analyst
+PLB-202604-273,2026-04-01T11:19:34+08:00,2026-04-16T09:09:00+08:00,Accounting Division,MIS,Software/Website Support,MEDIUM,72.0,61.84,True,False,Dev Staff / MIS Analyst
+PLB-202604-274,2026-04-01T14:57:26+08:00,2026-04-16T12:00:00+08:00,Supply and Property Management,MIS,Software/Website Support,MEDIUM,72.0,62.05,True,False,Dev Staff / MIS Analyst
+PLB-202604-275,2026-04-06T10:02:56+08:00,2026-04-17T08:21:00+08:00,Registrar Office,MIS,Software/Website Support,HIGH,24.0,62.32,False,True,Dev Staff / MIS Analyst
+PLB-202604-276,2026-04-01T09:40:54+08:00,2026-04-15T17:00:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,HIGH,24.0,62.33,False,True,Dev Staff / MIS Analyst
+PLB-202604-277,2026-04-01T11:51:39+08:00,2026-04-16T10:14:00+08:00,Human Resource Development Office,MIS,Software/Website Support,MEDIUM,72.0,62.38,True,False,Dev Staff / MIS Analyst
+PLB-202603-278,2026-03-30T12:32:28+08:00,2026-04-14T10:44:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,LOW,168.0,62.73,True,True,Dev Staff / MIS Analyst
+PLB-202604-279,2026-04-06T14:11:18+08:00,2026-04-17T11:55:00+08:00,Supply and Property Management,MIS,Software/Website Support,LOW,168.0,62.73,True,False,Dev Staff / MIS Analyst
+PLB-202603-280,2026-03-30T14:11:31+08:00,2026-04-14T13:18:00+08:00,College of Industrial Technology,MIS,Software/Website Support,CRITICAL,4.0,63.11,False,True,Dev Staff / MIS Analyst
+PLB-202603-281,2026-03-30T09:24:21+08:00,2026-04-14T08:31:00+08:00,Cashier Office,MIS,Software/Website Support,MEDIUM,72.0,63.11,True,True,Dev Staff / MIS Analyst
+PLB-202603-282,2026-03-30T08:30:34+08:00,2026-04-13T16:49:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,HIGH,24.0,63.31,False,True,Dev Staff / MIS Analyst
+PLB-202604-283,2026-04-06T08:28:25+08:00,2026-04-16T16:59:00+08:00,Cashier Office,MIS,Software/Website Support,MEDIUM,72.0,63.52,True,False,Dev Staff / MIS Analyst
+PLB-202604-284,2026-04-08T13:30:22+08:00,2026-04-21T13:05:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,MEDIUM,72.0,63.58,True,True,Dev Staff / MIS Analyst
+PLB-202604-285,2026-04-06T14:37:37+08:00,2026-04-17T14:31:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,LOW,168.0,63.9,True,False,Dev Staff / MIS Analyst
+PLB-202604-286,2026-04-08T12:39:12+08:00,2026-04-21T13:24:00+08:00,Graduate School,MIS,Software/Website Support,CRITICAL,4.0,64.4,False,False,Dev Staff / MIS Analyst
+PLB-202604-287,2026-04-10T13:51:28+08:00,2026-04-22T14:19:00+08:00,Accounting Division,MIS,Software/Website Support,HIGH,24.0,64.46,False,False,Dev Staff / MIS Analyst
+PLB-202604-288,2026-04-10T09:14:36+08:00,2026-04-22T09:58:00+08:00,College of Education,MIS,Software/Website Support,HIGH,24.0,64.73,False,True,Dev Staff / MIS Analyst
+PLB-202604-289,2026-04-10T15:46:32+08:00,2026-04-22T16:39:00+08:00,Supply and Property Management,MIS,Software/Website Support,MEDIUM,72.0,64.89,True,True,Dev Staff / MIS Analyst
+PLB-202604-290,2026-04-10T13:05:32+08:00,2026-04-22T14:00:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,HIGH,24.0,64.91,False,False,Dev Staff / MIS Analyst
+PLB-202604-291,2026-04-10T14:55:22+08:00,2026-04-22T15:54:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,HIGH,24.0,64.99,False,False,Dev Staff / MIS Analyst
+PLB-202604-292,2026-04-10T09:00:40+08:00,2026-04-22T10:05:00+08:00,Supply and Property Management,MIS,Software/Website Support,MEDIUM,72.0,65.08,True,False,Dev Staff / MIS Analyst
+PLB-202604-293,2026-04-07T11:26:22+08:00,2026-04-20T13:33:00+08:00,Registrar Office,MIS,Software/Website Support,MEDIUM,72.0,65.12,True,False,Dev Staff / MIS Analyst
+PLB-202604-294,2026-04-10T13:48:16+08:00,2026-04-22T15:03:00+08:00,College of Education,MIS,Software/Website Support,MEDIUM,72.0,65.25,True,False,Dev Staff / MIS Analyst
+PLB-202604-295,2026-04-06T13:16:07+08:00,2026-04-17T14:39:00+08:00,Human Resource Development Office,MIS,Software/Website Support,MEDIUM,72.0,65.39,True,True,Dev Staff / MIS Analyst
+PLB-202604-296,2026-04-17T12:36:04+08:00,2026-04-29T15:22:00+08:00,College of Education,MIS,Software/Website Support,LOW,168.0,66.36,True,True,Dev Staff / MIS Analyst
+PLB-202604-297,2026-04-13T09:19:45+08:00,2026-04-23T11:44:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,HIGH,24.0,66.42,False,False,Dev Staff / MIS Analyst
+PLB-202604-298,2026-04-13T14:13:51+08:00,2026-04-23T16:41:00+08:00,Graduate School,MIS,Software/Website Support,HIGH,24.0,66.46,False,False,Dev Staff / MIS Analyst
+PLB-202604-299,2026-04-16T14:02:19+08:00,2026-04-28T16:39:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,LOW,168.0,66.61,True,True,Dev Staff / MIS Analyst
+PLB-202604-300,2026-04-15T11:33:33+08:00,2026-04-27T15:37:00+08:00,Cashier Office,MIS,Software/Website Support,CRITICAL,4.0,67.06,False,True,Dev Staff / MIS Analyst
+PLB-202604-301,2026-04-13T11:32:31+08:00,2026-04-23T15:46:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,CRITICAL,4.0,67.23,False,True,Dev Staff / MIS Analyst
+PLB-202604-302,2026-04-13T08:39:18+08:00,2026-04-23T13:10:00+08:00,Registrar Office,MIS,Software/Website Support,LOW,168.0,67.52,True,True,Dev Staff / MIS Analyst
+PLB-202604-303,2026-04-13T15:42:58+08:00,2026-04-24T10:32:00+08:00,College of Industrial Technology,MIS,Software/Website Support,LOW,168.0,67.84,True,False,Dev Staff / MIS Analyst
+PLB-202604-304,2026-04-16T10:44:15+08:00,2026-04-28T16:21:00+08:00,College of Education,MIS,Software/Website Support,HIGH,24.0,68.62,False,False,Dev Staff / MIS Analyst
+PLB-202604-305,2026-04-13T15:04:39+08:00,2026-04-24T13:19:00+08:00,Human Resource Development Office,MIS,Software/Website Support,HIGH,24.0,70.25,False,False,Dev Staff / MIS Analyst
+PLB-202604-306,2026-04-13T08:55:53+08:00,2026-04-23T16:18:00+08:00,College of Education,MIS,Software/Website Support,HIGH,24.0,70.39,False,False,Dev Staff / MIS Analyst
+PLB-202604-307,2026-04-15T08:50:42+08:00,2026-04-27T16:28:00+08:00,Guidance and Testing Office,MIS,Software/Website Support,HIGH,24.0,70.63,False,False,Dev Staff / MIS Analyst
+PLB-202604-308,2026-04-16T10:26:03+08:00,2026-04-29T09:19:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,CRITICAL,4.0,70.88,False,True,Dev Staff / MIS Analyst
+PLB-202604-309,2026-04-22T13:02:27+08:00,2026-05-06T11:51:00+08:00,Cashier Office,MIS,Software/Website Support,LOW,168.0,71.82,True,False,Dev Staff / MIS Analyst
+PLB-202604-310,2026-04-20T15:12:10+08:00,2026-05-04T15:04:00+08:00,Graduate School,MIS,Software/Website Support,LOW,168.0,71.87,True,True,Dev Staff / MIS Analyst
+PLB-202604-311,2026-04-20T14:58:32+08:00,2026-05-04T15:29:00+08:00,College of Education,MIS,Software/Website Support,MEDIUM,72.0,72.51,False,False,Dev Staff / MIS Analyst
+PLB-202604-312,2026-04-21T09:45:06+08:00,2026-05-05T10:47:00+08:00,Cashier Office,MIS,Software/Website Support,LOW,168.0,73.03,True,False,Dev Staff / MIS Analyst
+PLB-202604-313,2026-04-20T10:42:27+08:00,2026-05-04T13:34:00+08:00,Registrar Office,MIS,Software/Website Support,LOW,168.0,73.86,True,True,Dev Staff / MIS Analyst
+PLB-202604-314,2026-04-21T08:55:02+08:00,2026-05-05T11:36:00+08:00,College of Industrial Technology,MIS,Software/Website Support,MEDIUM,72.0,74.69,False,False,Dev Staff / MIS Analyst
+PLB-202604-315,2026-04-22T11:29:21+08:00,2026-05-06T15:30:00+08:00,Human Resource Development Office,MIS,Software/Website Support,MEDIUM,72.0,75.01,False,False,Dev Staff / MIS Analyst
+PLB-202604-316,2026-04-22T15:05:37+08:00,2026-05-07T09:40:00+08:00,Human Resource Development Office,MIS,Software/Website Support,MEDIUM,72.0,75.58,False,False,Dev Staff / MIS Analyst
+PLB-202604-317,2026-04-21T14:22:08+08:00,2026-05-06T09:50:00+08:00,College of Arts and Sciences,MIS,Software/Website Support,MEDIUM,72.0,76.46,False,False,Dev Staff / MIS Analyst
+PLB-202604-318,2026-04-20T13:26:41+08:00,2026-05-05T09:10:00+08:00,College of Education,MIS,Software/Website Support,MEDIUM,72.0,76.74,False,False,Dev Staff / MIS Analyst
+PLB-202604-319,2026-04-20T12:18:55+08:00,2026-05-05T11:40:00+08:00,Accounting Division,MIS,Software/Website Support,MEDIUM,72.0,79.67,False,True,Dev Staff / MIS Analyst
+PLB-202604-320,2026-04-24T12:42:34+08:00,2026-05-11T14:02:00+08:00,Accounting Division,MIS,Software/Website Support,CRITICAL,4.0,81.03,False,False,Dev Staff / MIS Analyst
